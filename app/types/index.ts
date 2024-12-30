@@ -14,15 +14,22 @@ export interface ReaderConfig {
  */
 export interface TextContentProps {
   content: string;        // Text content to display
-  fontSize: number;       // Font size in pixels
   isDarkMode: boolean;    // Whether dark mode is enabled
+}
+
+/**
+ * Text position definition
+ */
+export interface TextPosition {
+  offset: number;         // Character offset in the text file (0-based)
+  total: number;         // Total length of the text
 }
 
 /**
  * Bookmark definition
  */
 export interface Bookmark {
-  position: number;       // Page number or scroll position
-  chapter: number;        // Chapter index (deprecated)
-  timestamp: number;      // When the bookmark was created
+  offset: number;        // Character offset in the text file
+  timestamp: number;     // When the bookmark was created
+  note?: string;        // Optional note for the bookmark
 }

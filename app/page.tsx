@@ -17,7 +17,7 @@ export default function Home() {
   // State management
   const [content, setContent] = useState<string>('');
   const [config, setConfig] = useState<ReaderConfig>(DEFAULT_CONFIG);
-  const [currentPosition, setCurrentPosition] = useState(0);
+  const [currentOffset, setCurrentOffset] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
@@ -60,13 +60,13 @@ export default function Home() {
     reader.onload = (e) => {
       const text = e.target?.result as string;
       setContent(text);
-      setCurrentPosition(0);
+      setCurrentOffset(0);
     };
     reader.readAsText(file);
   }, []);
 
   const scrollToTop = () => {
-    setCurrentPosition(0);
+    setCurrentOffset(0);
   };
 
   // Determine if we should show the mobile layout
@@ -123,9 +123,9 @@ export default function Home() {
                 ${isMobile ? 'h-full' : ''}
               `}>
                 <Sidebar
-                  currentPosition={currentPosition}
-                  onBookmarkSelect={(position) => {
-                    setCurrentPosition(position);
+                  currentPosition={currentOffset}
+                  onBookmarkSelect={(offset) => {
+                    setCurrentOffset(offset);
                     if (isMobile) setIsSidebarOpen(false);
                   }}
                   isDarkMode={config.isDarkMode}
@@ -135,7 +135,8 @@ export default function Home() {
             
             <Reader
               content={content}
-              onPositionChange={setCurrentPosition}
+              currentOffset={currentOffset}
+              onPositionChange={setCurrentOffset}
               isDarkMode={config.isDarkMode}
             />
           </div>

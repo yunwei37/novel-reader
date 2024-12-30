@@ -1,29 +1,31 @@
 /**
  * Reader Component
  * 
- * A versatile text reader component that handles all content display and navigation.
- * Features include:
- * - Page/scroll mode switching
- * - Font size adjustment
- * - Content chunking and display
- * - Page navigation in paged mode
- * - Smooth scrolling with progress indicator in scroll mode
- * - Dark mode support
- * - Responsive design
+ * A versatile text reader component that handles content display and navigation.
+ * Supports both paged and scroll modes with position tracking.
  */
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { TextContentProps } from '../types';
-import { calculateScrollProgress, getPageContent, getChunkedContent, calculateLinesPerPage, calculateTotalPages } from '../lib/reader';
+import { TextContentProps, TextPosition } from '../types';
+import {
+  calculateLinesPerPage,
+  calculateTotalPages,
+  getPageContent,
+  offsetToPage,
+  pageToOffset,
+  getTextPosition
+} from '../lib/reader';
 
-interface ReaderProps extends Omit<TextContentProps, 'fontSize'> {
-  onPositionChange: (position: number) => void;  // Callback for position changes
-  defaultFontSize?: number;     // Initial font size
-  defaultIsPaged?: boolean;     // Initial paged mode state
+interface ReaderProps extends TextContentProps {
+  currentOffset: number;                    // Current character offset in the text
+  onPositionChange: (offset: number) => void; // Callback for position changes
+  defaultFontSize?: number;                 // Initial font size
+  defaultIsPaged?: boolean;                 // Initial paged mode state
 }
 
 export const Reader: React.FC<ReaderProps> = ({
   content,
+  currentOffset,
   onPositionChange,
   isDarkMode,
   defaultFontSize = 16,
@@ -34,22 +36,22 @@ export const Reader: React.FC<ReaderProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const readerRef = useRef<HTMLDivElement>(null);
   
-  // State for content display and navigation
-  const [displayContent, setDisplayContent] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentChunk, setCurrentChunk] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  // State for display settings
   const [fontSize, setFontSize] = useState(defaultFontSize);
   const [isPaged, setIsPaged] = useState(defaultIsPaged);
   const [windowHeight, setWindowHeight] = useState(0);
 
+  // State for content display
+  const [displayContent, setDisplayContent] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
   // Constants
-  const CHUNK_SIZE = 50000;
   const MIN_FONT_SIZE = 12;
   const MAX_FONT_SIZE = 24;
-  const HEADER_HEIGHT = 180; // Height of the header area
-  const FOOTER_HEIGHT = 100; // Height of the footer area
+  const HEADER_HEIGHT = 180;
+  const FOOTER_HEIGHT = 100;
 
   // Calculate available height for the reader
   const updateWindowHeight = useCallback(() => {
@@ -67,67 +69,95 @@ export const Reader: React.FC<ReaderProps> = ({
     return () => window.removeEventListener('resize', updateWindowHeight);
   }, [updateWindowHeight]);
 
-  // Update content display based on mode and position
+  // Handle scroll in non-paged mode
+  const handleScroll = useCallback(() => {
+    if (!isPaged && containerRef.current && content) {
+      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+      const progress = scrollTop / (scrollHeight - clientHeight);
+      setScrollProgress(progress);
+
+      // Calculate offset based on scroll position
+      const newOffset = Math.round(progress * content.length);
+      if (Math.abs(newOffset - currentOffset) > 50) {
+        onPositionChange(newOffset);
+      }
+    }
+  }, [isPaged, content, currentOffset, onPositionChange]);
+
+  // Update scroll position when offset changes in scroll mode
+  useEffect(() => {
+    if (!isPaged && containerRef.current && content) {
+      const { scrollHeight, clientHeight } = containerRef.current;
+      const progress = currentOffset / content.length;
+      const targetScroll = progress * (scrollHeight - clientHeight);
+      
+      if (Math.abs(containerRef.current.scrollTop - targetScroll) > 10) {
+        containerRef.current.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [currentOffset, isPaged, content]);
+
+  // Update page when offset changes in paged mode
+  useEffect(() => {
+    if (isPaged && content) {
+      const linesPerPage = calculateLinesPerPage(windowHeight - 100, fontSize);
+      const newPage = offsetToPage(currentOffset, content, linesPerPage);
+      if (newPage !== currentPage) {
+        setCurrentPage(newPage);
+      }
+    }
+  }, [currentOffset, isPaged, content, windowHeight, fontSize, currentPage]);
+
+  // Update content display based on mode
   useEffect(() => {
     if (!content) return;
 
+    const linesPerPage = calculateLinesPerPage(windowHeight - 100, fontSize);
+    const totalPages = calculateTotalPages(content, linesPerPage);
+    setTotalPages(totalPages);
+
     if (isPaged) {
-      const linesPerPage = calculateLinesPerPage(windowHeight - 100, fontSize);
-      setTotalPages(calculateTotalPages(content, linesPerPage));
       const pageContent = getPageContent(content, currentPage, linesPerPage);
       setDisplayContent(pageContent);
-      onPositionChange(currentPage);
     } else {
-      const chunkContent = getChunkedContent(content, currentChunk, CHUNK_SIZE);
-      setDisplayContent(chunkContent);
-      if (containerRef.current) {
-        onPositionChange(containerRef.current.scrollTop);
+      setDisplayContent(content);
+    }
+  }, [content, currentOffset, isPaged, currentPage, fontSize, windowHeight]);
+
+  // Handle wheel events in paged mode
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (isPaged && content) {
+      e.preventDefault();
+      const linesPerPage = calculateLinesPerPage(windowHeight - 100, fontSize);
+      
+      if (e.deltaY > 0 && currentPage < totalPages) {
+        const newOffset = pageToOffset(currentPage + 1, content, linesPerPage);
+        onPositionChange(newOffset);
+      } else if (e.deltaY < 0 && currentPage > 1) {
+        const newOffset = pageToOffset(currentPage - 1, content, linesPerPage);
+        onPositionChange(newOffset);
       }
     }
-  }, [content, currentChunk, isPaged, currentPage, fontSize, windowHeight, onPositionChange]);
+  }, [isPaged, content, currentPage, totalPages, windowHeight, fontSize, onPositionChange]);
 
-  // Reset position when switching modes
-  useEffect(() => {
-    setCurrentPage(1);
-    setCurrentChunk(0);
+  // Handle font size changes
+  const adjustFontSize = useCallback((delta: number) => {
+    setFontSize(prev => {
+      const newSize = Math.min(Math.max(prev + delta, MIN_FONT_SIZE), MAX_FONT_SIZE);
+      return newSize;
+    });
+  }, []);
+
+  // Handle mode switching
+  const togglePageMode = useCallback(() => {
+    setIsPaged(prev => !prev);
     if (containerRef.current) {
       containerRef.current.scrollTop = 0;
     }
-  }, [isPaged]);
-
-  const handleScroll = () => {
-    if (!isPaged && containerRef.current) {
-      const progress = calculateScrollProgress(containerRef.current);
-      setScrollProgress(progress);
-
-      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-      const totalChunks = Math.ceil(content.length / CHUNK_SIZE);
-      const newChunk = Math.floor((scrollTop / (scrollHeight - clientHeight)) * totalChunks);
-      
-      if (newChunk !== currentChunk) {
-        setCurrentChunk(newChunk);
-      }
-      onPositionChange(scrollTop);
-    }
-  };
-
-  const handleWheel = (e: React.WheelEvent) => {
-    if (isPaged) {
-      e.preventDefault();
-      if (e.deltaY > 0 && currentPage < totalPages) {
-        setCurrentPage(prev => prev + 1);
-      } else if (e.deltaY < 0 && currentPage > 1) {
-        setCurrentPage(prev => prev - 1);
-      }
-    }
-  };
-
-  const adjustFontSize = (delta: number) => {
-    setFontSize(prev => {
-      const newSize = prev + delta;
-      return Math.min(Math.max(newSize, MIN_FONT_SIZE), MAX_FONT_SIZE);
-    });
-  };
+  }, []);
 
   return (
     <div 
@@ -137,7 +167,7 @@ export const Reader: React.FC<ReaderProps> = ({
     >
       <div className="sticky top-0 z-10 flex justify-between items-center gap-4 mb-4 p-4 bg-inherit">
         <button
-          onClick={() => setIsPaged(!isPaged)}
+          onClick={togglePageMode}
           className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-md"
         >
           {isPaged ? 'Switch to Scroll Mode' : 'Switch to Page Mode'}
@@ -167,14 +197,11 @@ export const Reader: React.FC<ReaderProps> = ({
         className={`
           relative bg-white rounded-lg shadow-lg p-8 prose max-w-none
           ${isDarkMode ? 'dark:bg-gray-800 dark:text-white' : ''}
-          ${isPaged 
-            ? 'overflow-hidden' 
-            : 'overflow-auto'
-          }
+          ${isPaged ? 'overflow-hidden' : 'overflow-auto'}
         `}
         style={{ 
           fontSize: `${fontSize}px`,
-          height: `${windowHeight - 100}px`, // Adjust for the control bar
+          height: `${windowHeight - 100}px`,
         }}
         onWheel={handleWheel}
         onScroll={handleScroll}
@@ -183,22 +210,24 @@ export const Reader: React.FC<ReaderProps> = ({
           ref={contentRef}
           className="whitespace-pre-wrap font-sans leading-relaxed m-0 px-4 text-justify hyphens-auto break-words"
         >
-          {displayContent || content}
+          {displayContent}
         </pre>
 
         {isPaged && (
           <div className={`
             absolute bottom-0 left-0 right-0 flex justify-between items-center p-4 
-            ${isDarkMode 
-              ? 'bg-gray-800 border-t border-gray-700' 
-              : 'bg-white border-t border-gray-200'
-            }
+            ${isDarkMode ? 'bg-gray-800 border-t border-gray-700' : 'bg-white border-t border-gray-200'}
           `}>
             <button
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              onClick={() => {
+                if (currentPage > 1) {
+                  const linesPerPage = calculateLinesPerPage(windowHeight - 100, fontSize);
+                  const newOffset = pageToOffset(currentPage - 1, content, linesPerPage);
+                  onPositionChange(newOffset);
+                }
+              }}
               disabled={currentPage <= 1}
               className="px-4 py-2 rounded bg-blue-500 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
-              aria-label="Previous page"
             >
               ← Previous
             </button>
@@ -206,10 +235,15 @@ export const Reader: React.FC<ReaderProps> = ({
               Page {currentPage} of {totalPages}
             </span>
             <button
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              onClick={() => {
+                if (currentPage < totalPages) {
+                  const linesPerPage = calculateLinesPerPage(windowHeight - 100, fontSize);
+                  const newOffset = pageToOffset(currentPage + 1, content, linesPerPage);
+                  onPositionChange(newOffset);
+                }
+              }}
               disabled={currentPage >= totalPages}
               className="px-4 py-2 rounded bg-blue-500 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
-              aria-label="Next page"
             >
               Next →
             </button>

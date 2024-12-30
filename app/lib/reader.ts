@@ -1,8 +1,8 @@
 /**
- * Utility functions for the Novel Reader application
+ * Reader utility functions
  */
 
-import { Chapter } from '../types';
+import { Chapter, TextPosition } from '../types';
 
 /**
  * Detects chapters in the given text content
@@ -50,80 +50,117 @@ export const detectChapters = (text: string): Chapter[] => {
 };
 
 /**
- * Calculates the number of lines that can fit in the container
- * @param containerHeight Height of the container
- * @param fontSize Current font size
- * @returns Number of lines that can fit
+ * Calculate the number of lines that can fit in a given height
  */
-export const calculateLinesPerPage = (
-  containerHeight: number,
-  fontSize: number
+export const calculateLinesPerPage = (height: number, fontSize: number): number => {
+  const lineHeight = fontSize * 1.5; // Assuming 1.5 line height
+  return Math.floor(height / lineHeight);
+};
+
+/**
+ * Calculate total pages based on content and lines per page
+ */
+export const calculateTotalPages = (content: string, linesPerPage: number): number => {
+  const lines = content.split('\n');
+  return Math.ceil(lines.length / linesPerPage);
+};
+
+/**
+ * Get content for a specific page
+ */
+export const getPageContent = (content: string, pageNumber: number, linesPerPage: number): string => {
+  const lines = content.split('\n');
+  const startLine = (pageNumber - 1) * linesPerPage;
+  return lines.slice(startLine, startLine + linesPerPage).join('\n');
+};
+
+/**
+ * Convert character offset to page number
+ */
+export const offsetToPage = (offset: number, content: string, linesPerPage: number): number => {
+  const textBeforeOffset = content.slice(0, offset);
+  const linesBeforeOffset = textBeforeOffset.split('\n').length;
+  return Math.max(1, Math.ceil(linesBeforeOffset / linesPerPage));
+};
+
+/**
+ * Convert page number to character offset
+ */
+export const pageToOffset = (page: number, content: string, linesPerPage: number): number => {
+  const lines = content.split('\n');
+  const targetLine = Math.min((page - 1) * linesPerPage, lines.length);
+  let offset = 0;
+  for (let i = 0; i < targetLine; i++) {
+    offset += lines[i].length + 1; // +1 for newline character
+  }
+  return Math.min(offset, content.length);
+};
+
+/**
+ * Get text position information
+ */
+export const getTextPosition = (content: string, offset: number): TextPosition => {
+  return {
+    offset: Math.min(Math.max(0, offset), content.length),
+    total: content.length
+  };
+};
+
+/**
+ * Calculate scroll progress
+ */
+export const calculateScrollProgress = (element: HTMLElement): number => {
+  const { scrollTop, scrollHeight, clientHeight } = element;
+  return scrollTop / (scrollHeight - clientHeight);
+};
+
+/**
+ * Calculate character offset from scroll position
+ */
+export const scrollToOffset = (
+  scrollTop: number,
+  scrollHeight: number,
+  clientHeight: number,
+  contentLength: number
 ): number => {
-  // Using 1.5 line height and accounting for container padding
-  const lineHeight = fontSize * 1.5;
-  const availableHeight = containerHeight - 100; // Account for padding and margins
-  return Math.floor(availableHeight / lineHeight);
+  const maxScroll = scrollHeight - clientHeight;
+  const scrollProgress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+  return Math.round(scrollProgress * contentLength);
 };
 
 /**
- * Calculates the total number of pages for the content
- * @param content Text content
- * @param linesPerPage Number of lines per page
- * @returns Total number of pages
+ * Calculate scroll position from character offset
  */
-export const calculateTotalPages = (
-  content: string,
-  linesPerPage: number
+export const offsetToScroll = (
+  offset: number,
+  contentLength: number,
+  scrollHeight: number,
+  clientHeight: number
 ): number => {
-  const lines = content.split('\n').filter(line => line.trim().length > 0);
-  return Math.max(1, Math.ceil(lines.length / linesPerPage));
+  const progress = offset / contentLength;
+  return Math.round(progress * (scrollHeight - clientHeight));
 };
 
 /**
- * Gets the content for a specific page
- * @param content Full text content
- * @param currentPage Current page number
- * @param linesPerPage Number of lines per page
- * @returns Content for the specified page
+ * Load from local storage with type safety
  */
-export const getPageContent = (
-  content: string,
-  currentPage: number,
-  linesPerPage: number
-): string => {
-  const lines = content.split('\n').filter(line => line.trim().length > 0);
-  const start = (currentPage - 1) * linesPerPage;
-  const end = start + linesPerPage;
-  return lines.slice(start, end).join('\n');
+export const loadFromStorage = <T>(key: string, defaultValue: T): T => {
+  if (typeof window === 'undefined') return defaultValue;
+  const stored = localStorage.getItem(key);
+  if (!stored) return defaultValue;
+  try {
+    return JSON.parse(stored) as T;
+  } catch {
+    return defaultValue;
+  }
 };
 
 /**
- * Gets chunked content for scroll mode
- * @param content Full text content
- * @param currentChunk Current chunk index
- * @param chunkSize Size of each chunk
- * @returns Chunked content
+ * Save to local storage
  */
-export const getChunkedContent = (
-  content: string,
-  currentChunk: number,
-  chunkSize: number
-): string => {
-  const start = currentChunk * chunkSize;
-  const end = Math.min(start + chunkSize * 3, content.length);
-  return content.slice(start, end);
-};
-
-/**
- * Calculates scroll progress
- * @param container Container element
- * @returns Progress value between 0 and 1
- */
-export const calculateScrollProgress = (
-  container: HTMLElement
-): number => {
-  const progress = container.scrollTop / (container.scrollHeight - container.clientHeight);
-  return Math.min(1, Math.max(0, progress));
+export const saveToStorage = (key: string, value: any): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(key, JSON.stringify(value));
 };
 
 /**
@@ -133,33 +170,4 @@ export const calculateScrollProgress = (
  */
 export const formatTimestamp = (timestamp: number): string => {
   return new Date(timestamp).toLocaleString();
-};
-
-/**
- * Saves data to localStorage
- * @param key Storage key
- * @param data Data to store
- */
-export const saveToStorage = <T>(key: string, data: T): void => {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.error(`Error saving to localStorage: ${error}`);
-  }
-};
-
-/**
- * Loads data from localStorage
- * @param key Storage key
- * @param defaultValue Default value if key doesn't exist
- * @returns Stored data or default value
- */
-export const loadFromStorage = <T>(key: string, defaultValue: T): T => {
-  try {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : defaultValue;
-  } catch (error) {
-    console.error(`Error loading from localStorage: ${error}`);
-    return defaultValue;
-  }
 };
