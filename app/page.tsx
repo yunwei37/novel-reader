@@ -3,11 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useCallback } from 'react';
 import { Header } from './components/Header';
-import { SearchBar } from './components/SearchBar';
 import { Sidebar } from './components/Sidebar';
 import { Reader } from './components/Reader';
-import { Chapter, Bookmark, ReaderConfig } from './types';
-import { detectChapters, loadFromStorage, saveToStorage, getPageContent, getChunkedContent, calculateLinesPerPage, calculateTotalPages } from './lib/reader';
+import { Bookmark, ReaderConfig } from './types';
+import { loadFromStorage, saveToStorage } from './lib/reader';
 
 // Default configuration
 const DEFAULT_CONFIG: ReaderConfig = {
@@ -20,28 +19,18 @@ const DEFAULT_CONFIG: ReaderConfig = {
 export default function Home() {
   // State management
   const [content, setContent] = useState<string>('');
-  const [displayContent, setDisplayContent] = useState<string>('');
-  const [chapters, setChapters] = useState<Chapter[]>([]);
   const [config, setConfig] = useState<ReaderConfig>(DEFAULT_CONFIG);
-  const [currentChapter, setCurrentChapter] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<number[]>([]);
-  const [currentSearchIndex, setCurrentSearchIndex] = useState(-1);
+  const [currentPosition, setCurrentPosition] = useState(0);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [currentChunk, setCurrentChunk] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const fullContentRef = useRef<string>('');
 
   // Load preferences from localStorage on client side
   useEffect(() => {
-    // Set window width
     setWindowWidth(window.innerWidth);
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
@@ -63,35 +52,6 @@ export default function Home() {
     saveToStorage('bookmarks', bookmarks);
   }, [config, bookmarks]);
 
-  // Content chunking and page calculation
-  useEffect(() => {
-    if (!fullContentRef.current || !chapters[currentChapter]) return;
-
-    const currentContent = chapters[currentChapter].content;
-    if (config.isPaged) {
-      const linesPerPage = calculateLinesPerPage(window.innerHeight, config.fontSize);
-      setTotalPages(calculateTotalPages(currentContent, linesPerPage));
-      const content = getPageContent(currentContent, currentPage, linesPerPage);
-      setDisplayContent(content);
-    } else {
-      const content = getChunkedContent(currentContent, currentChunk, config.chunkSize);
-      setDisplayContent(content);
-    }
-  }, [currentChunk, config.isPaged, currentPage, config.fontSize, currentChapter, chapters]);
-
-  // Handle window resize for page recalculation
-  useEffect(() => {
-    const handleResize = () => {
-      if (config.isPaged && chapters[currentChapter]) {
-        const linesPerPage = calculateLinesPerPage(window.innerHeight, config.fontSize);
-        setTotalPages(calculateTotalPages(chapters[currentChapter].content, linesPerPage));
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [config.isPaged, config.fontSize, currentChapter, chapters]);
-
   // Handle scroll events for "Go to top" button
   useEffect(() => {
     const handleScroll = () => {
@@ -108,68 +68,23 @@ export default function Home() {
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
-      fullContentRef.current = text;
       setContent(text);
-      setCurrentChunk(0);
-      setCurrentPage(1);
-      const detectedChapters = detectChapters(text);
-      setChapters(detectedChapters);
-      setCurrentChapter(0);
-      setSearchQuery('');
-      setSearchResults([]);
-      setCurrentSearchIndex(-1);
+      setCurrentPosition(0);
     };
     reader.readAsText(file);
   }, []);
 
-  const handleSearch = useCallback(() => {
-    if (!searchQuery || !fullContentRef.current) return;
-
-    const results: number[] = [];
-    let position = -1;
-    const lowerContent = fullContentRef.current.toLowerCase();
-    const lowerQuery = searchQuery.toLowerCase();
-
-    while ((position = lowerContent.indexOf(lowerQuery, position + 1)) !== -1) {
-      results.push(position);
-    }
-
-    setSearchResults(results);
-    setCurrentSearchIndex(results.length > 0 ? 0 : -1);
-
-    if (results.length > 0) {
-      if (config.isPaged) {
-        const linesBeforeResult = fullContentRef.current
-          .slice(0, results[0])
-          .split('\n').length;
-        const linesPerPage = calculateLinesPerPage(window.innerHeight, config.fontSize);
-        const targetPage = Math.floor(linesBeforeResult / linesPerPage) + 1;
-        setCurrentPage(targetPage);
-      } else {
-        const element = document.createElement('div');
-        element.innerHTML = fullContentRef.current;
-        const position = results[0];
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  }, [searchQuery, config.isPaged, config.fontSize]);
-
   const addBookmark = useCallback(() => {
-    const position = config.isPaged ? currentPage : window.scrollY;
     const bookmark: Bookmark = {
-      position,
-      chapter: currentChapter,
+      position: currentPosition,
+      chapter: 0,
       timestamp: Date.now()
     };
     setBookmarks(prev => [...prev, bookmark]);
-  }, [currentChapter, currentPage, config.isPaged]);
+  }, [currentPosition]);
 
   const scrollToTop = () => {
-    if (config.isPaged) {
-      setCurrentPage(1);
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    setCurrentPosition(0);
   };
 
   const togglePageMode = () => {
@@ -177,8 +92,7 @@ export default function Home() {
       ...prev,
       isPaged: !prev.isPaged
     }));
-    setCurrentPage(1);
-    setCurrentChunk(0);
+    setCurrentPosition(0);
   };
 
   // Determine if we should show the mobile layout
@@ -197,7 +111,7 @@ export default function Home() {
             isMobile={isMobile}
           />
 
-          <div className="flex justify-between items-center mt-4 gap-4 flex-wrap">
+          <div className="flex justify-between items-center mt-4 gap-4">
             <button
               onClick={togglePageMode}
               className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-md"
@@ -205,15 +119,12 @@ export default function Home() {
               {config.isPaged ? 'Switch to Scroll Mode' : 'Switch to Page Mode'}
             </button>
 
-            {content && (
-              <SearchBar
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                onSearch={handleSearch}
-                onBookmark={addBookmark}
-                isDarkMode={config.isDarkMode}
-              />
-            )}
+            <button
+              onClick={addBookmark}
+              className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-md"
+            >
+              Add Bookmark
+            </button>
           </div>
         </div>
 
@@ -256,46 +167,22 @@ export default function Home() {
                 ${isMobile ? 'h-full' : ''}
               `}>
                 <Sidebar
-                  chapters={chapters}
                   bookmarks={bookmarks}
-                  currentChapter={currentChapter}
-                  onChapterSelect={(index) => {
-                    setCurrentChapter(index);
-                    if (isMobile) setIsSidebarOpen(false);
-                  }}
-                  onBookmarkSelect={(position, chapter) => {
-                    if (config.isPaged) {
-                      setCurrentPage(position as number);
-                    } else {
-                      window.scrollTo({ top: position, behavior: 'smooth' });
-                    }
-                    setCurrentChapter(chapter);
+                  onBookmarkSelect={(position) => {
+                    setCurrentPosition(position);
                     if (isMobile) setIsSidebarOpen(false);
                   }}
                   isDarkMode={config.isDarkMode}
+                  isPaged={config.isPaged}
                 />
               </div>
             </div>
             
             <Reader
-              content={chapters[currentChapter]?.content || ''}
-              displayContent={displayContent}
+              content={content}
               fontSize={config.fontSize}
               isPaged={config.isPaged}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              onScroll={() => {
-                if (!config.isPaged) {
-                  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-                  const progress = scrollTop / (scrollHeight - clientHeight);
-                  const totalChunks = Math.ceil(fullContentRef.current.length / config.chunkSize);
-                  const newChunk = Math.floor(progress * totalChunks);
-                  if (newChunk !== currentChunk) {
-                    setCurrentChunk(newChunk);
-                  }
-                }
-              }}
+              onPositionChange={setCurrentPosition}
               isDarkMode={config.isDarkMode}
             />
           </div>
