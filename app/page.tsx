@@ -5,15 +5,12 @@ import { useCallback } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { Reader } from './components/Reader';
-import { Bookmark, ReaderConfig } from './types';
+import { ReaderConfig } from './types';
 import { loadFromStorage, saveToStorage } from './lib/reader';
 
 // Default configuration
 const DEFAULT_CONFIG: ReaderConfig = {
-  isPaged: false,
-  fontSize: 16,
   isDarkMode: false,
-  chunkSize: 50000,
 };
 
 export default function Home() {
@@ -21,7 +18,6 @@ export default function Home() {
   const [content, setContent] = useState<string>('');
   const [config, setConfig] = useState<ReaderConfig>(DEFAULT_CONFIG);
   const [currentPosition, setCurrentPosition] = useState(0);
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
@@ -39,18 +35,13 @@ export default function Home() {
     const savedConfig = loadFromStorage('readerConfig', DEFAULT_CONFIG);
     setConfig(savedConfig);
 
-    // Load saved bookmarks
-    const savedBookmarks = loadFromStorage<Bookmark[]>('bookmarks', []);
-    setBookmarks(savedBookmarks);
-
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Save preferences to localStorage
   useEffect(() => {
     saveToStorage('readerConfig', config);
-    saveToStorage('bookmarks', bookmarks);
-  }, [config, bookmarks]);
+  }, [config]);
 
   // Handle scroll events for "Go to top" button
   useEffect(() => {
@@ -74,24 +65,7 @@ export default function Home() {
     reader.readAsText(file);
   }, []);
 
-  const addBookmark = useCallback(() => {
-    const bookmark: Bookmark = {
-      position: currentPosition,
-      chapter: 0,
-      timestamp: Date.now()
-    };
-    setBookmarks(prev => [...prev, bookmark]);
-  }, [currentPosition]);
-
   const scrollToTop = () => {
-    setCurrentPosition(0);
-  };
-
-  const togglePageMode = () => {
-    setConfig(prev => ({
-      ...prev,
-      isPaged: !prev.isPaged
-    }));
     setCurrentPosition(0);
   };
 
@@ -104,28 +78,10 @@ export default function Home() {
         <div className="sticky top-0 z-50 bg-inherit pb-4">
           <Header
             isDarkMode={config.isDarkMode}
-            fontSize={config.fontSize}
             onDarkModeToggle={() => setConfig(prev => ({ ...prev, isDarkMode: !prev.isDarkMode }))}
-            onFontSizeChange={(size) => setConfig(prev => ({ ...prev, fontSize: size }))}
             onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
             isMobile={isMobile}
           />
-
-          <div className="flex justify-between items-center mt-4 gap-4">
-            <button
-              onClick={togglePageMode}
-              className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-md"
-            >
-              {config.isPaged ? 'Switch to Scroll Mode' : 'Switch to Page Mode'}
-            </button>
-
-            <button
-              onClick={addBookmark}
-              className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-md"
-            >
-              Add Bookmark
-            </button>
-          </div>
         </div>
 
         {!content && (
@@ -167,21 +123,18 @@ export default function Home() {
                 ${isMobile ? 'h-full' : ''}
               `}>
                 <Sidebar
-                  bookmarks={bookmarks}
+                  currentPosition={currentPosition}
                   onBookmarkSelect={(position) => {
                     setCurrentPosition(position);
                     if (isMobile) setIsSidebarOpen(false);
                   }}
                   isDarkMode={config.isDarkMode}
-                  isPaged={config.isPaged}
                 />
               </div>
             </div>
             
             <Reader
               content={content}
-              fontSize={config.fontSize}
-              isPaged={config.isPaged}
               onPositionChange={setCurrentPosition}
               isDarkMode={config.isDarkMode}
             />

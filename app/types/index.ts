@@ -6,10 +6,7 @@
  * Reader configuration options
  */
 export interface ReaderConfig {
-  isPaged: boolean;       // Whether to use paged mode
-  fontSize: number;       // Font size in pixels
   isDarkMode: boolean;    // Whether dark mode is enabled
-  chunkSize: number;      // Size of content chunks in scroll mode
 }
 
 /**

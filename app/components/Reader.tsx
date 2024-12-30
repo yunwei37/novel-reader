@@ -1,34 +1,38 @@
 /**
  * Reader Component
  * 
- * A versatile text reader component that supports both paged and scrolling modes.
+ * A versatile text reader component that handles all content display and navigation.
  * Features include:
+ * - Page/scroll mode switching
+ * - Font size adjustment
+ * - Content chunking and display
  * - Page navigation in paged mode
  * - Smooth scrolling with progress indicator in scroll mode
- * - Customizable font size
  * - Dark mode support
  * - Responsive design
  */
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { TextContentProps } from '../types';
 import { calculateScrollProgress, getPageContent, getChunkedContent, calculateLinesPerPage, calculateTotalPages } from '../lib/reader';
 
-interface ReaderProps extends TextContentProps {
-  isPaged: boolean;             // Whether to use paged mode
+interface ReaderProps extends Omit<TextContentProps, 'fontSize'> {
   onPositionChange: (position: number) => void;  // Callback for position changes
+  defaultFontSize?: number;     // Initial font size
+  defaultIsPaged?: boolean;     // Initial paged mode state
 }
 
 export const Reader: React.FC<ReaderProps> = ({
   content,
-  fontSize,
-  isPaged,
   onPositionChange,
   isDarkMode,
+  defaultFontSize = 16,
+  defaultIsPaged = false,
 }) => {
   // Refs for DOM elements
   const contentRef = useRef<HTMLPreElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const readerRef = useRef<HTMLDivElement>(null);
   
   // State for content display and navigation
   const [displayContent, setDisplayContent] = useState('');
@@ -36,16 +40,39 @@ export const Reader: React.FC<ReaderProps> = ({
   const [totalPages, setTotalPages] = useState(1);
   const [currentChunk, setCurrentChunk] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [fontSize, setFontSize] = useState(defaultFontSize);
+  const [isPaged, setIsPaged] = useState(defaultIsPaged);
+  const [windowHeight, setWindowHeight] = useState(0);
 
   // Constants
   const CHUNK_SIZE = 50000;
+  const MIN_FONT_SIZE = 12;
+  const MAX_FONT_SIZE = 24;
+  const HEADER_HEIGHT = 180; // Height of the header area
+  const FOOTER_HEIGHT = 100; // Height of the footer area
+
+  // Calculate available height for the reader
+  const updateWindowHeight = useCallback(() => {
+    if (readerRef.current) {
+      const windowHeight = window.innerHeight;
+      const availableHeight = windowHeight - HEADER_HEIGHT - FOOTER_HEIGHT;
+      setWindowHeight(availableHeight);
+    }
+  }, []);
+
+  // Initialize window height
+  useEffect(() => {
+    updateWindowHeight();
+    window.addEventListener('resize', updateWindowHeight);
+    return () => window.removeEventListener('resize', updateWindowHeight);
+  }, [updateWindowHeight]);
 
   // Update content display based on mode and position
   useEffect(() => {
     if (!content) return;
 
     if (isPaged) {
-      const linesPerPage = calculateLinesPerPage(window.innerHeight, fontSize);
+      const linesPerPage = calculateLinesPerPage(windowHeight - 100, fontSize);
       setTotalPages(calculateTotalPages(content, linesPerPage));
       const pageContent = getPageContent(content, currentPage, linesPerPage);
       setDisplayContent(pageContent);
@@ -57,20 +84,7 @@ export const Reader: React.FC<ReaderProps> = ({
         onPositionChange(containerRef.current.scrollTop);
       }
     }
-  }, [content, currentChunk, isPaged, currentPage, fontSize, onPositionChange]);
-
-  // Handle window resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (isPaged && content) {
-        const linesPerPage = calculateLinesPerPage(window.innerHeight, fontSize);
-        setTotalPages(calculateTotalPages(content, linesPerPage));
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isPaged, content, fontSize]);
+  }, [content, currentChunk, isPaged, currentPage, fontSize, windowHeight, onPositionChange]);
 
   // Reset position when switching modes
   useEffect(() => {
@@ -81,10 +95,6 @@ export const Reader: React.FC<ReaderProps> = ({
     }
   }, [isPaged]);
 
-  /**
-   * Handles scroll events in scroll mode
-   * Updates the scroll progress and current chunk
-   */
   const handleScroll = () => {
     if (!isPaged && containerRef.current) {
       const progress = calculateScrollProgress(containerRef.current);
@@ -101,10 +111,6 @@ export const Reader: React.FC<ReaderProps> = ({
     }
   };
 
-  /**
-   * Handles wheel events in paged mode
-   * Prevents default scrolling and implements page navigation
-   */
   const handleWheel = (e: React.WheelEvent) => {
     if (isPaged) {
       e.preventDefault();
@@ -116,19 +122,60 @@ export const Reader: React.FC<ReaderProps> = ({
     }
   };
 
+  const adjustFontSize = (delta: number) => {
+    setFontSize(prev => {
+      const newSize = prev + delta;
+      return Math.min(Math.max(newSize, MIN_FONT_SIZE), MAX_FONT_SIZE);
+    });
+  };
+
   return (
-    <div className="relative min-h-[calc(100vh-200px)] flex-1">
+    <div 
+      ref={readerRef}
+      className="relative flex-1"
+      style={{ minHeight: `${windowHeight}px` }}
+    >
+      <div className="sticky top-0 z-10 flex justify-between items-center gap-4 mb-4 p-4 bg-inherit">
+        <button
+          onClick={() => setIsPaged(!isPaged)}
+          className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-md"
+        >
+          {isPaged ? 'Switch to Scroll Mode' : 'Switch to Page Mode'}
+        </button>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => adjustFontSize(-1)}
+            className="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors disabled:opacity-50"
+            disabled={fontSize <= MIN_FONT_SIZE}
+          >
+            A-
+          </button>
+          <span className="min-w-[3ch] text-center">{fontSize}</span>
+          <button
+            onClick={() => adjustFontSize(1)}
+            className="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors disabled:opacity-50"
+            disabled={fontSize >= MAX_FONT_SIZE}
+          >
+            A+
+          </button>
+        </div>
+      </div>
+
       <div
         ref={containerRef}
         className={`
           relative bg-white rounded-lg shadow-lg p-8 prose max-w-none
           ${isDarkMode ? 'dark:bg-gray-800 dark:text-white' : ''}
           ${isPaged 
-            ? 'h-[calc(100vh-300px)] overflow-hidden' 
-            : 'min-h-[calc(100vh-300px)] max-h-[calc(100vh-200px)] overflow-auto'
+            ? 'overflow-hidden' 
+            : 'overflow-auto'
           }
         `}
-        style={{ fontSize: `${fontSize}px` }}
+        style={{ 
+          fontSize: `${fontSize}px`,
+          height: `${windowHeight - 100}px`, // Adjust for the control bar
+        }}
         onWheel={handleWheel}
         onScroll={handleScroll}
       >
