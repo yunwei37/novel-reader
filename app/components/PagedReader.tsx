@@ -5,7 +5,6 @@ interface PagedReaderProps {
     currentOffset: number;
     onPositionChange: (offset: number) => void;
     fontSize: number;
-    isDarkMode: boolean;
 }
 
 export const PagedReader: React.FC<PagedReaderProps> = ({
@@ -13,13 +12,12 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
     currentOffset,
     onPositionChange,
     fontSize,
-    isDarkMode,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [pages, setPages] = useState<string[]>([]);
-    const CHARS_PER_PAGE = 300;
+    const CHARS_PER_PAGE = 500;
 
     // Split content into pages
     useEffect(() => {
@@ -93,11 +91,15 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
         <div className="h-full flex flex-col">
             <div
                 ref={containerRef}
-                className={`
-                    flex-1 rounded-t-md shadow-sm overflow-y-auto min-h-0
-                    ${isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'}
-                    scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-transparent
-                `}
+                className="
+                    flex-1 rounded-t-md overflow-y-auto min-h-0
+                    bg-white dark:bg-gray-800 
+                    text-gray-900 dark:text-gray-100
+                    shadow-sm dark:shadow-gray-900/20
+                    scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 
+                    dark:scrollbar-thumb-gray-600 dark:hover:scrollbar-thumb-gray-500 
+                    scrollbar-track-transparent
+                "
                 onWheel={handleWheel}
             >
                 <div className="p-6">
@@ -110,24 +112,25 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                 </div>
             </div>
 
-            <div className={`
+            <div className="
                 h-10 px-4 flex items-center justify-between gap-4
-                ${isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'}
-                border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}
-                rounded-b-md shadow-sm
-            `}>
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-gray-100
+                border-t border-gray-200 dark:border-gray-700
+                shadow-sm dark:shadow-gray-900/20
+                rounded-b-md
+            ">
                 <button
                     onClick={() => navigatePage('prev')}
                     disabled={currentPage <= 1}
-                    className={`
+                    className="
                         w-7 h-7 rounded-md transition-all duration-200
                         flex items-center justify-center
-                        ${isDarkMode
-                            ? 'hover:bg-gray-700 text-gray-300 disabled:text-gray-600'
-                            : 'hover:bg-gray-100 text-gray-600 disabled:text-gray-300'
-                        }
+                        text-gray-600 dark:text-gray-300 
+                        hover:bg-gray-100 dark:hover:bg-gray-700
+                        disabled:text-gray-300 dark:disabled:text-gray-700
                         disabled:cursor-not-allowed
-                    `}
+                    "
                     aria-label="Previous page"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,19 +140,21 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
 
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1.5">
-                        <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Page</span>
-                        <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            Page
+                        </span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                             {currentPage}
                         </span>
-                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>/</span>
-                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">/</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">
                             {totalPages}
                         </span>
                     </div>
 
-                    <div className={`h-4 w-px ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                    <div className="h-4 w-px bg-gray-200 dark:bg-gray-700" />
 
-                    <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                         {Math.round((currentPage / totalPages) * 100)}%
                     </span>
                 </div>
@@ -157,15 +162,14 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                 <button
                     onClick={() => navigatePage('next')}
                     disabled={currentPage >= totalPages}
-                    className={`
+                    className="
                         w-7 h-7 rounded-md transition-all duration-200
                         flex items-center justify-center
-                        ${isDarkMode
-                            ? 'hover:bg-gray-700 text-gray-300 disabled:text-gray-600'
-                            : 'hover:bg-gray-100 text-gray-600 disabled:text-gray-300'
-                        }
+                        text-gray-600 dark:text-gray-300 
+                        hover:bg-gray-100 dark:hover:bg-gray-700
+                        disabled:text-gray-300 dark:disabled:text-gray-700
                         disabled:cursor-not-allowed
-                    `}
+                    "
                     aria-label="Next page"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
