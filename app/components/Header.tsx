@@ -11,27 +11,25 @@ interface HeaderProps {
   isDarkMode: boolean;
   onDarkModeToggle: () => void;
   onMenuClick: () => void;
-  isMobile: boolean;
+  isSidebarOpen: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   isDarkMode,
   onDarkModeToggle,
   onMenuClick,
-  isMobile,
+  isSidebarOpen,
 }) => {
   return (
     <header className="flex justify-between items-center">
       <div className="flex items-center gap-4">
-        {isMobile && (
-          <button
-            onClick={onMenuClick}
-            className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Toggle menu"
-          >
-            ☰
-          </button>
-        )}
+        <button
+          onClick={onMenuClick}
+          className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Toggle sidebar"
+        >
+          {isSidebarOpen ? '←' : '→'}
+        </button>
         <h1 className="text-2xl font-bold">Novel Reader</h1>
       </div>
 

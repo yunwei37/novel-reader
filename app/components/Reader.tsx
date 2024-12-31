@@ -16,8 +16,6 @@ interface ReaderProps {
   isDarkMode: boolean;
   defaultFontSize?: number;
   defaultIsPaged?: boolean;
-  sidebarWidth: number;
-  isMobile: boolean;
 }
 
 export const Reader: React.FC<ReaderProps> = ({
@@ -27,8 +25,6 @@ export const Reader: React.FC<ReaderProps> = ({
   isDarkMode,
   defaultFontSize = 16,
   defaultIsPaged = false,
-  sidebarWidth,
-  isMobile,
 }) => {
   const [fontSize, setFontSize] = useState(defaultFontSize);
   const [isPaged, setIsPaged] = useState(defaultIsPaged);

@@ -60,17 +60,17 @@ export default function Home() {
   return (
     <div className="h-screen w-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
       <div className="h-full flex flex-col p-2">
-        {/* Header - fixed height */}
+        {/* Header */}
         <div className="h-14 bg-inherit">
           <Header
             isDarkMode={config.isDarkMode}
             onDarkModeToggle={() => setConfig(prev => ({ ...prev, isDarkMode: !prev.isDarkMode }))}
             onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            isMobile={isMobile}
+            isSidebarOpen={isSidebarOpen}
           />
         </div>
 
-        {/* Main content area - takes remaining height */}
+        {/* Main content area */}
         <div className="flex-1 min-h-0 mt-2">
           {!content ? (
             <div className="h-full flex items-center justify-center">
@@ -97,7 +97,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="h-full flex relative">
-              {/* Sidebar */}
+              {/* Sidebar - always in overlay mode */}
               <div className={`
                 fixed inset-y-0 left-2 w-64 transform transition-transform duration-300 ease-in-out z-40
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
