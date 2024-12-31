@@ -38,8 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const addBookmark = () => {
     const newBookmark: Bookmark = {
-      position: currentPosition,
-      chapter: 0, // deprecated
+      offset: currentPosition,
       timestamp: Date.now()
     };
     setBookmarks(prev => [...prev, newBookmark]);
@@ -89,12 +88,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 "
               >
                 <button
-                  onClick={() => onBookmarkSelect(bookmark.position)}
+                  onClick={() => onBookmarkSelect(bookmark.offset)}
                   className="w-full text-left"
                 >
                   <div className="flex flex-col">
                     <span className="font-medium text-sm sm:text-base text-gray-900 dark:text-gray-200">
-                      Position {Math.round(bookmark.position)}
+                      Position {Math.round(bookmark.offset)}
                     </span>
                     <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                       {new Date(bookmark.timestamp).toLocaleString()}
