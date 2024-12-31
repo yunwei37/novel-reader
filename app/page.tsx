@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Header } from './components/Header';
-import { Sidebar } from './components/Sidebar';
 import { Reader } from './components/Reader';
-import { ReaderConfig } from './types';
+import { Sidebar } from './components/Sidebar';
 import { loadFromStorage, saveToStorage } from './lib/reader';
+import { ReaderConfig } from './types';
 
 // Default configuration
 const DEFAULT_CONFIG: ReaderConfig = {
@@ -18,14 +17,13 @@ export default function Home() {
   const [content, setContent] = useState<string>('');
   const [config, setConfig] = useState<ReaderConfig>(DEFAULT_CONFIG);
   const [currentOffset, setCurrentOffset] = useState(0);
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
-  
+
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load preferences from localStorage on client side
+  // Load preferences and handle window resize
   useEffect(() => {
     setWindowWidth(window.innerWidth);
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -43,15 +41,6 @@ export default function Home() {
     saveToStorage('readerConfig', config);
   }, [config]);
 
-  // Handle scroll events for "Go to top" button
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -65,17 +54,14 @@ export default function Home() {
     reader.readAsText(file);
   }, []);
 
-  const scrollToTop = () => {
-    setCurrentOffset(0);
-  };
-
   // Determine if we should show the mobile layout
   const isMobile = windowWidth < 768;
 
   return (
-    <div className={`min-h-screen transition-colors ${config.isDarkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <div className="max-w-7xl mx-auto p-4 min-h-screen">
-        <div className="sticky top-0 z-50 bg-inherit pb-4">
+    <div className="h-screen w-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
+      <div className="h-full flex flex-col p-2">
+        {/* Header - fixed height */}
+        <div className="h-14 bg-inherit">
           <Header
             isDarkMode={config.isDarkMode}
             onDarkModeToggle={() => setConfig(prev => ({ ...prev, isDarkMode: !prev.isDarkMode }))}
@@ -84,80 +70,72 @@ export default function Home() {
           />
         </div>
 
-        {!content && (
-          <div className="mt-8 border-4 border-dashed border-gray-300 rounded-lg p-12 text-center bg-white dark:bg-gray-800 shadow-lg">
-            <input
-              type="file"
-              accept=".txt"
-              onChange={handleFileUpload}
-              className="hidden"
-              ref={fileInputRef}
-            />
-            <div className="flex flex-col items-center gap-4">
-              <div className="text-4xl mb-4">📚</div>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-md"
-              >
-                Choose TXT File
-              </button>
-              <p className="text-gray-500 dark:text-gray-400">or drag and drop your .txt file here</p>
-            </div>
-          </div>
-        )}
-
-        {content && (
-          <div className={`
-            mt-8 flex gap-6
-            ${isMobile ? 'relative' : 'flex-row'}
-          `}>
-            <div className={`
-              ${isMobile
-                ? `fixed inset-y-0 left-0 w-64 transform transition-transform duration-300 ease-in-out z-40
-                   ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
-                : 'w-72 flex-shrink-0'
-              }
-            `}>
-              <div className={`
-                sticky top-[180px] bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6
-                ${isMobile ? 'h-full' : ''}
-              `}>
-                <Sidebar
-                  currentPosition={currentOffset}
-                  onBookmarkSelect={(offset) => {
-                    setCurrentOffset(offset);
-                    if (isMobile) setIsSidebarOpen(false);
-                  }}
-                  isDarkMode={config.isDarkMode}
+        {/* Main content area - takes remaining height */}
+        <div className="flex-1 min-h-0 mt-2">
+          {!content ? (
+            <div className="h-full flex items-center justify-center">
+              {/* File upload UI */}
+              <div className="w-full max-w-2xl border-4 border-dashed border-gray-300 rounded-lg p-12 text-center bg-white dark:bg-gray-800 shadow-lg">
+                <input
+                  type="file"
+                  accept=".txt"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  ref={fileInputRef}
                 />
+                <div className="flex flex-col items-center gap-4">
+                  <div className="text-4xl mb-4">📚</div>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-md"
+                  >
+                    Choose TXT File
+                  </button>
+                  <p className="text-gray-500 dark:text-gray-400">or drag and drop your .txt file here</p>
+                </div>
               </div>
             </div>
-            
-            <Reader
-              content={content}
-              currentOffset={currentOffset}
-              onPositionChange={setCurrentOffset}
-              isDarkMode={config.isDarkMode}
-            />
-          </div>
-        )}
+          ) : (
+            <div className="h-full flex relative">
+              {/* Sidebar */}
+              <div className={`
+                fixed inset-y-0 left-2 w-64 transform transition-transform duration-300 ease-in-out z-40
+                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+              `}>
+                <div className="h-[calc(100vh-4rem)] mt-16 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+                  <Sidebar
+                    currentPosition={currentOffset}
+                    onBookmarkSelect={(offset) => {
+                      setCurrentOffset(offset);
+                      setIsSidebarOpen(false);
+                    }}
+                    isDarkMode={config.isDarkMode}
+                  />
+                </div>
+              </div>
 
-        {showScrollTop && (
-          <button
-            onClick={scrollToTop}
-            className="fixed bottom-8 right-8 p-4 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors"
-            aria-label="Scroll to top"
-          >
-            ↑
-          </button>
-        )}
+              {/* Reader container */}
+              <div className="flex-1 min-w-0 h-full">
+                <Reader
+                  content={content}
+                  currentOffset={currentOffset}
+                  onPositionChange={setCurrentOffset}
+                  isDarkMode={config.isDarkMode}
+                  defaultFontSize={16}
+                  defaultIsPaged={false}
+                />
+              </div>
 
-        {isMobile && isSidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30"
-            onClick={() => setIsSidebarOpen(false)}
-          />
-        )}
+              {/* Sidebar overlay */}
+              {isSidebarOpen && (
+                <div
+                  className="fixed inset-0 bg-black bg-opacity-50 z-30"
+                  onClick={() => setIsSidebarOpen(false)}
+                />
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

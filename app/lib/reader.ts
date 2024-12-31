@@ -54,7 +54,10 @@ export const detectChapters = (text: string): Chapter[] => {
  */
 export const calculateLinesPerPage = (height: number, fontSize: number): number => {
   const lineHeight = fontSize * 1.5; // Assuming 1.5 line height
-  return Math.floor(height / lineHeight);
+  const paddingTop = 32;  // Account for container padding
+  const paddingBottom = 32;
+  const availableHeight = height - paddingTop - paddingBottom;
+  return Math.floor(availableHeight / lineHeight);
 };
 
 /**
@@ -170,4 +173,24 @@ export const saveToStorage = (key: string, value: any): void => {
  */
 export const formatTimestamp = (timestamp: number): string => {
   return new Date(timestamp).toLocaleString();
+};
+
+export const calculatePageMetrics = (
+  width: number,
+  height: number,
+  fontSize: number,
+  content: string
+) => {
+  const lineHeight = fontSize * 1.5;
+  const charsPerLine = Math.floor(width / (fontSize * 0.6)); // Approximate chars per line
+  const linesPerPage = Math.floor(height / lineHeight);
+  const charsPerPage = charsPerLine * linesPerPage;
+
+  return {
+    lineHeight,
+    charsPerLine,
+    linesPerPage,
+    charsPerPage,
+    totalPages: Math.ceil(content.length / charsPerPage)
+  };
 };
