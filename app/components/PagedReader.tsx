@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { calculatePageMetrics } from '../lib/reader';
 
 interface PagedReaderProps {
     content: string;
@@ -19,114 +18,160 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [displayContent, setDisplayContent] = useState('');
-    const CONTENT_PADDING = 32;
+    const [pages, setPages] = useState<string[]>([]);
+    const CHARS_PER_PAGE = 300;
 
-    // Calculate content metrics for paging
-    const getPageMetrics = useCallback(() => {
-        if (!content || !containerRef.current) return null;
-
-        const rect = containerRef.current.getBoundingClientRect();
-        const contentHeight = rect.height - (CONTENT_PADDING * 2);
-        const contentWidth = rect.width - (CONTENT_PADDING * 2);
-
-        return calculatePageMetrics(contentWidth, contentHeight, fontSize, content);
-    }, [content, fontSize]);
-
-    // Get content for current page
-    const getCurrentPageContent = useCallback(() => {
-        if (!content) return '';
-
-        const metrics = getPageMetrics();
-        if (!metrics) return '';
-
-        const startChar = currentOffset;
-        const endChar = Math.min(startChar + metrics.charsPerPage, content.length);
-
-        // Find complete word boundaries
-        let adjustedStart = startChar;
-        while (adjustedStart > 0 && content[adjustedStart - 1] !== ' ' && content[adjustedStart - 1] !== '\n') {
-            adjustedStart--;
-        }
-
-        let adjustedEnd = endChar;
-        while (adjustedEnd < content.length && content[adjustedEnd] !== ' ' && content[adjustedEnd] !== '\n') {
-            adjustedEnd++;
-        }
-
-        return content.slice(adjustedStart, adjustedEnd);
-    }, [content, currentOffset, getPageMetrics]);
-
-    // Update display content and page numbers
+    // Split content into pages
     useEffect(() => {
-        const newContent = getCurrentPageContent();
-        setDisplayContent(newContent);
-
-        const metrics = getPageMetrics();
-        if (metrics) {
-            setTotalPages(metrics.totalPages);
-            setCurrentPage(Math.floor(currentOffset / metrics.charsPerPage) + 1);
+        if (!content) {
+            setPages([]);
+            return;
         }
-    }, [getCurrentPageContent, currentOffset, getPageMetrics]);
+
+        const splitContent: string[] = [];
+        let currentChunk = '';
+        let charCount = 0;
+        const words = content.split(/(\s+)/);
+
+        for (const word of words) {
+            if (charCount + word.length > CHARS_PER_PAGE) {
+                splitContent.push(currentChunk);
+                currentChunk = word;
+                charCount = word.length;
+            } else {
+                currentChunk += word;
+                charCount += word.length;
+            }
+        }
+
+        if (currentChunk) {
+            splitContent.push(currentChunk);
+        }
+
+        setPages(splitContent);
+        setTotalPages(splitContent.length);
+    }, [content]);
+
+    // Update current page based on offset
+    useEffect(() => {
+        if (!content) return;
+        const newPage = Math.floor(currentOffset / CHARS_PER_PAGE) + 1;
+        setCurrentPage(Math.min(newPage, totalPages));
+    }, [currentOffset, CHARS_PER_PAGE, totalPages, content]);
 
     // Handle page navigation
     const navigatePage = useCallback((direction: 'next' | 'prev') => {
-        const metrics = getPageMetrics();
-        if (!metrics || !content) return;
+        if (!content || pages.length === 0) return;
 
-        const newChar = direction === 'next'
-            ? Math.min(currentOffset + metrics.charsPerPage, content.length - 1)
-            : Math.max(currentOffset - metrics.charsPerPage, 0);
+        const targetPage = direction === 'next'
+            ? Math.min(currentPage + 1, totalPages)
+            : Math.max(currentPage - 1, 1);
 
-        onPositionChange(newChar);
-    }, [getPageMetrics, content, currentOffset, onPositionChange]);
+        const newOffset = (targetPage - 1) * CHARS_PER_PAGE;
+        onPositionChange(newOffset);
 
-    // Handle wheel events
+        // Reset scroll position when changing pages
+        if (containerRef.current) {
+            containerRef.current.scrollTop = 0;
+        }
+    }, [content, currentPage, totalPages, CHARS_PER_PAGE, onPositionChange, pages.length]);
+
+    // Handle wheel events for page navigation
     const handleWheel = useCallback((e: React.WheelEvent) => {
-        e.preventDefault();
-        navigatePage(e.deltaY > 0 ? 'next' : 'prev');
+        const isScrolledToBottom = containerRef.current &&
+            containerRef.current.scrollHeight - containerRef.current.scrollTop <= containerRef.current.clientHeight + 1;
+        const isScrolledToTop = containerRef.current && containerRef.current.scrollTop === 0;
+
+        // Only navigate pages if we're at the top/bottom of the current page content
+        if ((e.deltaY > 0 && isScrolledToBottom) || (e.deltaY < 0 && isScrolledToTop)) {
+            e.preventDefault();
+            navigatePage(e.deltaY > 0 ? 'next' : 'prev');
+        }
     }, [navigatePage]);
 
     return (
-        <div className="flex-1 flex flex-col min-h-0">
+        <div className="h-full flex flex-col">
             <div
                 ref={containerRef}
                 className={`
-          flex-1 bg-white rounded-lg shadow-lg overflow-hidden
-          ${isDarkMode ? 'dark:bg-gray-800 dark:text-white' : ''}
-        `}
+                    flex-1 rounded-t-md shadow-sm overflow-y-auto min-h-0
+                    ${isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'}
+                    scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-transparent
+                `}
                 onWheel={handleWheel}
             >
-                <div className="h-full p-8">
+                <div className="p-6">
                     <pre
-                        className="whitespace-pre-wrap font-sans leading-relaxed m-0 text-justify hyphens-auto break-words h-full"
+                        className="whitespace-pre-wrap font-sans leading-relaxed m-0 text-justify hyphens-auto break-words"
                         style={{ fontSize: `${fontSize}px`, lineHeight: '1.5' }}
                     >
-                        {displayContent}
+                        {pages[currentPage - 1] || ''}
                     </pre>
                 </div>
             </div>
 
-            <div className="mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-                <div className="flex justify-between items-center p-3">
-                    <button
-                        onClick={() => navigatePage('prev')}
-                        disabled={currentPage <= 1}
-                        className="px-4 py-2 rounded bg-blue-500 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
-                    >
-                        ← Previous
-                    </button>
-                    <span className="text-sm font-medium">
-                        Page {currentPage} of {totalPages}
+            <div className={`
+                h-10 px-4 flex items-center justify-between gap-4
+                ${isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'}
+                border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}
+                rounded-b-md shadow-sm
+            `}>
+                <button
+                    onClick={() => navigatePage('prev')}
+                    disabled={currentPage <= 1}
+                    className={`
+                        w-7 h-7 rounded-md transition-all duration-200
+                        flex items-center justify-center
+                        ${isDarkMode
+                            ? 'hover:bg-gray-700 text-gray-300 disabled:text-gray-600'
+                            : 'hover:bg-gray-100 text-gray-600 disabled:text-gray-300'
+                        }
+                        disabled:cursor-not-allowed
+                    `}
+                    aria-label="Previous page"
+                >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
+                        <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Page</span>
+                        <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                            {currentPage}
+                        </span>
+                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>/</span>
+                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {totalPages}
+                        </span>
+                    </div>
+
+                    <div className={`h-4 w-px ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+
+                    <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {Math.round((currentPage / totalPages) * 100)}%
                     </span>
-                    <button
-                        onClick={() => navigatePage('next')}
-                        disabled={currentPage >= totalPages}
-                        className="px-4 py-2 rounded bg-blue-500 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
-                    >
-                        Next →
-                    </button>
                 </div>
+
+                <button
+                    onClick={() => navigatePage('next')}
+                    disabled={currentPage >= totalPages}
+                    className={`
+                        w-7 h-7 rounded-md transition-all duration-200
+                        flex items-center justify-center
+                        ${isDarkMode
+                            ? 'hover:bg-gray-700 text-gray-300 disabled:text-gray-600'
+                            : 'hover:bg-gray-100 text-gray-600 disabled:text-gray-300'
+                        }
+                        disabled:cursor-not-allowed
+                    `}
+                    aria-label="Next page"
+                >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
             </div>
         </div>
     );
