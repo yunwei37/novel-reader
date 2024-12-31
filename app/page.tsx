@@ -68,11 +68,6 @@ export default function Home() {
     setCurrentView('library');
   }, []);
 
-  const handleSettingsChange = useCallback((settings: any) => {
-    // Apply settings changes
-    localStorage.setItem('reader_settings', JSON.stringify(settings));
-  }, []);
-
   // Get the current view title
   const getViewTitle = () => {
     switch (currentView) {
@@ -99,7 +94,6 @@ export default function Home() {
         {/* Header */}
         <Header
           title={getViewTitle()}
-          onDarkModeToggle={handleDarkModeToggle}
           onSettingsClick={currentView === 'library' ? () => setCurrentView('settings') : undefined}
           onBackClick={getBackAction()}
         />
@@ -128,7 +122,10 @@ export default function Home() {
           )}
 
           {currentView === 'settings' && (
-            <SettingsView onSettingsChange={handleSettingsChange} />
+            <SettingsView
+              isDarkMode={isDarkMode}
+              onDarkModeToggle={handleDarkModeToggle}
+            />
           )}
 
           {currentView === 'import' && (

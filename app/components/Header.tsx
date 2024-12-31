@@ -8,14 +8,12 @@
 import React from 'react';
 
 interface HeaderProps {
-  onDarkModeToggle: () => void;
   onSettingsClick?: () => void;
   onBackClick?: () => void;
   title: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  onDarkModeToggle,
   onSettingsClick,
   onBackClick,
   title,
@@ -57,19 +55,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-xl">⚙️</span>
           </button>
         )}
-        <button
-          onClick={onDarkModeToggle}
-          className="
-            p-2 rounded-lg transition-colors
-            text-gray-600 dark:text-gray-300
-            hover:bg-gray-100 dark:hover:bg-gray-700
-          "
-          aria-label="Toggle dark mode"
-        >
-          <span className="text-xl">
-            🌤️
-          </span>
-        </button>
       </div>
     </header>
   );
