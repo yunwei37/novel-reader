@@ -65,7 +65,7 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
                 "
                 onScroll={handleScroll}
             >
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                     <pre
                         className="whitespace-pre-wrap font-sans leading-relaxed m-0 text-justify hyphens-auto break-words"
                         style={{ fontSize: `${fontSize}px`, lineHeight: '1.5' }}
@@ -76,15 +76,15 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
             </div>
 
             <div className="
-                h-10 px-4
+                min-h-[2.5rem] px-2 sm:px-4 py-2
                 bg-white dark:bg-gray-800
                 border-t border-gray-200 dark:border-gray-700
                 shadow-sm dark:shadow-gray-900/20
                 rounded-b-md
-                flex items-center justify-between
+                flex flex-wrap items-center justify-between gap-2
             ">
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2 sm:gap-3 order-1">
+                    <div className="flex items-center gap-1 sm:gap-1.5">
                         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                             Progress
                         </span>
@@ -94,7 +94,7 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
                     </div>
                 </div>
 
-                <div className="w-48 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                <div className="flex-1 min-w-[100px] max-w-[12rem] h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden order-3 sm:order-2">
                     <div
                         className="h-full rounded-full transition-all duration-200 bg-gray-400 dark:bg-gray-500"
                         style={{ width: `${(currentOffset / content.length) * 100}%` }}

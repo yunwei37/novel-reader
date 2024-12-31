@@ -37,44 +37,48 @@ export const Reader: React.FC<ReaderProps> = ({
   return (
     <div className="h-full flex flex-col">
       {/* Controls Bar */}
-      <div className="h-12 flex justify-between items-center gap-4 p-2 rounded-lg mb-2">
+      <div className="min-h-[3rem] flex flex-wrap items-center justify-between gap-2 p-2 rounded-lg mb-2">
         <button
           onClick={() => setIsPaged(!isPaged)}
           className="
-            px-4 py-2 rounded-lg shadow-sm transition-colors
+            px-3 py-1.5 rounded-lg shadow-sm transition-colors
             bg-gray-100 dark:bg-gray-700
             hover:bg-gray-200 dark:hover:bg-gray-600
             text-gray-700 dark:text-gray-100
+            text-sm sm:text-base
+            flex-shrink-0
           "
         >
-          {isPaged ? 'Switch to Scroll Mode' : 'Switch to Page Mode'}
+          {isPaged ? 'Switch to Scroll' : 'Switch to Page'}
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={() => adjustFontSize(-1)}
             disabled={fontSize <= MIN_FONT_SIZE}
             className="
-              px-3 py-1 rounded transition-colors
+              px-2 py-1 rounded transition-colors
               bg-gray-100 dark:bg-gray-700
               hover:bg-gray-200 dark:hover:bg-gray-600
               text-gray-700 dark:text-gray-100
               disabled:opacity-50 disabled:cursor-not-allowed
+              text-sm sm:text-base
             "
           >
             A-
           </button>
-          <span className="min-w-[3ch] text-center text-gray-700 dark:text-gray-300">
+          <span className="min-w-[2.5ch] text-center text-gray-700 dark:text-gray-300 text-sm sm:text-base tabular-nums">
             {fontSize}
           </span>
           <button
             onClick={() => adjustFontSize(1)}
             disabled={fontSize >= MAX_FONT_SIZE}
             className="
-              px-3 py-1 rounded transition-colors
+              px-2 py-1 rounded transition-colors
               bg-gray-100 dark:bg-gray-700
               hover:bg-gray-200 dark:hover:bg-gray-600
               text-gray-700 dark:text-gray-100
               disabled:opacity-50 disabled:cursor-not-allowed
+              text-sm sm:text-base
             "
           >
             A+

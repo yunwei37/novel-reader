@@ -19,12 +19,12 @@ export const Header: React.FC<HeaderProps> = ({
   isSidebarOpen,
 }) => {
   return (
-    <header className="flex justify-between items-center rounded-md px-4 text-gray-900 dark:text-gray-100">
-      <div className="flex items-center gap-4">
+    <header className="flex justify-between items-center rounded-md px-2 sm:px-4 text-gray-900 dark:text-gray-100">
+      <div className="flex items-center gap-2 sm:gap-4">
         <button
           onClick={onMenuClick}
           className="
-            p-2 rounded-lg transition-colors
+            p-1.5 sm:p-2 rounded-lg transition-colors
             text-gray-600 dark:text-gray-300
             hover:bg-gray-100 dark:hover:bg-gray-700
             active:bg-gray-200 dark:active:bg-gray-600
@@ -41,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
             </svg>
           )}
         </button>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">
           Novel Reader
         </h1>
       </div>
@@ -49,15 +49,14 @@ export const Header: React.FC<HeaderProps> = ({
       <button
         onClick={onDarkModeToggle}
         className="
-          p-2 rounded-lg transition-colors
+          p-1.5 sm:p-2 rounded-lg transition-colors
           text-gray-600 dark:text-gray-300
           hover:bg-gray-100 dark:hover:bg-gray-700
           active:bg-gray-200 dark:active:bg-gray-600
         "
         aria-label="Toggle dark mode"
       >
-        <span className="text-xl">
-          {/* Using emoji that will automatically adapt to system theme */}
+        <span className="text-base sm:text-xl">
           🌤️
         </span>
       </button>

@@ -108,7 +108,7 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                 "
                 onWheel={handleWheel}
             >
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                     <pre
                         className="whitespace-pre-wrap font-sans leading-relaxed m-0 text-justify hyphens-auto break-words"
                         style={{ fontSize: `${fontSize}px`, lineHeight: '1.5' }}
@@ -119,12 +119,13 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
             </div>
 
             <div className="
-                h-10 px-4 flex items-center justify-between gap-4
+                min-h-[2.5rem] px-2 sm:px-4 py-2
                 bg-white dark:bg-gray-800 
                 text-gray-900 dark:text-gray-100
                 border-t border-gray-200 dark:border-gray-700
                 shadow-sm dark:shadow-gray-900/20
                 rounded-b-md
+                flex flex-wrap items-center justify-between gap-2
             ">
                 <button
                     onClick={() => navigatePage('prev')}
@@ -136,6 +137,7 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                         hover:bg-gray-100 dark:hover:bg-gray-700
                         disabled:text-gray-300 dark:disabled:text-gray-700
                         disabled:cursor-not-allowed
+                        order-1
                     "
                     aria-label="Previous page"
                 >
@@ -144,8 +146,8 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                     </svg>
                 </button>
 
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2 sm:gap-3 order-2 flex-1 justify-center min-w-[150px]">
+                    <div className="flex items-center gap-1 sm:gap-1.5">
                         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                             Page
                         </span>
@@ -158,7 +160,7 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                         </span>
                     </div>
 
-                    <div className="h-4 w-px bg-gray-200 dark:bg-gray-700" />
+                    <div className="hidden sm:block h-4 w-px bg-gray-200 dark:bg-gray-700" />
 
                     <span className="text-xs font-medium text-gray-600 dark:text-gray-400 tabular-nums">
                         {getProgress()}%
@@ -175,6 +177,7 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                         hover:bg-gray-100 dark:hover:bg-gray-700
                         disabled:text-gray-300 dark:disabled:text-gray-700
                         disabled:cursor-not-allowed
+                        order-3
                     "
                     aria-label="Next page"
                 >
