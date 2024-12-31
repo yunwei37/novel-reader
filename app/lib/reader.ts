@@ -161,7 +161,7 @@ export const loadFromStorage = <T>(key: string, defaultValue: T): T => {
 /**
  * Save to local storage
  */
-export const saveToStorage = (key: string, value: any): void => {
+export const saveToStorage = (key: string, value: unknown): void => {
   if (typeof window === 'undefined') return;
   localStorage.setItem(key, JSON.stringify(value));
 };

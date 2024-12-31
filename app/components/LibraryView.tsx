@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { NovelStorage } from '../lib/storage';
 import { Novel } from '../types';
@@ -86,7 +87,13 @@ export const LibraryView: React.FC<LibraryViewProps> = ({ onNovelSelect, onImpor
                             <div>
                                 <div className="aspect-[2/3] bg-gray-100 dark:bg-gray-700 relative">
                                     {novel.coverUrl ? (
-                                        <img src={novel.coverUrl} alt={novel.title} className="w-full h-full object-cover" />
+                                        <Image
+                                            src={novel.coverUrl}
+                                            alt={novel.title}
+                                            fill
+                                            className="object-cover"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        />
                                     ) : (
                                         <div className="absolute inset-0 flex items-center justify-center text-4xl">
                                             📖
