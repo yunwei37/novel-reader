@@ -15,6 +15,12 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
+    // Calculate progress with 2 decimal places
+    const getProgress = () => {
+        if (!content) return "0.00";
+        return ((currentOffset / content.length) * 100).toFixed(2);
+    };
+
     // Handle scroll events
     const handleScroll = useCallback(() => {
         if (!containerRef.current || !content) return;
@@ -45,11 +51,11 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
     }, [currentOffset, content]);
 
     return (
-        <div className="h-full relative">
+        <div className="h-full flex flex-col">
             <div
                 ref={containerRef}
                 className="
-                    h-full rounded-lg overflow-y-auto
+                    flex-1 rounded-t-md overflow-y-auto min-h-0
                     bg-white dark:bg-gray-800
                     text-gray-900 dark:text-gray-100
                     shadow-sm dark:shadow-gray-900/20
@@ -69,16 +75,31 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
                 </div>
             </div>
 
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                <div className="w-2 h-32 rounded-full bg-gray-200 dark:bg-gray-700">
+            <div className="
+                h-10 px-4
+                bg-white dark:bg-gray-800
+                border-t border-gray-200 dark:border-gray-700
+                shadow-sm dark:shadow-gray-900/20
+                rounded-b-md
+                flex items-center justify-between
+            ">
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            Progress
+                        </span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-200 tabular-nums">
+                            {getProgress()}%
+                        </span>
+                    </div>
+                </div>
+
+                <div className="w-48 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
                     <div
-                        className="w-full rounded-full transition-all duration-200 bg-gray-400 dark:bg-gray-500"
-                        style={{ height: `${(currentOffset / content.length) * 100}%` }}
+                        className="h-full rounded-full transition-all duration-200 bg-gray-400 dark:bg-gray-500"
+                        style={{ width: `${(currentOffset / content.length) * 100}%` }}
                     />
                 </div>
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {Math.round((currentOffset / content.length) * 100)}%
-                </span>
             </div>
         </div>
     );

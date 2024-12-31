@@ -19,6 +19,12 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
     const [pages, setPages] = useState<string[]>([]);
     const CHARS_PER_PAGE = 500;
 
+    // Calculate progress with 2 decimal places
+    const getProgress = () => {
+        if (!content) return "0.00";
+        return ((currentPage / totalPages) * 100).toFixed(2);
+    };
+
     // Split content into pages
     useEffect(() => {
         if (!content) {
@@ -154,8 +160,8 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
 
                     <div className="h-4 w-px bg-gray-200 dark:bg-gray-700" />
 
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                        {Math.round((currentPage / totalPages) * 100)}%
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400 tabular-nums">
+                        {getProgress()}%
                     </span>
                 </div>
 
