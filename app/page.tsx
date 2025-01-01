@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Header } from './components/Header';
 import { ImportDialog } from './components/ImportDialog';
-import { LibraryView } from './components/LibraryView';
+import { LibraryView } from './components/library/LibraryView';
 import { Reader } from './components/Reader';
 import { SettingsView } from './components/SettingsView';
 import { NovelStorage } from './lib/storage';
