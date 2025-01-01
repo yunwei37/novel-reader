@@ -2,13 +2,11 @@ import React, { useRef, useState } from 'react';
 import { NovelStorage } from '../lib/storage';
 import { Novel } from '../types';
 
-interface ImportDialogProps {
-    onClose: () => void;
+interface ImportViewProps {
     onImportComplete: (novel: Novel) => void;
 }
 
-export const ImportDialog: React.FC<ImportDialogProps> = ({
-    onClose,
+export const ImportView: React.FC<ImportViewProps> = ({
     onImportComplete,
 }) => {
     const [url, setUrl] = useState('');
@@ -22,7 +20,6 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
             setError(null);
             const novel = await NovelStorage.importFromUrl(url);
             onImportComplete(novel);
-            onClose();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to import novel');
         } finally {
@@ -50,7 +47,6 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
 
             await NovelStorage.saveNovel(novel, content);
             onImportComplete(novel);
-            onClose();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to import file');
         } finally {
@@ -59,15 +55,11 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg max-w-lg w-full p-6">
-                <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-                    Import Novel
-                </h2>
-
+        <div className="flex-1 p-4 overflow-auto">
+            <div className="max-w-lg mx-auto">
                 {/* File Import */}
-                <div className="mb-6">
-                    <h3 className="font-medium mb-2 text-gray-700 dark:text-gray-300">
+                <div className="mb-8">
+                    <h3 className="text-lg font-medium mb-4 text-gray-700 dark:text-gray-300">
                         Import from File
                     </h3>
                     <input
@@ -80,7 +72,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
                     <button
                         onClick={() => fileInputRef.current?.click()}
                         className="
-                            w-full px-4 py-3 rounded-lg
+                            w-full px-4 py-6 rounded-lg
                             border-2 border-dashed border-gray-300 dark:border-gray-600
                             hover:border-gray-400 dark:hover:border-gray-500
                             text-gray-600 dark:text-gray-300
@@ -93,18 +85,18 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
                 </div>
 
                 {/* URL Import */}
-                <div className="mb-6">
-                    <h3 className="font-medium mb-2 text-gray-700 dark:text-gray-300">
+                <div className="mb-8">
+                    <h3 className="text-lg font-medium mb-4 text-gray-700 dark:text-gray-300">
                         Import from URL
                     </h3>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-3">
                         <input
                             type="url"
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                             placeholder="Enter URL to TXT file"
                             className="
-                                flex-1 px-4 py-2 rounded-lg
+                                w-full px-4 py-3 rounded-lg
                                 bg-gray-50 dark:bg-gray-700
                                 border border-gray-300 dark:border-gray-600
                                 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
@@ -117,7 +109,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
                             onClick={handleUrlImport}
                             disabled={!url || isLoading}
                             className="
-                                px-4 py-2 rounded-lg
+                                w-full px-4 py-3 rounded-lg
                                 bg-blue-500 hover:bg-blue-600
                                 disabled:bg-gray-300 dark:disabled:bg-gray-600
                                 text-white
@@ -131,27 +123,10 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
 
                 {/* Error Message */}
                 {error && (
-                    <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400">
+                    <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400">
                         {error}
                     </div>
                 )}
-
-                {/* Actions */}
-                <div className="flex justify-end gap-2">
-                    <button
-                        onClick={onClose}
-                        className="
-                            px-4 py-2 rounded-lg
-                            bg-gray-100 dark:bg-gray-700
-                            hover:bg-gray-200 dark:hover:bg-gray-600
-                            text-gray-700 dark:text-gray-300
-                            transition-colors
-                        "
-                        disabled={isLoading}
-                    >
-                        Cancel
-                    </button>
-                </div>
             </div>
         </div>
     );

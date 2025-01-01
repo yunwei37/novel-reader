@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Header } from './components/Header';
-import { ImportDialog } from './components/ImportDialog';
+import { ImportView } from './components/ImportView';
 import { LibraryView } from './components/library/LibraryView';
 import { Reader } from './components/Reader';
 import { SettingsView } from './components/SettingsView';
@@ -129,8 +129,7 @@ export default function Home() {
           )}
 
           {currentView === 'import' && (
-            <ImportDialog
-              onClose={() => setCurrentView('library')}
+            <ImportView
               onImportComplete={(novel: Novel) => {
                 handleNovelSelect(novel);
                 setCurrentView('reader');
