@@ -19,6 +19,26 @@ export default function Home() {
   const [currentOffset, setCurrentOffset] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // Handle URL query parameters for auto-import
+  useEffect(() => {
+    const handleUrlImport = async (url: string) => {
+      try {
+        const novel = await NovelStorage.importFromUrl(url);
+        handleNovelSelect(novel);
+      } catch (err) {
+        console.error('Failed to import novel from URL:', err);
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const addUrl = params.get('add');
+    if (addUrl) {
+      handleUrlImport(addUrl);
+      // Clear the URL parameter after import attempt
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
   // Initialize dark mode from localStorage or system preference
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');
