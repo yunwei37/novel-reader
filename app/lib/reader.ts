@@ -11,7 +11,7 @@ import { Chapter, TextPosition } from '../types';
  */
 export const detectChapters = (text: string): Chapter[] => {
   const lines = text.split('\n');
-  const chapterPattern = /^(chapter|第|卷|章|section)\s*\d+/i;
+  const chapterPattern = /^(?:chapter|第.*[章节]|[第序]|卷|章|section|part|book|\d+|NO.*|CHAPTER)/i;
   const chapters: Chapter[] = [];
   let currentChapterContent = '';
   let currentChapterTitle = '';
