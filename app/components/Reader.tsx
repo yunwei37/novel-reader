@@ -5,12 +5,10 @@
  * Supports both paged and scroll modes with position tracking.
  */
 
-import React, { useEffect, useState } from 'react';
-import { detectChapters, loadFromStorage, saveToStorage } from '../lib/reader';
-import { Bookmark, Chapter } from '../types';
+import React, { useState } from 'react';
 import { PagedReader } from './PagedReader';
-import { ReaderMenu } from './ReaderMenu';
 import { ScrollReader } from './ScrollReader';
+import { ReaderMenu } from './reader/ReaderMenu';
 
 interface ReaderProps {
   content: string;
@@ -30,41 +28,6 @@ export const Reader: React.FC<ReaderProps> = ({
   const [fontSize, setFontSize] = useState(defaultFontSize);
   const [isPaged, setIsPaged] = useState(defaultIsPaged);
   const [showMenu, setShowMenu] = useState(false);
-  const [chapters, setChapters] = useState<Chapter[]>([]);
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-
-  const MIN_FONT_SIZE = 12;
-  const MAX_FONT_SIZE = 24;
-
-  // Detect chapters when content changes
-  useEffect(() => {
-    if (content) {
-      setChapters(detectChapters(content));
-    }
-  }, [content]);
-
-  // Load bookmarks from storage
-  useEffect(() => {
-    const savedBookmarks = loadFromStorage<Bookmark[]>('bookmarks', []);
-    setBookmarks(savedBookmarks);
-  }, []);
-
-  // Save bookmarks to storage
-  useEffect(() => {
-    saveToStorage('bookmarks', bookmarks);
-  }, [bookmarks]);
-
-  const handleBookmarkAdd = () => {
-    const newBookmark: Bookmark = {
-      offset: currentOffset,
-      timestamp: Date.now()
-    };
-    setBookmarks(prev => [...prev, newBookmark]);
-  };
-
-  const handleBookmarkRemove = (index: number) => {
-    setBookmarks(prev => prev.filter((_, i) => i !== index));
-  };
 
   return (
     <div className="h-full flex flex-col">
@@ -106,16 +69,12 @@ export const Reader: React.FC<ReaderProps> = ({
         isOpen={showMenu}
         onClose={() => setShowMenu(false)}
         fontSize={fontSize}
-        onFontSizeChange={(size) => setFontSize(size)}
+        onFontSizeChange={setFontSize}
         isPaged={isPaged}
         onModeToggle={() => setIsPaged(!isPaged)}
+        content={content}
         currentPosition={currentOffset}
-        bookmarks={bookmarks}
-        onBookmarkAdd={handleBookmarkAdd}
-        onBookmarkRemove={handleBookmarkRemove}
-        onBookmarkSelect={onPositionChange}
-        chapters={chapters}
-        onChapterSelect={onPositionChange}
+        onPositionChange={onPositionChange}
       />
     </div>
   );
