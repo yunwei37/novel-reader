@@ -18,7 +18,7 @@ export const detectChapters = (text: string): Chapter[] => {
   let startIndex = 0;
   let currentOffset = 0;
 
-  lines.forEach((line, index) => {
+  lines.forEach((line) => {
     if (chapterPattern.test(line.trim())) {
       if (currentChapterTitle) {
         chapters.push({
