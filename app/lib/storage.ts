@@ -69,10 +69,12 @@ export class NovelStorage {
         }
 
         const content = await response.text();
-        const filename = url.split('/').pop() || 'Unknown';
+        const encodedFilename = url.split('/').pop() || 'Unknown';
+        // Decode URL-encoded characters and remove file extension
+        const decodedFilename = decodeURIComponent(encodedFilename);
         const novel: Novel = {
             id: crypto.randomUUID(),
-            title: filename.replace(/\.[^/.]+$/, ''),
+            title: decodedFilename.replace(/\.[^/.]+$/, ''),
             source: 'url',
             url,
             lastRead: Date.now(),
