@@ -20,9 +20,20 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
     // Detect chapters when content changes
     useEffect(() => {
         if (content) {
-            setChapters(detectChapters(content));
+            const detectedChapters = detectChapters(content);
+            console.log('Detected chapters:', detectedChapters.map(ch => ({
+                title: ch.title,
+                startIndex: ch.startIndex,
+                contentPreview: ch.content.slice(0, 50)
+            })));
+            setChapters(detectedChapters);
         }
     }, [content]);
+
+    const handleChapterSelect = (startIndex: number) => {
+        console.log('Jumping to chapter at position:', startIndex);
+        onPositionChange(startIndex);
+    };
 
     return (
         <div className="space-y-6">
@@ -42,7 +53,7 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
                 {chapters.map((chapter, index) => (
                     <button
                         key={index}
-                        onClick={() => onPositionChange(chapter.startIndex)}
+                        onClick={() => handleChapterSelect(chapter.startIndex)}
                         className={`
               w-full p-3 rounded-lg text-left transition-colors
               ${chapter.startIndex === currentPosition

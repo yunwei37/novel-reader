@@ -16,6 +16,7 @@ export const detectChapters = (text: string): Chapter[] => {
   let currentChapterContent = '';
   let currentChapterTitle = '';
   let startIndex = 0;
+  let currentOffset = 0;
 
   lines.forEach((line, index) => {
     if (chapterPattern.test(line.trim())) {
@@ -23,25 +24,28 @@ export const detectChapters = (text: string): Chapter[] => {
         chapters.push({
           title: currentChapterTitle,
           content: currentChapterContent,
-          startIndex
+          startIndex: startIndex
         });
-        currentChapterContent = '';
       }
       currentChapterTitle = line.trim();
-      startIndex = index;
+      startIndex = currentOffset;
+      currentChapterContent = '';
     } else {
       currentChapterContent += line + '\n';
     }
+    // Add line length plus newline character to track character offset
+    currentOffset += line.length + 1;
   });
 
   if (currentChapterTitle) {
     chapters.push({
       title: currentChapterTitle,
       content: currentChapterContent,
-      startIndex
+      startIndex: startIndex
     });
   }
 
+  // If no chapters were detected, treat the entire text as one chapter
   return chapters.length > 0 ? chapters : [{
     title: 'Full Text',
     content: text,
