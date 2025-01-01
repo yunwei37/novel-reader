@@ -17,11 +17,6 @@ export interface ReaderConfig {
   isDarkMode: boolean;
 }
 
-export interface TextContentProps {
-  content: string;
-  isDarkMode: boolean;
-}
-
 export interface TextPosition {
   offset: number;
   total: number;
