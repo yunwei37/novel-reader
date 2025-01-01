@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BookmarksPage } from './BookmarksPage';
 import { ChaptersPage } from './ChaptersPage';
 import { MainMenuPage } from './MainMenuPage';
+import { ProgressSlider } from './ProgressSlider';
 import { SettingsPage } from './SettingsPage';
 
 interface ReaderMenuProps {
@@ -34,6 +35,11 @@ export const ReaderMenu: React.FC<ReaderMenuProps> = ({
     const [currentPage, setCurrentPage] = useState<MenuPage>('main');
 
     if (!isOpen) return null;
+
+    const handleProgressChange = (progress: number) => {
+        const newPosition = Math.floor(progress * content.length);
+        onPositionChange(newPosition);
+    };
 
     return (
         <>
@@ -89,6 +95,12 @@ export const ReaderMenu: React.FC<ReaderMenuProps> = ({
                         />
                     )}
                 </div>
+
+                {/* Position Slider */}
+                <ProgressSlider
+                    progress={content ? currentPosition / content.length : 0}
+                    onProgressChange={handleProgressChange}
+                />
             </div>
         </>
     );
