@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type View = 'library' | 'reader' | 'settings' | 'import';
+export type View = 'library' | 'reader' | 'settings' | 'add';
 
 interface NavigationProps {
     currentView: View;
@@ -17,7 +17,7 @@ export const Navigation: React.FC<NavigationProps> = ({
         { id: 'library', label: 'Library', icon: '📚' },
         { id: 'reader', label: 'Reader', icon: '📖' },
         { id: 'settings', label: 'Settings', icon: '⚙️' },
-        { id: 'import', label: 'Import', icon: '📥' },
+        { id: 'add', label: 'Add', icon: '📥' },
     ];
 
     if (isMobile) {

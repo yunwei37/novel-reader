@@ -1,15 +1,15 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { AddView } from './components/AddView';
 import { Header } from './components/Header';
-import { ImportView } from './components/ImportView';
 import { LibraryView } from './components/library/LibraryView';
 import { Reader } from './components/Reader';
 import { SettingsView } from './components/SettingsView';
 import { NovelStorage } from './lib/storage';
 import { Novel } from './types';
 
-type View = 'library' | 'reader' | 'settings' | 'import';
+type View = 'library' | 'reader' | 'settings' | 'add';
 
 export default function Home() {
   // State management
@@ -95,8 +95,8 @@ export default function Home() {
         return currentNovel?.title || 'Reading';
       case 'settings':
         return 'Settings';
-      case 'import':
-        return 'Import Novel';
+      case 'add':
+        return 'Add Novel';
       default:
         return 'Novel Reader';
     }
@@ -123,7 +123,7 @@ export default function Home() {
           {currentView === 'library' && (
             <LibraryView
               onNovelSelect={handleNovelSelect}
-              onImportClick={() => setCurrentView('import')}
+              onImportClick={() => setCurrentView('add')}
             />
           )}
 
@@ -148,8 +148,8 @@ export default function Home() {
             />
           )}
 
-          {currentView === 'import' && (
-            <ImportView
+          {currentView === 'add' && (
+            <AddView
               onImportComplete={(novel: Novel) => {
                 handleNovelSelect(novel);
                 setCurrentView('reader');
