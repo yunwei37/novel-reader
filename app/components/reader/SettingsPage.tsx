@@ -6,6 +6,8 @@ interface SettingsPageProps {
     isPaged: boolean;
     onModeToggle: () => void;
     onBack: () => void;
+    charsPerPage?: number;
+    onCharsPerPageChange?: (chars: number) => void;
 }
 
 export const SettingsPage: React.FC<SettingsPageProps> = ({
@@ -14,6 +16,8 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     isPaged,
     onModeToggle,
     onBack,
+    charsPerPage = 500,
+    onCharsPerPageChange,
 }) => {
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
@@ -122,6 +126,35 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                         </span>
                     </button>
                 </div>
+
+                {isPaged && onCharsPerPageChange && (
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Characters Per Page
+                        </label>
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => onCharsPerPageChange(Math.max(200, charsPerPage - 100))}
+                                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                                </svg>
+                            </button>
+                            <span className="text-gray-900 dark:text-gray-100 tabular-nums w-16 text-center">
+                                {charsPerPage}
+                            </span>
+                            <button
+                                onClick={() => onCharsPerPageChange(Math.min(2000, charsPerPage + 100))}
+                                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
