@@ -17,6 +17,9 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const contentLength = useMemo(() => content?.length || 0, [content]);
     const isUserScrolling = useRef(false);
+    const lastUserScrollTime = useRef(0);
+    const lastKnownOffset = useRef(currentOffset);
+    const SCROLL_COOLDOWN = 2000; // 2 seconds cooldown after user scrolling
 
     // Memoize progress calculation
     const progress = useMemo(() => {
@@ -24,57 +27,72 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
         return ((currentOffset / contentLength) * 100).toFixed(2);
     }, [currentOffset, contentLength]);
 
-    // Throttle scroll event handling with increased threshold
-    const handleScroll = useCallback(
-        throttle(() => {
-            if (!containerRef.current || !contentLength) return;
-
-            const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+    const handleScrollThrottled = useMemo(
+        () => throttle((scrollTop: number, scrollHeight: number, clientHeight: number) => {
+            if (!contentLength) return;
             const progress = scrollTop / (scrollHeight - clientHeight);
             const newOffset = Math.round(progress * contentLength);
-
-            // Increased threshold to 100 characters
             if (Math.abs(newOffset - currentOffset) > 100) {
+                lastUserScrollTime.current = Date.now();
+                lastKnownOffset.current = newOffset;
                 onPositionChange(newOffset);
             }
         }, 250, { leading: true, trailing: true }),
         [contentLength, currentOffset, onPositionChange]
     );
 
-    // Debounce scroll position updates with increased threshold
-    const updateScrollPosition = useCallback(
-        debounce(() => {
-            if (!containerRef.current || !contentLength) return;
+    const handleScroll = useCallback(() => {
+        if (!containerRef.current) return;
+        isUserScrolling.current = true;
+        const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+        handleScrollThrottled(scrollTop, scrollHeight, clientHeight);
+    }, [handleScrollThrottled]);
 
-            // Don't update if user is actively scrolling
-            if (isUserScrolling.current) return;
+    const updateScrollPositionDebounced = useMemo(
+        () => debounce((container: HTMLDivElement, force: boolean = false) => {
+            if (!contentLength) return;
+            if (!force && isUserScrolling.current) return;
 
-            const { scrollHeight, clientHeight } = containerRef.current;
+            // Don't auto-adjust if user has scrolled recently and it's not a forced update
+            const timeSinceLastScroll = Date.now() - lastUserScrollTime.current;
+            if (!force && timeSinceLastScroll < SCROLL_COOLDOWN) return;
+
+            const { scrollHeight, clientHeight } = container;
             const progress = currentOffset / contentLength;
             const targetScroll = Math.round(progress * (scrollHeight - clientHeight));
 
-            // Increased threshold to 50 pixels
-            if (Math.abs(containerRef.current.scrollTop - targetScroll) > 50) {
-                containerRef.current.scrollTo({
+            // Only adjust if forced or the difference is significant
+            const viewportHeight = clientHeight * 2;
+            if (force || Math.abs(container.scrollTop - targetScroll) > viewportHeight) {
+                container.scrollTo({
                     top: targetScroll,
-                    behavior: 'smooth'
+                    behavior: force ? 'auto' : 'smooth'
                 });
             }
         }, 250),
-        [currentOffset, contentLength]
+        [currentOffset, contentLength, SCROLL_COOLDOWN]
     );
+
+    const updateScrollPosition = useCallback((force: boolean = false) => {
+        if (!containerRef.current) return;
+        updateScrollPositionDebounced(containerRef.current, force);
+    }, [updateScrollPositionDebounced]);
 
     // Handle scroll start and end
     const handleScrollStart = useCallback(() => {
         isUserScrolling.current = true;
     }, []);
 
-    const handleScrollEnd = useCallback(
-        debounce(() => {
+    const handleScrollEndDebounced = useMemo(
+        () => debounce(() => {
             isUserScrolling.current = false;
-        }, 150),
+        }, 1000), // Increased debounce time to 1 second
         []
     );
+
+    const handleScrollEnd = useCallback(() => {
+        handleScrollEndDebounced();
+    }, [handleScrollEndDebounced]);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -92,16 +110,26 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
                 container.removeEventListener('touchend', handleScrollEnd);
                 container.removeEventListener('mouseup', handleScrollEnd);
             }
-            updateScrollPosition.cancel();
-            handleScroll.cancel();
-            handleScrollEnd.cancel();
+            handleScrollThrottled.cancel();
+            updateScrollPositionDebounced.cancel();
+            handleScrollEndDebounced.cancel();
         };
-    }, [updateScrollPosition, handleScroll, handleScrollStart, handleScrollEnd]);
+    }, [handleScrollStart, handleScrollEnd, handleScrollThrottled, updateScrollPositionDebounced, handleScrollEndDebounced]);
 
     // Add effect to handle external currentOffset changes
     useEffect(() => {
-        updateScrollPosition();
-    }, [currentOffset, updateScrollPosition]);
+        // If the offset changed from outside (not by user scrolling)
+        if (currentOffset !== lastKnownOffset.current) {
+            lastKnownOffset.current = currentOffset;
+            updateScrollPosition(true); // Force update
+        } else {
+            // Normal scroll position sync
+            const timeSinceLastScroll = Date.now() - lastUserScrollTime.current;
+            if (timeSinceLastScroll >= SCROLL_COOLDOWN) {
+                updateScrollPosition(false);
+            }
+        }
+    }, [currentOffset, updateScrollPosition, SCROLL_COOLDOWN]);
 
     return (
         <div className="h-full flex flex-col">
