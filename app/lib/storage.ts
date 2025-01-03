@@ -38,11 +38,11 @@ export class NovelStorage {
 
             // Save novel metadata
             const novelsStore = transaction.objectStore(this.NOVELS_STORE);
-            const novelRequest = novelsStore.put(novel);
+            novelsStore.put(novel);
 
             // Save content
             const contentStore = transaction.objectStore(this.CONTENT_STORE);
-            const contentRequest = contentStore.put({
+            contentStore.put({
                 id: novel.id,
                 content: content
             });
@@ -117,7 +117,7 @@ export class NovelStorage {
         try {
             const utf8Text = new TextDecoder('utf-8', { fatal: true }).decode(buffer);
             return utf8Text;
-        } catch (e) {
+        } catch (_) {
             // If UTF-8 fails, detect encoding
             const uint8Array = new Uint8Array(buffer);
             const result = jschardet.detect(Buffer.from(uint8Array));
@@ -143,8 +143,8 @@ export class NovelStorage {
 
             try {
                 return new TextDecoder(encoding).decode(buffer);
-            } catch (error) {
-                console.error('Failed to decode with detected encoding:', encoding);
+            } catch (decodeError) {
+                console.error('Failed to decode with detected encoding:', encoding, decodeError);
                 // Fallback to UTF-8 without fatal flag as last resort
                 return new TextDecoder('utf-8').decode(buffer);
             }

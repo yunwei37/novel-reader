@@ -38,7 +38,6 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
         const splitContent: string[] = [];
         let currentChunk = '';
         let charCount = 0;
-        const words = content.split(/(\s+)/);
         const paragraphs = content.split(/\n+/);
 
         // Try to keep paragraphs together when possible
