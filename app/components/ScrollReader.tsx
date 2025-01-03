@@ -98,6 +98,11 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
         };
     }, [updateScrollPosition, handleScroll, handleScrollStart, handleScrollEnd]);
 
+    // Add effect to handle external currentOffset changes
+    useEffect(() => {
+        updateScrollPosition();
+    }, [currentOffset, updateScrollPosition]);
+
     return (
         <div className="h-full flex flex-col">
             <div
