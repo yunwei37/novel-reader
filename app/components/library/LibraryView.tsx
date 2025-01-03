@@ -17,8 +17,15 @@ export const LibraryView: React.FC<LibraryViewProps> = ({ onNovelSelect, onImpor
     const [isSelectionMode, setIsSelectionMode] = useState(false);
 
     useEffect(() => {
-        const loadedNovels = NovelStorage.getAllNovels();
-        setNovels(loadedNovels);
+        const loadNovels = async () => {
+            try {
+                const loadedNovels = await NovelStorage.getAllNovels();
+                setNovels(loadedNovels);
+            } catch (error) {
+                console.error('Failed to load novels:', error);
+            }
+        };
+        loadNovels();
     }, []);
 
     const sortedNovels = novels

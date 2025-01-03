@@ -110,6 +110,38 @@ export class NovelStorage {
         });
     }
 
+    static async importFromFile(file: File): Promise<Novel> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = async (event) => {
+                try {
+                    const content = event.target?.result as string;
+                    if (!content) {
+                        throw new Error('Failed to read file content');
+                    }
+
+                    const novel: Novel = {
+                        id: crypto.randomUUID(),
+                        title: file.name.replace(/\.[^/.]+$/, ''), // Remove file extension
+                        source: 'local',
+                        filepath: file.name,
+                        lastRead: Date.now(),
+                        lastPosition: 0,
+                    };
+
+                    await this.saveNovel(novel, content);
+                    resolve(novel);
+                } catch (error) {
+                    reject(error);
+                }
+            };
+
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsText(file);
+        });
+    }
+
     static async importFromUrl(url: string): Promise<Novel> {
         const response = await fetch(url);
         if (!response.ok) {
@@ -131,4 +163,4 @@ export class NovelStorage {
         await this.saveNovel(novel, content);
         return novel;
     }
-} 
+}
