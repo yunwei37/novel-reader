@@ -1,65 +1,113 @@
 import { Novel } from '../types';
 
 export class NovelStorage {
-    private static NOVELS_KEY = 'novels';
-    private static CONTENT_PREFIX = 'novel_content_';
+    private static DB_NAME = 'novel-reader-db';
+    private static DB_VERSION = 1;
+    private static NOVELS_STORE = 'novels';
+    private static CONTENT_STORE = 'content';
 
-    static async saveNovel(novel: Novel, content: string) {
-        // Save novel metadata
-        const novels = this.getAllNovels();
-        novels.push(novel);
-        localStorage.setItem(this.NOVELS_KEY, JSON.stringify(novels));
+    private static async getDB(): Promise<IDBDatabase> {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
 
-        // Save content in chunks to handle large files
-        const chunkSize = 512 * 1024; // 512KB chunks
-        for (let i = 0; i < content.length; i += chunkSize) {
-            const chunk = content.slice(i, i + chunkSize);
-            localStorage.setItem(
-                `${this.CONTENT_PREFIX}${novel.id}_${i}`,
-                chunk
-            );
-        }
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => resolve(request.result);
+
+            request.onupgradeneeded = (event) => {
+                const db = (event.target as IDBOpenDBRequest).result;
+
+                // Create novels store for metadata
+                if (!db.objectStoreNames.contains(this.NOVELS_STORE)) {
+                    db.createObjectStore(this.NOVELS_STORE, { keyPath: 'id' });
+                }
+
+                // Create content store for novel content
+                if (!db.objectStoreNames.contains(this.CONTENT_STORE)) {
+                    db.createObjectStore(this.CONTENT_STORE, { keyPath: 'id' });
+                }
+            };
+        });
     }
 
-    static getAllNovels(): Novel[] {
-        const novels = localStorage.getItem(this.NOVELS_KEY);
-        return novels ? JSON.parse(novels) : [];
+    static async saveNovel(novel: Novel, content: string) {
+        const db = await this.getDB();
+        return new Promise<void>((resolve, reject) => {
+            const transaction = db.transaction([this.NOVELS_STORE, this.CONTENT_STORE], 'readwrite');
+
+            // Save novel metadata
+            const novelsStore = transaction.objectStore(this.NOVELS_STORE);
+            const novelRequest = novelsStore.put(novel);
+
+            // Save content
+            const contentStore = transaction.objectStore(this.CONTENT_STORE);
+            const contentRequest = contentStore.put({
+                id: novel.id,
+                content: content
+            });
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
+    }
+
+    static async getAllNovels(): Promise<Novel[]> {
+        const db = await this.getDB();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(this.NOVELS_STORE, 'readonly');
+            const store = transaction.objectStore(this.NOVELS_STORE);
+            const request = store.getAll();
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
     }
 
     static async getNovelContent(novelId: string): Promise<string> {
-        let content = '';
-        let chunk;
-        let i = 0;
+        const db = await this.getDB();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(this.CONTENT_STORE, 'readonly');
+            const store = transaction.objectStore(this.CONTENT_STORE);
+            const request = store.get(novelId);
 
-        while (chunk = localStorage.getItem(`${this.CONTENT_PREFIX}${novelId}_${i}`)) {
-            content += chunk;
-            i += 512 * 1024;
-        }
-
-        return content;
+            request.onsuccess = () => resolve(request.result?.content || '');
+            request.onerror = () => reject(request.error);
+        });
     }
 
     static async updateNovelProgress(novelId: string, position: number) {
-        const novels = this.getAllNovels();
-        const novel = novels.find(n => n.id === novelId);
-        if (novel) {
-            novel.lastPosition = position;
-            novel.lastRead = Date.now();
-            localStorage.setItem(this.NOVELS_KEY, JSON.stringify(novels));
-        }
+        const db = await this.getDB();
+        return new Promise<void>((resolve, reject) => {
+            const transaction = db.transaction(this.NOVELS_STORE, 'readwrite');
+            const store = transaction.objectStore(this.NOVELS_STORE);
+
+            const getRequest = store.get(novelId);
+            getRequest.onsuccess = () => {
+                const novel = getRequest.result;
+                if (novel) {
+                    novel.lastPosition = position;
+                    novel.lastRead = Date.now();
+                    store.put(novel);
+                }
+            };
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
     }
 
     static async deleteNovel(novelId: string) {
-        // Remove novel metadata
-        const novels = this.getAllNovels().filter(n => n.id !== novelId);
-        localStorage.setItem(this.NOVELS_KEY, JSON.stringify(novels));
+        const db = await this.getDB();
+        return new Promise<void>((resolve, reject) => {
+            const transaction = db.transaction([this.NOVELS_STORE, this.CONTENT_STORE], 'readwrite');
 
-        // Remove content chunks
-        let i = 0;
-        while (localStorage.getItem(`${this.CONTENT_PREFIX}${novelId}_${i}`)) {
-            localStorage.removeItem(`${this.CONTENT_PREFIX}${novelId}_${i}`);
-            i += 512 * 1024;
-        }
+            // Delete novel metadata
+            transaction.objectStore(this.NOVELS_STORE).delete(novelId);
+            // Delete content
+            transaction.objectStore(this.CONTENT_STORE).delete(novelId);
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
     }
 
     static async importFromUrl(url: string): Promise<Novel> {
@@ -70,7 +118,6 @@ export class NovelStorage {
 
         const content = await response.text();
         const encodedFilename = url.split('/').pop() || 'Unknown';
-        // Decode URL-encoded characters and remove file extension
         const decodedFilename = decodeURIComponent(encodedFilename);
         const novel: Novel = {
             id: crypto.randomUUID(),
