@@ -3,6 +3,7 @@ import { BookmarksPage } from './BookmarksPage';
 import { ChaptersPage } from './ChaptersPage';
 import { MainMenuPage } from './MainMenuPage';
 import { ProgressSlider } from './ProgressSlider';
+import { SearchPage } from './SearchPage';
 import { SettingsPage } from './SettingsPage';
 
 interface ReaderMenuProps {
@@ -19,7 +20,7 @@ interface ReaderMenuProps {
     onPositionChange: (position: number) => void;
 }
 
-type MenuPage = 'main' | 'settings' | 'bookmarks' | 'chapters';
+type MenuPage = 'main' | 'settings' | 'bookmarks' | 'chapters' | 'search';
 
 export const ReaderMenu: React.FC<ReaderMenuProps> = ({
     isOpen,
@@ -90,6 +91,13 @@ export const ReaderMenu: React.FC<ReaderMenuProps> = ({
                         <ChaptersPage
                             content={content}
                             currentPosition={currentPosition}
+                            onPositionChange={onPositionChange}
+                            onBack={() => setCurrentPage('main')}
+                        />
+                    )}
+                    {currentPage === 'search' && (
+                        <SearchPage
+                            content={content}
                             onPositionChange={onPositionChange}
                             onBack={() => setCurrentPage('main')}
                         />
