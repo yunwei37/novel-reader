@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { detectChapters, loadFromStorage, saveToStorage } from '../../lib/reader';
 import { Chapter } from '../../types';
 
@@ -21,6 +21,7 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
     );
     const [isEditing, setIsEditing] = useState(false);
     const [editPattern, setEditPattern] = useState(chapterPattern);
+    const chaptersContainerRef = useRef<HTMLDivElement>(null);
 
     // Detect chapters when content or pattern changes
     useEffect(() => {
@@ -34,6 +35,31 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
             setChapters(detectedChapters);
         }
     }, [content, chapterPattern]);
+
+    // Find current chapter index
+    const currentChapterIndex = chapters.findIndex((chapter, index) => {
+        const nextChapter = chapters[index + 1];
+        return chapter.startIndex <= currentPosition &&
+            (!nextChapter || nextChapter.startIndex > currentPosition);
+    });
+
+    // Auto scroll to current chapter
+    useEffect(() => {
+        if (currentChapterIndex >= 0 && chaptersContainerRef.current) {
+            const container = chaptersContainerRef.current;
+            const chapterElement = container.children[currentChapterIndex] as HTMLElement;
+
+            if (chapterElement) {
+                const containerHeight = container.clientHeight;
+                const scrollOffset = chapterElement.offsetTop - containerHeight / 2 + chapterElement.clientHeight / 2;
+
+                container.scrollTo({
+                    top: scrollOffset,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }, [currentChapterIndex]);
 
     const handleChapterSelect = (startIndex: number) => {
         console.log('Jumping to chapter at position:', startIndex);
@@ -94,25 +120,31 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
                 </div>
             )}
 
-            <div className="space-y-2">
-                {chapters.map((chapter, index) => (
-                    <button
-                        key={index}
-                        onClick={() => handleChapterSelect(chapter.startIndex)}
-                        className={`
-                            w-full p-3 rounded-lg text-left transition-colors
-                            ${chapter.startIndex === currentPosition
-                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100'
-                            }
-                        `}
-                    >
-                        <span className="block text-sm font-medium truncate">
-                            {chapter.title}
-                        </span>
-                    </button>
-                ))}
+            <div ref={chaptersContainerRef} className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
+                {chapters.map((chapter, index) => {
+                    const isCurrentChapter = index === currentChapterIndex;
+                    return (
+                        <button
+                            key={index}
+                            onClick={() => handleChapterSelect(chapter.startIndex)}
+                            className={`
+                                w-full p-3 rounded-lg text-left transition-colors relative
+                                ${isCurrentChapter
+                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 ring-2 ring-blue-500'
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100'
+                                }
+                            `}
+                        >
+                            <span className="block text-sm font-medium truncate">
+                                {chapter.title}
+                            </span>
+                            {isCurrentChapter && (
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-blue-500" />
+                            )}
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );
-}; 
+};
