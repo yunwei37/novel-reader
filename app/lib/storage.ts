@@ -1,3 +1,5 @@
+import * as jschardet from 'jschardet';
+import { TextDecoder } from 'text-encoding';
 import { Novel } from '../types';
 
 export class NovelStorage {
@@ -110,16 +112,57 @@ export class NovelStorage {
         });
     }
 
+    private static async detectAndDecodeText(buffer: ArrayBuffer): Promise<string> {
+        // First try UTF-8
+        try {
+            const utf8Text = new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+            return utf8Text;
+        } catch (e) {
+            // If UTF-8 fails, detect encoding
+            const uint8Array = new Uint8Array(buffer);
+            const result = jschardet.detect(Buffer.from(uint8Array));
+
+            if (!result.encoding) {
+                throw new Error('Could not detect file encoding');
+            }
+
+            // Common encoding aliases
+            const encodingMap: { [key: string]: string } = {
+                'ascii': 'windows-1252',
+                'iso-8859-1': 'windows-1252',
+                'windows-1252': 'windows-1252',
+                'gb2312': 'gb18030',
+                'gbk': 'gb18030',
+                'big5': 'big5',
+                'euc-jp': 'euc-jp',
+                'shift-jis': 'shift-jis',
+                'euc-kr': 'euc-kr',
+            };
+
+            const encoding = encodingMap[result.encoding.toLowerCase()] || result.encoding;
+
+            try {
+                return new TextDecoder(encoding).decode(buffer);
+            } catch (error) {
+                console.error('Failed to decode with detected encoding:', encoding);
+                // Fallback to UTF-8 without fatal flag as last resort
+                return new TextDecoder('utf-8').decode(buffer);
+            }
+        }
+    }
+
     static async importFromFile(file: File): Promise<Novel> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
 
             reader.onload = async (event) => {
                 try {
-                    const content = event.target?.result as string;
-                    if (!content) {
+                    const buffer = event.target?.result as ArrayBuffer;
+                    if (!buffer) {
                         throw new Error('Failed to read file content');
                     }
+
+                    const content = await this.detectAndDecodeText(buffer);
 
                     const novel: Novel = {
                         id: crypto.randomUUID(),
@@ -138,7 +181,7 @@ export class NovelStorage {
             };
 
             reader.onerror = () => reject(new Error('Failed to read file'));
-            reader.readAsText(file);
+            reader.readAsArrayBuffer(file); // Read as ArrayBuffer instead of text
         });
     }
 
