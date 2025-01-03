@@ -117,7 +117,7 @@ export class NovelStorage {
         try {
             const utf8Text = new TextDecoder('utf-8', { fatal: true }).decode(buffer);
             return utf8Text;
-        } catch (_) {
+        } catch {
             // If UTF-8 fails, detect encoding
             const uint8Array = new Uint8Array(buffer);
             const result = jschardet.detect(Buffer.from(uint8Array));
