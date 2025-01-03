@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Novel Reader
+
+A modern, feature-rich reading app for novels, books, and files, built with Next.js and TypeScript.
+
+## Features
+
+It works as `Progressive Web App (PWA)` or A `Single Page Application (SPA)`.
+
+- 📚 **Library Management**
+  - Import novels from local files or URLs
+  - Organize and manage your novel collection
+  - Sort by title or last read date
+  - Filter novels by title or author
+  - Bulk selection and deletion support
+
+- 📖 **Advanced Reading Experience**
+  - Two reading modes: Paged and Scroll
+  - Customizable font size
+  - Progress tracking and automatic bookmark saving
+  - Dark mode support with system preference detection
+  - Beautiful, clean reading interface
+
+- 🔍 **Navigation & Search**
+  - Automatic chapter detection
+  - Full-text search functionality
+  - Bookmarking system with notes
+  - Progress slider for quick navigation
+
+- 🌐 **Progressive Web App**
+  - Works offline
+  - Installable on any device
+  - Responsive design for all screen sizes
+  - URL-based novel import support
+
+- 📝 **Text Processing**
+  - Smart text encoding detection
+  - Support for multiple file encodings (UTF-8, GB18030, Big5, etc.)
+  - Automatic chapter detection with customizable patterns
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/novel-reader.git
+cd novel-reader
+```
 
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to start using the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project is built with:
+- [Next.js](https://nextjs.org/) - React framework
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) - Local storage
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License - see the LICENSE file for details.
