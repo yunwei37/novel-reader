@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Novel } from '../../types';
 
 interface NovelListItemProps {
@@ -16,12 +16,21 @@ export const NovelListItem: React.FC<NovelListItemProps> = ({
     onSelect,
     onClick,
 }) => {
+    const [isPressed, setIsPressed] = useState(false);
+
     return (
         <div
             onClick={() => onClick(novel)}
+            onMouseDown={() => setIsPressed(true)}
+            onMouseUp={() => setIsPressed(false)}
+            onMouseLeave={() => setIsPressed(false)}
             className={`
-                cursor-pointer rounded-lg overflow-hidden transition-transform hover:scale-[1.02]
+                cursor-pointer rounded-lg overflow-hidden
+                transition-all duration-100 ease-in-out
                 bg-white dark:bg-gray-800 shadow-sm
+                hover:scale-[1.02] hover:shadow-md
+                ${isPressed ? 'scale-[0.98] bg-gray-50 dark:bg-gray-700' : ''}
+                active:scale-[0.98] active:bg-gray-50 dark:active:bg-gray-700
             `}
         >
             <div className="flex items-center gap-4 p-4 w-full">
