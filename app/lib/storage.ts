@@ -185,8 +185,8 @@ export class NovelStorage {
         });
     }
 
-    static async importFromUrl(url: string): Promise<Novel> {
-        const response = await fetch(url);
+    static async importFromUrl(url: string, signal?: AbortSignal): Promise<Novel> {
+        const response = await fetch(url, { signal });
         if (!response.ok) {
             throw new Error('Failed to fetch novel content');
         }

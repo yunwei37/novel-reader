@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { NovelStorage } from '../lib/storage';
 import { Novel } from '../types';
+import { LoadingDialog } from './LoadingDialog';
 
 interface AddViewProps {
     onImportComplete: (novel: Novel) => void;
@@ -11,14 +12,17 @@ export const AddView: React.FC<AddViewProps> = ({
 }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [loadingMessage, setLoadingMessage] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
     const urlInputRef = useRef<HTMLInputElement>(null);
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
         setIsLoading(true);
+        setLoadingMessage(`Opening ${file.name}...`);
         setError(null);
 
         try {
@@ -29,6 +33,7 @@ export const AddView: React.FC<AddViewProps> = ({
             console.error('Import error:', err);
         } finally {
             setIsLoading(false);
+            setLoadingMessage('');
         }
     };
 
@@ -37,16 +42,32 @@ export const AddView: React.FC<AddViewProps> = ({
         if (!url) return;
 
         setIsLoading(true);
+        setLoadingMessage('Downloading from URL...');
         setError(null);
 
+        // Create new AbortController for this request
+        abortControllerRef.current = new AbortController();
+
         try {
-            const novel = await NovelStorage.importFromUrl(url);
+            const novel = await NovelStorage.importFromUrl(url, abortControllerRef.current.signal);
             onImportComplete(novel);
         } catch (err) {
-            setError('Failed to import from URL. Please check the URL and try again.');
-            console.error('Import error:', err);
+            if (err instanceof Error && err.name === 'AbortError') {
+                setError('Import cancelled.');
+            } else {
+                setError('Failed to import from URL. Please check the URL and try again.');
+                console.error('Import error:', err);
+            }
         } finally {
             setIsLoading(false);
+            setLoadingMessage('');
+            abortControllerRef.current = null;
+        }
+    };
+
+    const handleCancel = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
         }
     };
 
@@ -90,7 +111,7 @@ export const AddView: React.FC<AddViewProps> = ({
                                 disabled:bg-gray-300 disabled:cursor-not-allowed
                                 dark:disabled:bg-gray-700"
                         >
-                            {isLoading ? 'Importing...' : 'Import'}
+                            Import
                         </button>
                     </div>
                 </div>
@@ -100,6 +121,14 @@ export const AddView: React.FC<AddViewProps> = ({
                     <div className="text-red-500 dark:text-red-400 text-sm mt-2">
                         {error}
                     </div>
+                )}
+
+                {/* Loading Dialog */}
+                {isLoading && (
+                    <LoadingDialog
+                        message={loadingMessage}
+                        onCancel={handleCancel}
+                    />
                 )}
             </div>
         </div>
