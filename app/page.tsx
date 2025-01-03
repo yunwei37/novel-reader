@@ -134,8 +134,10 @@ export default function Home() {
                   content={content}
                   currentOffset={currentOffset}
                   onPositionChange={handlePositionChange}
-                  defaultFontSize={16}
-                  defaultIsPaged={false}
+                  defaultConfig={{
+                    fontSize: 16,
+                    isPaged: false,
+                  }}
                 />
               </div>
             </div>

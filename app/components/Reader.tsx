@@ -10,25 +10,41 @@ import { PagedReader } from './PagedReader';
 import { ScrollReader } from './ScrollReader';
 import { ReaderMenu } from './reader/ReaderMenu';
 
+interface ReaderConfig {
+  fontSize: number;
+  isPaged: boolean;
+  charsPerPage: number;
+}
+
 interface ReaderProps {
   content: string;
   currentOffset: number;
   onPositionChange: (offset: number) => void;
-  defaultFontSize?: number;
-  defaultIsPaged?: boolean;
+  defaultConfig?: Partial<ReaderConfig>;
 }
+
+const DEFAULT_CONFIG: ReaderConfig = {
+  fontSize: 16,
+  isPaged: false,
+  charsPerPage: 500,
+};
 
 export const Reader: React.FC<ReaderProps> = ({
   content,
   currentOffset,
   onPositionChange,
-  defaultFontSize = 16,
-  defaultIsPaged = false,
+  defaultConfig = {},
 }) => {
-  const [fontSize, setFontSize] = useState(defaultFontSize);
-  const [isPaged, setIsPaged] = useState(defaultIsPaged);
+  const [config, setConfig] = useState<ReaderConfig>({
+    ...DEFAULT_CONFIG,
+    ...defaultConfig,
+  });
+
+  const updateConfig = (updates: Partial<ReaderConfig>) => {
+    setConfig(prev => ({ ...prev, ...updates }));
+  };
+
   const [showMenu, setShowMenu] = useState(false);
-  const [charsPerPage, setCharsPerPage] = useState(500);
 
   return (
     <div className="h-full flex flex-col">
@@ -48,20 +64,20 @@ export const Reader: React.FC<ReaderProps> = ({
 
       {/* Reader Content */}
       <div className="flex-1 min-h-0">
-        {isPaged ? (
+        {config.isPaged ? (
           <PagedReader
             content={content}
             currentOffset={currentOffset}
             onPositionChange={onPositionChange}
-            fontSize={fontSize}
-            charsPerPage={charsPerPage}
+            fontSize={config.fontSize}
+            charsPerPage={config.charsPerPage}
           />
         ) : (
           <ScrollReader
             content={content}
             currentOffset={currentOffset}
             onPositionChange={onPositionChange}
-            fontSize={fontSize}
+            fontSize={config.fontSize}
           />
         )}
       </div>
@@ -70,15 +86,11 @@ export const Reader: React.FC<ReaderProps> = ({
       <ReaderMenu
         isOpen={showMenu}
         onClose={() => setShowMenu(false)}
-        fontSize={fontSize}
-        onFontSizeChange={setFontSize}
-        isPaged={isPaged}
-        onModeToggle={() => setIsPaged(!isPaged)}
+        config={config}
+        onConfigChange={updateConfig}
         content={content}
         currentPosition={currentOffset}
         onPositionChange={onPositionChange}
-        charsPerPage={charsPerPage}
-        onCharsPerPageChange={setCharsPerPage}
       />
     </div>
   );

@@ -6,20 +6,22 @@ import { ProgressSlider } from './ProgressSlider';
 import { SearchPage } from './SearchPage';
 import { SettingsPage } from './SettingsPage';
 
+interface ReaderConfig {
+    fontSize: number;
+    isPaged: boolean;
+    charsPerPage: number;
+}
+
 interface ReaderMenuProps {
     isOpen: boolean;
     onClose: () => void;
     // Reading settings
-    fontSize: number;
-    onFontSizeChange: (size: number) => void;
-    isPaged: boolean;
-    onModeToggle: () => void;
+    config: ReaderConfig;
+    onConfigChange: (updates: Partial<ReaderConfig>) => void;
     // Content
     content: string;
     currentPosition: number;
     onPositionChange: (offset: number) => void;
-    charsPerPage: number;
-    onCharsPerPageChange: (chars: number) => void;
 }
 
 type MenuPage = 'main' | 'settings' | 'bookmarks' | 'chapters' | 'search';
@@ -27,15 +29,11 @@ type MenuPage = 'main' | 'settings' | 'bookmarks' | 'chapters' | 'search';
 export const ReaderMenu: React.FC<ReaderMenuProps> = ({
     isOpen,
     onClose,
-    fontSize,
-    onFontSizeChange,
-    isPaged,
-    onModeToggle,
+    config,
+    onConfigChange,
     content,
     currentPosition,
     onPositionChange,
-    charsPerPage,
-    onCharsPerPageChange,
 }) => {
     const [currentPage, setCurrentPage] = useState<MenuPage>('main');
 
@@ -77,13 +75,13 @@ export const ReaderMenu: React.FC<ReaderMenuProps> = ({
                     )}
                     {currentPage === 'settings' && (
                         <SettingsPage
-                            fontSize={fontSize}
-                            onFontSizeChange={onFontSizeChange}
-                            isPaged={isPaged}
-                            onModeToggle={onModeToggle}
+                            fontSize={config.fontSize}
+                            onFontSizeChange={(size) => onConfigChange({ fontSize: size })}
+                            isPaged={config.isPaged}
+                            onModeToggle={() => onConfigChange({ isPaged: !config.isPaged })}
                             onBack={() => setCurrentPage('main')}
-                            charsPerPage={charsPerPage}
-                            onCharsPerPageChange={onCharsPerPageChange}
+                            charsPerPage={config.charsPerPage}
+                            onCharsPerPageChange={(chars) => onConfigChange({ charsPerPage: chars })}
                         />
                     )}
                     {currentPage === 'bookmarks' && (
