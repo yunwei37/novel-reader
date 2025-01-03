@@ -28,6 +28,7 @@ export const Reader: React.FC<ReaderProps> = ({
   const [fontSize, setFontSize] = useState(defaultFontSize);
   const [isPaged, setIsPaged] = useState(defaultIsPaged);
   const [showMenu, setShowMenu] = useState(false);
+  const [charsPerPage, setCharsPerPage] = useState(500);
 
   return (
     <div className="h-full flex flex-col">
@@ -53,6 +54,7 @@ export const Reader: React.FC<ReaderProps> = ({
             currentOffset={currentOffset}
             onPositionChange={onPositionChange}
             fontSize={fontSize}
+            charsPerPage={charsPerPage}
           />
         ) : (
           <ScrollReader
@@ -75,6 +77,8 @@ export const Reader: React.FC<ReaderProps> = ({
         content={content}
         currentPosition={currentOffset}
         onPositionChange={onPositionChange}
+        charsPerPage={charsPerPage}
+        onCharsPerPageChange={setCharsPerPage}
       />
     </div>
   );

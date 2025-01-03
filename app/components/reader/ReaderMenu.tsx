@@ -17,7 +17,9 @@ interface ReaderMenuProps {
     // Content
     content: string;
     currentPosition: number;
-    onPositionChange: (position: number) => void;
+    onPositionChange: (offset: number) => void;
+    charsPerPage: number;
+    onCharsPerPageChange: (chars: number) => void;
 }
 
 type MenuPage = 'main' | 'settings' | 'bookmarks' | 'chapters' | 'search';
@@ -32,6 +34,8 @@ export const ReaderMenu: React.FC<ReaderMenuProps> = ({
     content,
     currentPosition,
     onPositionChange,
+    charsPerPage,
+    onCharsPerPageChange,
 }) => {
     const [currentPage, setCurrentPage] = useState<MenuPage>('main');
 
@@ -78,6 +82,8 @@ export const ReaderMenu: React.FC<ReaderMenuProps> = ({
                             isPaged={isPaged}
                             onModeToggle={onModeToggle}
                             onBack={() => setCurrentPage('main')}
+                            charsPerPage={charsPerPage}
+                            onCharsPerPageChange={onCharsPerPageChange}
                         />
                     )}
                     {currentPage === 'bookmarks' && (
