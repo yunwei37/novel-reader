@@ -16,6 +16,7 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const contentLength = useMemo(() => content?.length || 0, [content]);
+    const isUserScrolling = useRef(false);
 
     // Memoize progress calculation
     const progress = useMemo(() => {
@@ -23,7 +24,7 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
         return ((currentOffset / contentLength) * 100).toFixed(2);
     }, [currentOffset, contentLength]);
 
-    // Throttle scroll event handling to reduce calculations
+    // Throttle scroll event handling with increased threshold
     const handleScroll = useCallback(
         throttle(() => {
             if (!containerRef.current || !contentLength) return;
@@ -32,39 +33,70 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
             const progress = scrollTop / (scrollHeight - clientHeight);
             const newOffset = Math.round(progress * contentLength);
 
-            if (Math.abs(newOffset - currentOffset) > 50) {
+            // Increased threshold to 100 characters
+            if (Math.abs(newOffset - currentOffset) > 100) {
                 onPositionChange(newOffset);
             }
-        }, 100, { leading: true, trailing: true }),
+        }, 250, { leading: true, trailing: true }),
         [contentLength, currentOffset, onPositionChange]
     );
 
-    // Debounce scroll position updates
+    // Debounce scroll position updates with increased threshold
     const updateScrollPosition = useCallback(
         debounce(() => {
             if (!containerRef.current || !contentLength) return;
+
+            // Don't update if user is actively scrolling
+            if (isUserScrolling.current) return;
 
             const { scrollHeight, clientHeight } = containerRef.current;
             const progress = currentOffset / contentLength;
             const targetScroll = Math.round(progress * (scrollHeight - clientHeight));
 
-            if (Math.abs(containerRef.current.scrollTop - targetScroll) > 10) {
+            // Increased threshold to 50 pixels
+            if (Math.abs(containerRef.current.scrollTop - targetScroll) > 50) {
                 containerRef.current.scrollTo({
                     top: targetScroll,
                     behavior: 'smooth'
                 });
             }
-        }, 100),
+        }, 250),
         [currentOffset, contentLength]
     );
 
+    // Handle scroll start and end
+    const handleScrollStart = useCallback(() => {
+        isUserScrolling.current = true;
+    }, []);
+
+    const handleScrollEnd = useCallback(
+        debounce(() => {
+            isUserScrolling.current = false;
+        }, 150),
+        []
+    );
+
     useEffect(() => {
-        updateScrollPosition();
+        const container = containerRef.current;
+        if (container) {
+            container.addEventListener('touchstart', handleScrollStart);
+            container.addEventListener('mousedown', handleScrollStart);
+            container.addEventListener('touchend', handleScrollEnd);
+            container.addEventListener('mouseup', handleScrollEnd);
+        }
+
         return () => {
+            if (container) {
+                container.removeEventListener('touchstart', handleScrollStart);
+                container.removeEventListener('mousedown', handleScrollStart);
+                container.removeEventListener('touchend', handleScrollEnd);
+                container.removeEventListener('mouseup', handleScrollEnd);
+            }
             updateScrollPosition.cancel();
             handleScroll.cancel();
+            handleScrollEnd.cancel();
         };
-    }, [currentOffset, content, updateScrollPosition, handleScroll]);
+    }, [updateScrollPosition, handleScroll, handleScrollStart, handleScrollEnd]);
 
     return (
         <div className="h-full flex flex-col">
