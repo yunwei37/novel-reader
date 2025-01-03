@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import { debounce, throttle } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 interface ScrollReaderProps {
     content: string;
@@ -14,41 +15,56 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
     fontSize,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const contentLength = useMemo(() => content?.length || 0, [content]);
 
-    // Calculate progress with 2 decimal places
-    const getProgress = () => {
-        if (!content) return "0.00";
-        return ((currentOffset / content.length) * 100).toFixed(2);
-    };
+    // Memoize progress calculation
+    const progress = useMemo(() => {
+        if (!contentLength) return "0.00";
+        return ((currentOffset / contentLength) * 100).toFixed(2);
+    }, [currentOffset, contentLength]);
 
-    // Handle scroll events
-    const handleScroll = useCallback(() => {
-        if (!containerRef.current || !content) return;
+    // Throttle scroll event handling to reduce calculations
+    const handleScroll = useCallback(
+        throttle(() => {
+            if (!containerRef.current || !contentLength) return;
 
-        const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-        const progress = scrollTop / (scrollHeight - clientHeight);
-        const newOffset = Math.round(progress * content.length);
+            const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+            const progress = scrollTop / (scrollHeight - clientHeight);
+            const newOffset = Math.round(progress * contentLength);
 
-        if (Math.abs(newOffset - currentOffset) > 50) {
-            onPositionChange(newOffset);
-        }
-    }, [content, currentOffset, onPositionChange]);
+            if (Math.abs(newOffset - currentOffset) > 50) {
+                onPositionChange(newOffset);
+            }
+        }, 100, { leading: true, trailing: true }),
+        [contentLength, currentOffset, onPositionChange]
+    );
 
-    // Update scroll position when offset changes externally
+    // Debounce scroll position updates
+    const updateScrollPosition = useCallback(
+        debounce(() => {
+            if (!containerRef.current || !contentLength) return;
+
+            const { scrollHeight, clientHeight } = containerRef.current;
+            const progress = currentOffset / contentLength;
+            const targetScroll = Math.round(progress * (scrollHeight - clientHeight));
+
+            if (Math.abs(containerRef.current.scrollTop - targetScroll) > 10) {
+                containerRef.current.scrollTo({
+                    top: targetScroll,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100),
+        [currentOffset, contentLength]
+    );
+
     useEffect(() => {
-        if (!containerRef.current || !content) return;
-
-        const { scrollHeight, clientHeight } = containerRef.current;
-        const progress = currentOffset / content.length;
-        const targetScroll = Math.round(progress * (scrollHeight - clientHeight));
-
-        if (Math.abs(containerRef.current.scrollTop - targetScroll) > 10) {
-            containerRef.current.scrollTo({
-                top: targetScroll,
-                behavior: 'smooth'
-            });
-        }
-    }, [currentOffset, content]);
+        updateScrollPosition();
+        return () => {
+            updateScrollPosition.cancel();
+            handleScroll.cancel();
+        };
+    }, [currentOffset, content, updateScrollPosition, handleScroll]);
 
     return (
         <div className="h-full flex flex-col">
@@ -89,7 +105,7 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
                             Progress
                         </span>
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-200 tabular-nums">
-                            {getProgress()}%
+                            {progress}%
                         </span>
                     </div>
                 </div>
@@ -97,10 +113,10 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
                 <div className="flex-1 min-w-[100px] max-w-[12rem] h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden order-3 sm:order-2">
                     <div
                         className="h-full rounded-full transition-all duration-200 bg-gray-400 dark:bg-gray-500"
-                        style={{ width: `${(currentOffset / content.length) * 100}%` }}
+                        style={{ width: `${progress}%` }}
                     />
                 </div>
             </div>
         </div>
     );
-}; 
+};

@@ -10,8 +10,10 @@
     "generate-icons": "node scripts/generate-icons.js"
   },
   "dependencies": {
+    "@types/lodash": "^4.17.13",
     "@types/text-encoding": "^0.0.40",
     "jschardet": "^3.1.4",
+    "lodash": "^4.17.21",
     "next": "15.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

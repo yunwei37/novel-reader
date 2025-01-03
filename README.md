@@ -14,7 +14,7 @@ It works as `Progressive Web App (PWA)` or A `Single Page Application (SPA)`.
   - Bulk selection and deletion support
 
 - 📖 **Advanced Reading Experience**
-  - Two reading modes: Paged and Scroll
+  - Two reading modes: `Paged` and `Scroll`
   - Customizable font size
   - Progress tracking and automatic bookmark saving
   - Dark mode support with system preference detection
