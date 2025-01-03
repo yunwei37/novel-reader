@@ -4,14 +4,25 @@
 
 import { Chapter, TextPosition } from '../types';
 
+const DEFAULT_CHAPTER_PATTERN = /^(?:chapter|第.*[章节]|[第序]|卷|章|section|part|book|\d+|NO.*|CHAPTER)/i;
+
 /**
  * Detects chapters in the given text content
  * @param text The full text content to analyze
+ * @param customPattern Optional custom regex pattern for chapter detection
  * @returns Array of detected chapters
  */
-export const detectChapters = (text: string): Chapter[] => {
+export const detectChapters = (text: string, customPattern?: string): Chapter[] => {
   const lines = text.split('\n');
-  const chapterPattern = /^(?:chapter|第.*[章节]|[第序]|卷|章|section|part|book|\d+|NO.*|CHAPTER)/i;
+  let chapterPattern: RegExp;
+
+  try {
+    chapterPattern = customPattern ? new RegExp(customPattern, 'i') : DEFAULT_CHAPTER_PATTERN;
+  } catch (e) {
+    console.error('Invalid regex pattern:', e);
+    chapterPattern = DEFAULT_CHAPTER_PATTERN;
+  }
+
   const chapters: Chapter[] = [];
   let currentChapterContent = '';
   let currentChapterTitle = '';

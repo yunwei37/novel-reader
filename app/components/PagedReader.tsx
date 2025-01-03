@@ -188,4 +188,4 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
             </div>
         </div>
     );
-}; 
+};

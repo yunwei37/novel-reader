@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { detectChapters } from '../../lib/reader';
+import { detectChapters, loadFromStorage, saveToStorage } from '../../lib/reader';
 import { Chapter } from '../../types';
 
 interface ChaptersPageProps {
@@ -16,11 +16,16 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
     onBack,
 }) => {
     const [chapters, setChapters] = useState<Chapter[]>([]);
+    const [chapterPattern, setChapterPattern] = useState(() =>
+        loadFromStorage<string>('chapterPattern', '')
+    );
+    const [isEditing, setIsEditing] = useState(false);
+    const [editPattern, setEditPattern] = useState(chapterPattern);
 
-    // Detect chapters when content changes
+    // Detect chapters when content or pattern changes
     useEffect(() => {
         if (content) {
-            const detectedChapters = detectChapters(content);
+            const detectedChapters = detectChapters(content, chapterPattern);
             console.log('Detected chapters:', detectedChapters.map(ch => ({
                 title: ch.title,
                 startIndex: ch.startIndex,
@@ -28,11 +33,17 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
             })));
             setChapters(detectedChapters);
         }
-    }, [content]);
+    }, [content, chapterPattern]);
 
     const handleChapterSelect = (startIndex: number) => {
         console.log('Jumping to chapter at position:', startIndex);
         onPositionChange(startIndex);
+    };
+
+    const handlePatternSave = () => {
+        setChapterPattern(editPattern);
+        saveToStorage('chapterPattern', editPattern);
+        setIsEditing(false);
     };
 
     return (
@@ -47,7 +58,41 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
                 <span>Back</span>
             </button>
 
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Chapters</h2>
+            <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Chapters</h2>
+                <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-900 dark:text-gray-100"
+                >
+                    {isEditing ? 'Cancel' : 'Set Pattern'}
+                </button>
+            </div>
+
+            {isEditing && (
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Chapter Pattern (Regular Expression)
+                    </label>
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={editPattern}
+                            onChange={(e) => setEditPattern(e.target.value)}
+                            placeholder="Enter regex pattern..."
+                            className="flex-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button
+                            onClick={handlePatternSave}
+                            className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white"
+                        >
+                            Save
+                        </button>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Leave empty to use default pattern. Example: ^Chapter \d+
+                    </p>
+                </div>
+            )}
 
             <div className="space-y-2">
                 {chapters.map((chapter, index) => (
@@ -55,12 +100,12 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
                         key={index}
                         onClick={() => handleChapterSelect(chapter.startIndex)}
                         className={`
-              w-full p-3 rounded-lg text-left transition-colors
-              ${chapter.startIndex === currentPosition
+                            w-full p-3 rounded-lg text-left transition-colors
+                            ${chapter.startIndex === currentPosition
                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                 : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100'
                             }
-            `}
+                        `}
                     >
                         <span className="block text-sm font-medium truncate">
                             {chapter.title}
