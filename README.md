@@ -40,11 +40,6 @@ It works as `Progressive Web App (PWA)` or A `Single Page Application (SPA)`.
 ## Getting Started
 
 1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/novel-reader.git
-cd novel-reader
-```
-
 2. Install dependencies:
 ```bash
 npm install

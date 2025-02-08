@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'standalone',
+    output: 'export',
+    images: {
+        unoptimized: true,
+    },
+    basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
     headers: async () => {
         return [
             {
