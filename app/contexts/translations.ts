@@ -104,6 +104,11 @@ export const translations: Translations = {
     'add.confirmRedownload': 'This novel already exists. Do you want to download it again?',
     'add.confirmImportRepo': 'This novel is from a new repository. Would you like to import the repository data as well?',
     'add.repoImported': 'Repository successfully imported!',
+    'discover.sortBy': 'Sort by',
+    'discover.sortOptions.relevance': 'Relevance',
+    'discover.sortOptions.newest': 'Newest',
+    'discover.sortOptions.popular': 'Popular',
+    'discover.sortOptions.rating': 'Rating',
   },
   zh: {
     'common.back': '返回',
@@ -208,5 +213,10 @@ export const translations: Translations = {
     'add.confirmRedownload': '该小说已存在。是否重新下载？',
     'add.confirmImportRepo': '该小说来自新的书源。是否同时导入书源数据？',
     'add.repoImported': '书源导入成功！',
+    'discover.sortBy': '排序方式',
+    'discover.sortOptions.relevance': '相关度',
+    'discover.sortOptions.newest': '最新',
+    'discover.sortOptions.popular': '热门',
+    'discover.sortOptions.rating': '评分',
   },
 }; 

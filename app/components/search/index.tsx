@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { SearchBar } from './SearchBar';
 import { SearchResults } from './SearchResults';
 import { LocalRepo } from '../../types/repo';
-import { searchNovels, SearchResult } from '../../lib/search';
+import { searchNovels, SearchResult, sortSearchResults } from '../../lib/search';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { RankOption } from './SearchResults';
 
 interface SearchViewProps {
   repositories: LocalRepo[];
@@ -16,6 +17,7 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState('');
+  const [currentRank, setCurrentRank] = useState<RankOption>('relevance');
 
   const handleSearch = async (searchQuery: string) => {
     setQuery(searchQuery);
@@ -31,7 +33,8 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
     try {
       setTimeout(() => {
         const searchResults = searchNovels(repositories, searchQuery);
-        setResults(searchResults);
+        const sortedResults = sortSearchResults(searchResults, currentRank);
+        setResults(sortedResults);
       }, 0);
     } catch (error) {
       console.error('Search error:', error);
@@ -40,6 +43,11 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
       setIsSearching(false);
       onSearching(false);
     }
+  };
+
+  const handleRankChange = (rank: RankOption) => {
+    setCurrentRank(rank);
+    setResults(sortedResults => sortSearchResults(sortedResults, rank));
   };
 
   return (
@@ -52,7 +60,11 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="max-w-4xl mx-auto px-4">
           {results.length > 0 ? (
-            <SearchResults results={results} />
+            <SearchResults 
+              results={results} 
+              defaultRank={currentRank}
+              onRankChange={handleRankChange}
+            />
           ) : query ? (
             <div className="py-8 text-center text-gray-500 dark:text-gray-400">
               {t('discover.noResults')}
