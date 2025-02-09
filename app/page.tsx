@@ -9,6 +9,7 @@ import { SettingsView } from './components/SettingsView';
 import { NovelStorage } from './lib/storage';
 import { Novel } from './types';
 import { useTranslation } from './contexts/LanguageContext';
+import { LoadingDialog } from './components/LoadingDialog';
 
 type View = 'library' | 'reader' | 'settings' | 'add';
 
@@ -19,6 +20,8 @@ export default function Home() {
   const [content, setContent] = useState<string>('');
   const [currentOffset, setCurrentOffset] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
 
   const handleNovelSelect = useCallback(async (novel: Novel) => {
     const content = await NovelStorage.getNovelContent(novel.id);
@@ -31,11 +34,28 @@ export default function Home() {
   // Handle URL query parameters for auto-import
   useEffect(() => {
     const handleUrlImport = async (url: string) => {
+      // Check if novel with this URL already exists
+      const existingNovel = await NovelStorage.findNovelByUrl(url);
+      
+      if (existingNovel) {
+        const shouldDownloadAgain = window.confirm(t('add.confirmRedownload'));
+        if (!shouldDownloadAgain) {
+          handleNovelSelect(existingNovel);
+          return;
+        }
+      }
+
+      setIsLoading(true);
+      setLoadingMessage(t('add.loadingUrl'));
+      
       try {
         const novel = await NovelStorage.importFromUrl(url);
         handleNovelSelect(novel);
       } catch (err) {
         console.error('Failed to import novel from URL:', err);
+      } finally {
+        setIsLoading(false);
+        setLoadingMessage('');
       }
     };
 
@@ -45,7 +65,7 @@ export default function Home() {
       handleUrlImport(addUrl);
       window.history.replaceState({}, '', window.location.pathname);
     }
-  }, [handleNovelSelect]);
+  }, [handleNovelSelect, t]);
 
   // Initialize dark mode from localStorage or system preference
   useEffect(() => {
@@ -156,6 +176,14 @@ export default function Home() {
                 handleNovelSelect(novel);
                 setCurrentView('reader');
               }}
+            />
+          )}
+
+          {/* Loading Dialog */}
+          {isLoading && (
+            <LoadingDialog
+              message={loadingMessage}
+              onCancel={() => setIsLoading(false)}
             />
           )}
         </div>

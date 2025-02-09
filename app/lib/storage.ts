@@ -210,4 +210,9 @@ export class NovelStorage {
         await this.saveNovel(novel, content);
         return novel;
     }
+
+    static async findNovelByUrl(url: string): Promise<Novel | undefined> {
+        const novels = await this.getAllNovels();
+        return novels.find(novel => novel.url === url);
+    }
 }

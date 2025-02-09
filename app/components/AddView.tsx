@@ -43,27 +43,9 @@ export const AddView: React.FC<AddViewProps> = ({
         const url = urlInputRef.current?.value;
         if (!url) return;
 
-        setIsLoading(true);
-        setLoadingMessage(t('add.loadingUrl'));
-        setError(null);
-
-        abortControllerRef.current = new AbortController();
-
-        try {
-            const novel = await NovelStorage.importFromUrl(url, abortControllerRef.current.signal);
-            onImportComplete(novel);
-        } catch (err) {
-            if (err instanceof Error && err.name === 'AbortError') {
-                setError(t('add.error.cancelled'));
-            } else {
-                setError(t('add.error.url'));
-                console.error('Import error:', err);
-            }
-        } finally {
-            setIsLoading(false);
-            setLoadingMessage('');
-            abortControllerRef.current = null;
-        }
+        // Redirect to root with the URL as a query parameter
+        const encodedUrl = encodeURIComponent(url);
+        window.location.href = `/?add=${encodedUrl}`;
     };
 
     const handleCancel = () => {
