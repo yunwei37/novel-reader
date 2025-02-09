@@ -2,7 +2,7 @@ import { NovelMeta } from '../../types/repo';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useTranslation } from '../../contexts/LanguageContext';
-import { DownloadIcon } from '../icons';
+import { DownloadIcon, LinkIcon } from '../icons';
 
 interface NovelCardProps {
   novel: NovelMeta;
@@ -56,6 +56,19 @@ export function NovelCard({ novel }: NovelCardProps) {
               {novel.size && <span>{formatSize(novel.size)}</span>}
             </div>
             <div className="flex items-center space-x-2">
+              {novel.pageUrl && (
+                <a
+                  href={novel.pageUrl}
+                  className="p-1.5 rounded-full 
+                    hover:bg-gray-100 dark:hover:bg-gray-700 
+                    text-gray-600 dark:text-gray-300
+                    hover:text-gray-900 dark:hover:text-gray-100
+                    cursor-pointer"
+                  title={t('discover.novel.visit')}
+                >
+                  <LinkIcon />
+                </a>
+              )}
               {novel.downloadUrl && (
                 <a
                   onClick={(e) => {
@@ -99,21 +112,25 @@ export function NovelCard({ novel }: NovelCardProps) {
             <p>{t('discover.novel.lastUpdated')}: {novel.lastUpdated}</p>
             {novel.region && <p>{t('discover.novel.region')}: {novel.region}</p>}
           </div>
-          {novel.pageUrl && (
+          <div className="flex gap-3 mt-4">
+            {novel.pageUrl && (
+              <a 
+                href={novel.pageUrl} 
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 
+                  dark:hover:text-blue-300 font-medium transition-colors duration-200"
+              >
+                {t('discover.novel.visit')}
+              </a>
+            )}
             <a 
-              href={novel.pageUrl} 
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+              href={`/?add=${encodeURIComponent(novel.downloadUrl!)}`} 
+              aria-label={t('discover.novel.addToLibrary')}
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 
+                dark:hover:text-blue-300 font-medium transition-colors duration-200"
             >
-              {t('discover.novel.visit')}
+              {t('discover.novel.addToLibrary')}
             </a>
-          )}
-          <a 
-            href={`/?add=${encodeURIComponent(novel.downloadUrl!)}`} 
-            aria-label={t('discover.novel.addToLibrary')}
-            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 block mt-2"
-          >
-            {t('discover.novel.addToLibrary')}
-          </a>
+          </div>
         </div>
       )}
       
