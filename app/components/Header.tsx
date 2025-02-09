@@ -30,13 +30,13 @@ export const Header: React.FC<HeaderProps> = ({
   const { t } = useTranslation();
 
   return (
-    <header className="flex justify-between items-center h-14 px-4 border-b border-gray-200 dark:border-gray-700">
-      <div className="flex items-center gap-2">
+    <header className="flex h-14 px-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
         {onBackClick && (
           <button
             onClick={onBackClick}
             className="
-              p-2 rounded-lg transition-colors
+              p-2 rounded-lg transition-colors flex-shrink-0
               text-gray-600 dark:text-gray-300
               hover:bg-gray-100 dark:hover:bg-gray-700
             "
@@ -47,12 +47,12 @@ export const Header: React.FC<HeaderProps> = ({
             </svg>
           </button>
         )}
-        <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
+        <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 truncate min-w-0">
           {title}
         </h1>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 ml-4 flex-shrink-0">
         {buttons.map((button, index) => (
           <button
             key={index}
