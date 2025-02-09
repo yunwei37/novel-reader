@@ -3,6 +3,15 @@ import { TextDecoder } from 'text-encoding';
 import { Novel } from '../types';
 import { LocalRepo } from '../types/repo';
 
+function generateUUID(): string {
+    // Fallback UUID generator
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 export class NovelStorage {
     private static readonly DB_NAME = 'NovelDB';
     private static readonly DB_VERSION = 1;
@@ -172,7 +181,7 @@ export class NovelStorage {
                     const content = await this.detectAndDecodeText(buffer);
 
                     const novel: Novel = {
-                        id: crypto.randomUUID(),
+                        id: generateUUID(),
                         title: file.name.replace(/\.[^/.]+$/, ''), // Remove file extension
                         source: 'local',
                         filepath: file.name,
@@ -204,7 +213,7 @@ export class NovelStorage {
         const encodedFilename = url.split('/').pop() || 'Unknown';
         const decodedFilename = decodeURIComponent(encodedFilename);
         const novel: Novel = {
-            id: crypto.randomUUID(),
+            id: generateUUID(),
             title: decodedFilename.replace(/\.[^/.]+$/, ''),
             source: 'url',
             url,

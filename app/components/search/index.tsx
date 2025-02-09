@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { SearchBar } from './SearchBar';
 import { SearchResults } from './SearchResults';
 import { LocalRepo } from '../../types/repo';
@@ -20,29 +20,40 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
   const [currentRank, setCurrentRank] = useState<RankOption>('relevance');
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Handle search for a specific repository
+  const searchRepository = useCallback(async (repo: LocalRepo) => {
+    setIsSearching(true);
+    onSearching(true);
+
+    try {
+      const searchResults = searchNovels([repo], '', true);
+      const sortedResults = sortSearchResults(searchResults, currentRank);
+      setResults(sortedResults);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error('Failed to search repository:', error);
+      setResults([]);
+    } finally {
+      setIsSearching(false);
+      onSearching(false);
+    }
+  }, [currentRank, onSearching]);
+
+  // Handle URL parameters
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const repoUrl = params.get('repo');
+    const repoUrl = params.get('search');
     
     if (repoUrl) {
       const repo = repositories.find(r => r.url === repoUrl);
       if (repo) {
-        setIsSearching(true);
-        onSearching(true);
-        
-        setTimeout(() => {
-          const searchResults = searchNovels([repo], '', true);
-          const sortedResults = sortSearchResults(searchResults, currentRank);
-          setResults(sortedResults);
-          setCurrentPage(1); // Reset to first page when showing new results
-          setIsSearching(false);
-          onSearching(false);
-        }, 0);
+        searchRepository(repo);
       }
     }
-  }, [repositories, currentRank, onSearching]);
+  }, [repositories, searchRepository]);
 
-  const handleSearch = async (searchQuery: string) => {
+  // Handle manual search
+  const handleSearch = useCallback(async (searchQuery: string) => {
     setQuery(searchQuery);
     if (!searchQuery.trim()) {
       setResults([]);
@@ -54,12 +65,10 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
     onSearching(true);
     
     try {
-      setTimeout(() => {
-        const searchResults = searchNovels(repositories, searchQuery);
-        const sortedResults = sortSearchResults(searchResults, currentRank);
-        setResults(sortedResults);
-        setCurrentPage(1); // Reset to first page when searching
-      }, 0);
+      const searchResults = searchNovels(repositories, searchQuery);
+      const sortedResults = sortSearchResults(searchResults, currentRank);
+      setResults(sortedResults);
+      setCurrentPage(1);
     } catch (error) {
       console.error('Search error:', error);
       setResults([]);
@@ -67,18 +76,19 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
       setIsSearching(false);
       onSearching(false);
     }
-  };
+  }, [repositories, currentRank, onSearching]);
 
-  const handleRankChange = (rank: RankOption) => {
+  // Handle rank change
+  const handleRankChange = useCallback((rank: RankOption) => {
     setCurrentRank(rank);
-    setResults(sortedResults => sortSearchResults(sortedResults, rank));
-  };
+    setResults(prevResults => sortSearchResults(prevResults, rank));
+  }, []);
 
-  const handlePageChange = (page: number) => {
+  // Handle page change
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-    // Scroll to top when changing pages
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
   return (
     <div className={`${className} flex flex-col h-full`}>

@@ -122,7 +122,6 @@ export function DiscoverView({ onViewChange }: DiscoverViewProps) {
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-8">
           <ImportSection onImportComplete={handleImportComplete} />
 
-
           {repositories.length > 0 && (
             <>
               {/* <section>
@@ -154,17 +153,8 @@ export function DiscoverView({ onViewChange }: DiscoverViewProps) {
             onAddClick={() => setShowAddRepo(true)}
             onSync={handleSync}
             onRemove={handleRemoveRepo}
+            onViewChange={onViewChange}
           />
-
-          {repositories.map(repo => (
-            <RepoCard
-              key={repo.url}
-              repo={repo}
-              onSync={handleSync}
-              onRemove={handleRemoveRepo}
-              onViewChange={onViewChange}
-            />
-          ))}
         </div>
       </div>
 

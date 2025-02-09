@@ -17,7 +17,7 @@ export function RepoCard({ repo, onSync, onRemove, onViewChange }: RepoCardProps
 
   const handleViewAll = () => {
     onViewChange?.('search');
-    router.push(`/?view=search&repo=${encodeURIComponent(repo.url)}`);
+    router.push(`/?search=${encodeURIComponent(repo.url)}`);
   };
 
   return (

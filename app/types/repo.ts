@@ -52,4 +52,9 @@ export interface LocalRepo {
   meta: RepoMeta;
   lastSync: string;
   index?: RepoIndex;
+}
+
+export interface SearchResult extends NovelMeta {
+  repoUrl: string;
+  score: number;
 } 

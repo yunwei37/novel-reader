@@ -8,6 +8,7 @@ interface RepositorySectionProps {
   onAddClick: () => void;
   onSync: (url: string) => void;
   onRemove: (url: string) => void;
+  onViewChange?: (view: View) => void;
 }
 
 export function RepositorySection({
@@ -15,6 +16,7 @@ export function RepositorySection({
   onAddClick,
   onSync,
   onRemove,
+  onViewChange,
 }: RepositorySectionProps) {
   const { t } = useTranslation();
 
@@ -40,6 +42,7 @@ export function RepositorySection({
             repo={repo}
             onSync={onSync}
             onRemove={onRemove}
+            onViewChange={onViewChange}
           />
         ))}
       </div>

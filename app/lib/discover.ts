@@ -90,41 +90,33 @@ export async function syncRepository(repo: LocalRepo): Promise<RepoIndex> {
 }
 
 // Search and filter functions
-export function searchNovels(repositories: LocalRepo[], query: string): NovelMeta[] {
+export function searchNovels(repositories: LocalRepo[], query: string, showAll: boolean = false): SearchResult[] {
   const searchTerms = query.toLowerCase().split(/\s+/);
-  
-  const results: NovelMeta[] = [];
+  const results: SearchResult[] = [];
+  const seenNovelIds = new Set<string>();  // Track unique novels
   
   for (const repo of repositories) {
-    // Add null check for index
     if (!repo.index?.novels) continue;
     
     const novels = repo.index.novels;
     
     for (const novel of novels) {
-      // Check if all search terms match either title or author
-      const matchesAllTerms = searchTerms.every(term => {
+      // Skip if we've already seen this novel (using a combination of title and author as unique identifier)
+      const novelId = `${novel.title}|${novel.author}`;
+      if (seenNovelIds.has(novelId)) continue;
+
+      // If showAll is true or if the novel matches search terms
+      if (showAll || searchTerms.every(term => {
         const title = novel.title.toLowerCase();
         const author = novel.author?.toLowerCase() || '';
-        return title.includes(term) || author.includes(term);
-      });
-
-      if (matchesAllTerms) {
-        // Create a new object without the repoUrl property
+        const description = novel.description?.toLowerCase() || '';
+        return title.includes(term) || author.includes(term) || description.includes(term);
+      })) {
+        seenNovelIds.add(novelId);
         results.push({
-          id: novel.id,
-          title: novel.title,
-          author: novel.author,
-          description: novel.description,
-          cover: novel.cover,
-          tags: novel.tags,
-          categories: novel.categories,
-          chapters: novel.chapters,
-          lastUpdated: novel.lastUpdated,
-          date: novel.date,
-          pageUrl: novel.pageUrl,
-          size: novel.size,
-          region: novel.region
+          ...novel,
+          repoUrl: repo.url,
+          score: calculateRelevanceScore(novel, query)
         });
       }
     }
@@ -134,6 +126,21 @@ export function searchNovels(repositories: LocalRepo[], query: string): NovelMet
   results.sort((a, b) => a.title.localeCompare(b.title));
   
   return results;
+}
+
+function calculateRelevanceScore(novel: NovelMeta, query: string): number {
+  if (!query) return 1;
+  
+  const searchTerms = query.toLowerCase().split(/\s+/);
+  let score = 0;
+  
+  searchTerms.forEach(term => {
+    if (novel.title.toLowerCase().includes(term)) score += 3;
+    if (novel.author?.toLowerCase().includes(term)) score += 2;
+    if (novel.description?.toLowerCase().includes(term)) score += 1;
+  });
+  
+  return score;
 }
 
 // Ranking and sorting functions

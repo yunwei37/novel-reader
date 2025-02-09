@@ -44,10 +44,10 @@ export default function Home() {
       const params = new URLSearchParams(window.location.search);
       const addUrl = params.get('add');
       const addRepos = params.get('repos');
-      const view = params.get('view');
+      const searchRepo = params.get('search');
 
-      if (view) {
-        setCurrentView(view as View);
+      if (searchRepo) {
+        setCurrentView('search');
       }
 
       if (addRepos) {
