@@ -9,6 +9,8 @@ import React, { useState } from 'react';
 import { PagedReader } from './PagedReader';
 import { ScrollReader } from './ScrollReader';
 import { ReaderMenu } from './reader/ReaderMenu';
+import { TTSReader } from './TTSReader';
+import { SoundIcon } from './icons';
 
 interface ReaderConfig {
   fontSize: number;
@@ -23,6 +25,8 @@ interface ReaderProps {
   defaultConfig?: Partial<ReaderConfig>;
   showMenu?: boolean;
   onMenuClose?: () => void;
+  isTTSMode?: boolean;
+  onTTSToggle?: () => void;
 }
 
 const DEFAULT_CONFIG: ReaderConfig = {
@@ -38,6 +42,8 @@ export const Reader: React.FC<ReaderProps> = ({
   defaultConfig = {},
   showMenu = false,
   onMenuClose = () => {},
+  isTTSMode = false,
+  onTTSToggle = () => {},
 }) => {
   const [config, setConfig] = useState<ReaderConfig>({
     ...DEFAULT_CONFIG,
@@ -52,7 +58,14 @@ export const Reader: React.FC<ReaderProps> = ({
     <div className="h-full flex flex-col">
       {/* Reader Content */}
       <div className="flex-1 min-h-0">
-        {config.isPaged ? (
+        {isTTSMode ? (
+          <TTSReader
+            content={content}
+            currentOffset={currentOffset}
+            onPositionChange={onPositionChange}
+            fontSize={config.fontSize}
+          />
+        ) : config.isPaged ? (
           <PagedReader
             content={content}
             currentOffset={currentOffset}

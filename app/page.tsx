@@ -15,6 +15,7 @@ import { DiscoverView } from './components/discover';
 import { SearchView } from './components/search';
 import { LocalRepo } from './types/repo';
 import { handleUrlImport, handleRepoImport } from './lib/url-handlers';
+import { SoundIcon } from './components/icons';
 
 type View = 'library' | 'reader' | 'settings' | 'discover' | 'search';
 
@@ -29,6 +30,7 @@ export default function Home() {
   const [loadingMessage, setLoadingMessage] = useState('');
   const [repositories, setRepositories] = useState<LocalRepo[]>([]);
   const [showReaderMenu, setShowReaderMenu] = useState(false);
+  const [isTTSMode, setIsTTSMode] = useState(false);
 
   const handleNovelSelect = useCallback(async (novel: Novel) => {
     const content = await NovelStorage.getNovelContent(novel.id);
@@ -171,15 +173,22 @@ export default function Home() {
   // Define header buttons based on current view
   const getHeaderButtons = (): HeaderButton[] => {
     if (currentView === 'reader') {
-      return [{
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        ),
-        onClick: () => setShowReaderMenu(true),
-        ariaLabel: 'Open reader menu'
-      }];
+      return [
+        {
+          icon: <SoundIcon />,
+          onClick: () => setIsTTSMode(prev => !prev),
+          ariaLabel: isTTSMode ? 'Disable text-to-speech' : 'Enable text-to-speech'
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          ),
+          onClick: () => setShowReaderMenu(true),
+          ariaLabel: 'Open reader menu'
+        }
+      ];
     }
     
     if (currentView === 'library') {
@@ -224,6 +233,8 @@ export default function Home() {
                   }}
                   showMenu={showReaderMenu}
                   onMenuClose={() => setShowReaderMenu(false)}
+                  isTTSMode={isTTSMode}
+                  onTTSToggle={() => setIsTTSMode(prev => !prev)}
                 />
               </div>
             </div>
