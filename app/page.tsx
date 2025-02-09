@@ -177,7 +177,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <div className="h-[100dvh] w-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
       <div className="h-full flex flex-col">
         {/* Header */}
         <Header
