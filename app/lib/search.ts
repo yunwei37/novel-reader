@@ -5,34 +5,29 @@ export interface SearchResult extends NovelMeta {
   score: number;
 }
 
-export function searchNovels(repositories: LocalRepo[], query: string): SearchResult[] {
-  const searchTerms = query.toLowerCase().split(/\s+/);
+export function searchNovels(
+  repositories: LocalRepo[], 
+  query: string,
+  showAll: boolean = false
+): SearchResult[] {
   const results: SearchResult[] = [];
-  
+
   for (const repo of repositories) {
     if (!repo.index?.novels) continue;
     
     for (const novel of repo.index.novels) {
-      // Check if all search terms match either title or author
-      const matchesAllTerms = searchTerms.every(term => {
-        const title = novel.title.toLowerCase();
-        const author = (novel.author || '').toLowerCase();
-        return title.includes(term) || author.includes(term);
-      });
-
-      if (matchesAllTerms) {
+      if (showAll || 
+          novel.title.toLowerCase().includes(query.toLowerCase()) ||
+          novel.description?.toLowerCase().includes(query.toLowerCase())) {
         results.push({
           ...novel,
           repoUrl: repo.url,
-          score: 1 // Placeholder score, actual calculation needed
+          score: calculateRelevanceScore(novel, query)
         });
       }
     }
   }
 
-  // Sort by title
-  results.sort((a, b) => a.title.localeCompare(b.title));
-  
   return results;
 }
 
@@ -55,4 +50,34 @@ export function sortSearchResults(results: SearchResult[], rankBy: 'relevance' |
         return 0;
     }
   });
+}
+
+function calculateRelevanceScore(novel: NovelMeta, query: string): number {
+  if (!query) return 1; // If showing all, every result has same relevance
+  
+  const searchTerms = query.toLowerCase().split(/\s+/);
+  let score = 0;
+  
+  // Check title matches (highest weight)
+  searchTerms.forEach(term => {
+    if (novel.title.toLowerCase().includes(term)) {
+      score += 3;
+    }
+  });
+  
+  // Check description matches (medium weight)
+  searchTerms.forEach(term => {
+    if (novel.description?.toLowerCase().includes(term)) {
+      score += 1;
+    }
+  });
+  
+  // Check author matches (high weight)
+  searchTerms.forEach(term => {
+    if (novel.author?.toLowerCase().includes(term)) {
+      score += 2;
+    }
+  });
+  
+  return score;
 } 

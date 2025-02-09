@@ -40,32 +40,49 @@ export default function Home() {
 
   // Handle URL query parameters for auto-import and repo adding
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const addUrl = params.get('add');
-    const addRepos = params.get('repos');
+    const handleParams = () => {
+      const params = new URLSearchParams(window.location.search);
+      const addUrl = params.get('add');
+      const addRepos = params.get('repos');
+      const view = params.get('view');
 
-    if (addRepos) {
-      const repoUrls = addRepos.split(',').filter(url => url.trim());
-      if (repoUrls.length > 0) {
-        handleRepoImport(repoUrls, {
-          repositories,
+      if (view) {
+        setCurrentView(view as View);
+      }
+
+      if (addRepos) {
+        const repoUrls = addRepos.split(',').filter(url => url.trim());
+        if (repoUrls.length > 0) {
+          handleRepoImport(repoUrls, {
+            repositories,
+            onLoading: setIsLoading,
+            onLoadingMessage: setLoadingMessage,
+            onRepositoriesChange: setRepositories,
+            onViewChange: setCurrentView,
+            t
+          });
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      } else if (addUrl) {
+        handleUrlImport(addUrl, {
           onLoading: setIsLoading,
           onLoadingMessage: setLoadingMessage,
-          onRepositoriesChange: setRepositories,
-          onViewChange: setCurrentView,
+          onNovelSelect: handleNovelSelect,
           t
         });
         window.history.replaceState({}, '', window.location.pathname);
       }
-    } else if (addUrl) {
-      handleUrlImport(addUrl, {
-        onLoading: setIsLoading,
-        onLoadingMessage: setLoadingMessage,
-        onNovelSelect: handleNovelSelect,
-        t
-      });
-      window.history.replaceState({}, '', window.location.pathname);
-    }
+    };
+
+    // Listen for route changes
+    window.addEventListener('popstate', handleParams);
+    
+    // Initial check
+    handleParams();
+
+    return () => {
+      window.removeEventListener('popstate', handleParams);
+    };
   }, [handleNovelSelect, repositories, t]);
 
   // Initialize dark mode from localStorage or system preference
@@ -219,7 +236,9 @@ export default function Home() {
             />
           )}
 
-          {currentView === 'discover' && <DiscoverView />}
+          {currentView === 'discover' && (
+            <DiscoverView onViewChange={setCurrentView} />
+          )}
           
           {currentView === 'search' && (
             <div className="h-full">

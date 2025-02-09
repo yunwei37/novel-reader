@@ -7,15 +7,19 @@ import { RepositorySection } from './RepositorySection';
 import {
   fetchRepoIndex,
   syncRepository,
-  getPopularNovels,
   getLatestNovels
 } from '../../lib/discover';
 import { AddRepositoryDialog } from './AddRepositoryDialog';
 import { useRouter } from 'next/navigation';
 import { NovelStorage } from '../../lib/storage';
 import type { Novel } from '../../types';
+import { RepoCard } from './RepoCard';
 
-export function DiscoverView() {
+interface DiscoverViewProps {
+  onViewChange: (view: string) => void;
+}
+
+export function DiscoverView({ onViewChange }: DiscoverViewProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const [repositories, setRepositories] = useState<LocalRepo[]>([]);
@@ -121,7 +125,7 @@ export function DiscoverView() {
 
           {repositories.length > 0 && (
             <>
-              <section>
+              {/* <section>
                 <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">
                   {t('discover.popular')}
                 </h2>
@@ -130,7 +134,7 @@ export function DiscoverView() {
                     <NovelCard key={novel.id} novel={novel} />
                   ))}
                 </div>
-              </section>
+              </section> */}
 
               <section>
                 <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">
@@ -151,6 +155,16 @@ export function DiscoverView() {
             onSync={handleSync}
             onRemove={handleRemoveRepo}
           />
+
+          {repositories.map(repo => (
+            <RepoCard
+              key={repo.url}
+              repo={repo}
+              onSync={handleSync}
+              onRemove={handleRemoveRepo}
+              onViewChange={onViewChange}
+            />
+          ))}
         </div>
       </div>
 

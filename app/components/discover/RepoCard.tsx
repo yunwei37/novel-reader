@@ -1,15 +1,23 @@
 import { useTranslation } from '../../contexts/LanguageContext';
 import { RefreshIcon, TrashIcon } from '../icons';
 import { LocalRepo } from '../../types/repo';
+import { useRouter } from 'next/navigation';
 
 interface RepoCardProps {
   repo: LocalRepo;
   onSync: (url: string) => void;
   onRemove: (url: string) => void;
+  onViewChange?: (view: string) => void;
 }
 
-export function RepoCard({ repo, onSync, onRemove }: RepoCardProps) {
+export function RepoCard({ repo, onSync, onRemove, onViewChange }: RepoCardProps) {
   const { t } = useTranslation();
+  const router = useRouter();
+
+  const handleViewAll = () => {
+    onViewChange?.('search');
+    router.push(`/?view=search&repo=${encodeURIComponent(repo.url)}`);
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
@@ -29,6 +37,12 @@ export function RepoCard({ repo, onSync, onRemove }: RepoCardProps) {
           </p>
         </div>
         <div className="flex space-x-2 ml-4">
+          <button
+            onClick={handleViewAll}
+            className="p-2 text-blue-500 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+          >
+            {t('discover.viewAll')}
+          </button>
           <button
             onClick={() => onSync(repo.url)}
             className="p-2 text-blue-500 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"

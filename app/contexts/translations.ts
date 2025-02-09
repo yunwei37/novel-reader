@@ -109,6 +109,10 @@ export const translations: Translations = {
     'discover.sortOptions.newest': 'Newest',
     'discover.sortOptions.popular': 'Popular',
     'discover.sortOptions.rating': 'Rating',
+    'discover.viewAll': 'View All',
+    'common.previous': 'Previous',
+    'common.next': 'Next',
+    'common.pageCount': 'Page {current} of {total}',
   },
   zh: {
     'common.back': '返回',
@@ -218,5 +222,9 @@ export const translations: Translations = {
     'discover.sortOptions.newest': '最新',
     'discover.sortOptions.popular': '热门',
     'discover.sortOptions.rating': '评分',
+    'discover.viewAll': '查看全部',
+    'common.previous': '上一页',
+    'common.next': '下一页',
+    'common.pageCount': '第 {current} 页，共 {total} 页',
   },
 }; 

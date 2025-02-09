@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SearchBar } from './SearchBar';
 import { SearchResults } from './SearchResults';
 import { LocalRepo } from '../../types/repo';
@@ -18,6 +18,29 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
   const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState('');
   const [currentRank, setCurrentRank] = useState<RankOption>('relevance');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const repoUrl = params.get('repo');
+    
+    if (repoUrl) {
+      const repo = repositories.find(r => r.url === repoUrl);
+      if (repo) {
+        setIsSearching(true);
+        onSearching(true);
+        
+        setTimeout(() => {
+          const searchResults = searchNovels([repo], '', true);
+          const sortedResults = sortSearchResults(searchResults, currentRank);
+          setResults(sortedResults);
+          setCurrentPage(1); // Reset to first page when showing new results
+          setIsSearching(false);
+          onSearching(false);
+        }, 0);
+      }
+    }
+  }, [repositories, currentRank, onSearching]);
 
   const handleSearch = async (searchQuery: string) => {
     setQuery(searchQuery);
@@ -35,6 +58,7 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
         const searchResults = searchNovels(repositories, searchQuery);
         const sortedResults = sortSearchResults(searchResults, currentRank);
         setResults(sortedResults);
+        setCurrentPage(1); // Reset to first page when searching
       }, 0);
     } catch (error) {
       console.error('Search error:', error);
@@ -48,6 +72,12 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
   const handleRankChange = (rank: RankOption) => {
     setCurrentRank(rank);
     setResults(sortedResults => sortSearchResults(sortedResults, rank));
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when changing pages
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -64,6 +94,9 @@ export function SearchView({ repositories, onSearching, className = '' }: Search
               results={results} 
               defaultRank={currentRank}
               onRankChange={handleRankChange}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              itemsPerPage={50}
             />
           ) : query ? (
             <div className="py-8 text-center text-gray-500 dark:text-gray-400">
