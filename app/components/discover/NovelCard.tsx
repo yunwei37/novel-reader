@@ -1,5 +1,4 @@
 import { NovelMeta } from '../../types/repo';
-import { NovelStorage } from '../../lib/storage';
 import Image from 'next/image';
 import { useState } from 'react';
 

@@ -1,10 +1,9 @@
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useState, useEffect } from 'react';
-import { NovelMeta, LocalRepo } from '../../types/repo';
+import { LocalRepo } from '../../types/repo';
 import { NovelCard } from './NovelCard';
 import { ImportSection } from './ImportSection';
 import { RepositorySection } from './RepositorySection';
-import { Novel } from '../../types';
 import {
   fetchRepoIndex,
   syncRepository,
@@ -14,6 +13,7 @@ import {
 import { AddRepositoryDialog } from './AddRepositoryDialog';
 import { useRouter } from 'next/navigation';
 import { NovelStorage } from '../../lib/storage';
+import type { Novel } from '../../types';
 
 export function DiscoverView() {
   const { t } = useTranslation();
