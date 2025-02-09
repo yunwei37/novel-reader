@@ -171,6 +171,8 @@ export class NovelStorage {
                         filepath: file.name,
                         lastRead: Date.now(),
                         lastPosition: 0,
+                        bookmarks: [],
+                        chapters: [],
                     };
 
                     await this.saveNovel(novel, content);

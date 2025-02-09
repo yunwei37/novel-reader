@@ -167,7 +167,8 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
             });
 
             if (mostVisibleChunk) {
-                const newOffset = mostVisibleChunk.startOffset;
+                const mostVisibleChunkNotNull = mostVisibleChunk as ChunkInfo;
+                const newOffset = mostVisibleChunkNotNull.startOffset;
                 if (Math.abs(newOffset - currentOffset) > 100) {
                     lastUserScrollTime.current = Date.now();
                     lastKnownOffset.current = newOffset;
