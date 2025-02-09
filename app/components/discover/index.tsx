@@ -12,11 +12,11 @@ import {
 import { AddRepositoryDialog } from './AddRepositoryDialog';
 import { useRouter } from 'next/navigation';
 import { NovelStorage } from '../../lib/storage';
-import type { Novel } from '../../types';
+import type { Novel, View } from '../../types';
 import { RepoCard } from './RepoCard';
 
 interface DiscoverViewProps {
-  onViewChange: (view: string) => void;
+  onViewChange: (view: View) => void;
 }
 
 export function DiscoverView({ onViewChange }: DiscoverViewProps) {

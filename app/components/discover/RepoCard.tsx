@@ -2,12 +2,13 @@ import { useTranslation } from '../../contexts/LanguageContext';
 import { RefreshIcon, TrashIcon } from '../icons';
 import { LocalRepo } from '../../types/repo';
 import { useRouter } from 'next/navigation';
+import type { View } from '../../types';
 
 interface RepoCardProps {
   repo: LocalRepo;
   onSync: (url: string) => void;
   onRemove: (url: string) => void;
-  onViewChange?: (view: string) => void;
+  onViewChange?: (view: View) => void;
 }
 
 export function RepoCard({ repo, onSync, onRemove, onViewChange }: RepoCardProps) {

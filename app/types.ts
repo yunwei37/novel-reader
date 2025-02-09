@@ -35,3 +35,5 @@ export interface Chapter {
   content: string;
   startIndex: number;
 }
+
+export type View = 'library' | 'reader' | 'settings' | 'discover' | 'search';
