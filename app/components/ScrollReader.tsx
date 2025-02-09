@@ -1,12 +1,63 @@
 import { debounce, throttle } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ScrollProgress } from './reader/ScrollProgress';
+import { SHA256 } from 'crypto-js';
+
 interface ScrollReaderProps {
     content: string;
     currentOffset: number;
     onPositionChange: (offset: number) => void;
     fontSize: number;
 }
+
+interface ChunkInfo {
+    id: string;
+    startOffset: number;
+    endOffset: number;
+    content: string;
+}
+
+interface CachedChunks {
+    hash: string;
+    chunks: ChunkInfo[];
+    timestamp: number;
+}
+
+const CACHE_KEY = 'reader_chunks_cache';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+const getContentHash = (content: string): string => {
+    return SHA256(content).toString();
+};
+
+const getCachedChunks = (contentHash: string): ChunkInfo[] | null => {
+    try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (!cached) return null;
+
+        const parsedCache: CachedChunks = JSON.parse(cached);
+        if (parsedCache.hash !== contentHash) return null;
+        if (Date.now() - parsedCache.timestamp > CACHE_DURATION) return null;
+
+        return parsedCache.chunks;
+    } catch (error) {
+        console.warn('Error reading chunks cache:', error);
+        return null;
+    }
+};
+
+const setCachedChunks = (contentHash: string, chunks: ChunkInfo[]) => {
+    try {
+        const cacheData: CachedChunks = {
+            hash: contentHash,
+            chunks,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+        console.warn('Error saving chunks cache:', error);
+    }
+};
 
 export const ScrollReader: React.FC<ScrollReaderProps> = ({
     content,
@@ -19,33 +70,118 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
     const isUserScrolling = useRef(false);
     const lastUserScrollTime = useRef(0);
     const lastKnownOffset = useRef(currentOffset);
-    const SCROLL_COOLDOWN = 2000; // 2 seconds cooldown after user scrolling
+    const SCROLL_COOLDOWN = 2000;
+    const CHUNK_SIZE = 1000; // Characters per chunk
 
-    // Memoize progress calculation
-    const progress = useMemo(() => {
-        if (!contentLength) return "0.00";
-        return ((currentOffset / contentLength) * 100).toFixed(2);
-    }, [currentOffset, contentLength]);
+    // Create chunks from content
+    const chunks = useMemo((): ChunkInfo[] => {
+        if (!content) return [];
+        
+        const contentHash = getContentHash(content);
+        const cachedChunks = getCachedChunks(contentHash);
+        if (cachedChunks) return cachedChunks;
+        
+        const newChunks: ChunkInfo[] = [];
+        let currentPosition = 0;
+        
+        while (currentPosition < content.length) {
+            let endPosition = currentPosition + CHUNK_SIZE;
+            if (endPosition < content.length) {
+                while (endPosition < content.length && 
+                       content[endPosition] !== '\n' && 
+                       content[endPosition] !== '.') {
+                    endPosition++;
+                }
+                endPosition++;
+            } else {
+                endPosition = content.length;
+            }
 
+            newChunks.push({
+                id: `chunk-${currentPosition}`,
+                startOffset: currentPosition,
+                endOffset: endPosition,
+                content: content.slice(currentPosition, endPosition)
+            });
+
+            currentPosition = endPosition;
+        }
+        
+        // Cache the new chunks
+        setCachedChunks(contentHash, newChunks);
+        return newChunks;
+    }, [content]);
+
+    // Find the active chunk based on currentOffset
+    const activeChunkId = useMemo(() => {
+        const activeChunk = chunks.find(chunk => 
+            currentOffset >= chunk.startOffset && 
+            currentOffset <= chunk.endOffset
+        );
+        return activeChunk?.id;
+    }, [chunks, currentOffset]);
+
+    // Scroll to chunk if needed
+    useEffect(() => {
+        if (!containerRef.current || !activeChunkId) return;
+        
+        const element = document.getElementById(activeChunkId);
+        if (element && !isUserScrolling.current) {
+            const timeSinceLastScroll = Date.now() - lastUserScrollTime.current;
+            if (timeSinceLastScroll >= SCROLL_COOLDOWN) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }, [activeChunkId, SCROLL_COOLDOWN]);
+
+    // Modified scroll handler to work with chunks
     const handleScrollThrottled = useMemo(
-        () => throttle((scrollTop: number, scrollHeight: number, clientHeight: number) => {
-            if (!contentLength) return;
-            const progress = scrollTop / (scrollHeight - clientHeight);
-            const newOffset = Math.round(progress * contentLength);
-            if (Math.abs(newOffset - currentOffset) > 100) {
-                lastUserScrollTime.current = Date.now();
-                lastKnownOffset.current = newOffset;
-                onPositionChange(newOffset);
+        () => throttle(() => {
+            if (!containerRef.current || !chunks.length) return;
+
+            // Find the most visible chunk
+            const container = containerRef.current;
+            const containerTop = container.scrollTop;
+            const containerBottom = containerTop + container.clientHeight;
+
+            let mostVisibleChunk: ChunkInfo | null = null;
+            let maxVisibleHeight = 0;
+
+            chunks.forEach(chunk => {
+                const element = document.getElementById(chunk.id);
+                if (!element) return;
+
+                const rect = element.getBoundingClientRect();
+                const elementTop = element.offsetTop;
+                const elementBottom = elementTop + rect.height;
+
+                // Calculate visible height of this chunk
+                const visibleTop = Math.max(containerTop, elementTop);
+                const visibleBottom = Math.min(containerBottom, elementBottom);
+                const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+
+                if (visibleHeight > maxVisibleHeight) {
+                    maxVisibleHeight = visibleHeight;
+                    mostVisibleChunk = chunk;
+                }
+            });
+
+            if (mostVisibleChunk) {
+                const newOffset = mostVisibleChunk.startOffset;
+                if (Math.abs(newOffset - currentOffset) > 100) {
+                    lastUserScrollTime.current = Date.now();
+                    lastKnownOffset.current = newOffset;
+                    onPositionChange(newOffset);
+                }
             }
         }, 250, { leading: true, trailing: true }),
-        [contentLength, currentOffset, onPositionChange]
+        [chunks, currentOffset, onPositionChange]
     );
 
     const handleScroll = useCallback(() => {
         if (!containerRef.current) return;
         isUserScrolling.current = true;
-        const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-        handleScrollThrottled(scrollTop, scrollHeight, clientHeight);
+        handleScrollThrottled();
     }, [handleScrollThrottled]);
 
     const updateScrollPositionDebounced = useMemo(
@@ -147,16 +283,19 @@ export const ScrollReader: React.FC<ScrollReaderProps> = ({
                 onScroll={handleScroll}
             >
                 <div className="p-4 sm:p-6">
-                    <pre
-                        className="whitespace-pre-wrap font-sans leading-relaxed m-0 text-justify hyphens-auto break-words"
-                        style={{ fontSize: `${fontSize}px`, lineHeight: '1.5' }}
-                    >
-                        {content}
-                    </pre>
+                    {chunks.map(chunk => (
+                        <p
+                            key={chunk.id}
+                            id={chunk.id}
+                            className="whitespace-pre-wrap font-sans leading-relaxed m-0 text-justify hyphens-auto break-words"
+                            style={{ fontSize: `${fontSize}px`, lineHeight: '1.5' }}
+                        >
+                            {chunk.content}
+                        </p>
+                    ))}
                 </div>
             </div>
-            <ScrollProgress progress={progress} />
-
+            <ScrollProgress progress={((currentOffset / contentLength) * 100).toFixed(2)} />
         </div>
     );
 };

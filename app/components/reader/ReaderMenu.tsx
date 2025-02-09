@@ -24,7 +24,7 @@ interface ReaderMenuProps {
     config: ReaderConfig;
     onConfigChange: (updates: Partial<ReaderConfig>) => void;
     // Novel data
-    novel: Novel;
+    novel?: Novel;
     content: string;
     currentPosition: number;
     onPositionChange: (offset: number) => void;
@@ -102,7 +102,7 @@ export const ReaderMenu: React.FC<ReaderMenuProps> = ({
                             currentPosition={currentPosition}
                             onPositionChange={onPositionChange}
                             onBack={() => setCurrentPage('main')}
-                            chapters={novel.chapters}
+                            chapters={novel?.chapters}
                         />
                     )}
                     {currentPage === 'search' && (
