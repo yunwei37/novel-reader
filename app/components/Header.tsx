@@ -10,14 +10,20 @@
 import React from 'react';
 import { useTranslation } from '../contexts/LanguageContext';
 
+export interface HeaderButton {
+  icon: React.ReactNode;
+  onClick: () => void;
+  ariaLabel: string;
+}
+
 interface HeaderProps {
-  onSettingsClick?: () => void;
+  buttons?: HeaderButton[];
   onBackClick?: () => void;
   title: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  onSettingsClick,
+  buttons = [],
   onBackClick,
   title,
 }) => {
@@ -47,19 +53,20 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        {onSettingsClick && (
+        {buttons.map((button, index) => (
           <button
-            onClick={onSettingsClick}
+            key={index}
+            onClick={button.onClick}
             className="
               p-2 rounded-lg transition-colors
               text-gray-600 dark:text-gray-300
               hover:bg-gray-100 dark:hover:bg-gray-700
             "
-            aria-label={t('common.settings')}
+            aria-label={button.ariaLabel}
           >
-            <span className="text-xl">⚙️</span>
+            {button.icon}
           </button>
-        )}
+        ))}
       </div>
     </header>
   );

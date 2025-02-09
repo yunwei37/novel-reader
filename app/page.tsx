@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Header } from './components/Header';
+import type { HeaderButton } from './components/Header';
 import { LibraryView } from './components/library/LibraryView';
 import { Reader } from './components/Reader';
 import { SettingsView } from './components/SettingsView';
@@ -27,6 +28,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [repositories, setRepositories] = useState<LocalRepo[]>([]);
+  const [showReaderMenu, setShowReaderMenu] = useState(false);
 
   const handleNovelSelect = useCallback(async (novel: Novel) => {
     const content = await NovelStorage.getNovelContent(novel.id);
@@ -149,13 +151,38 @@ export default function Home() {
     loadRepositories();
   }, []);
 
+  // Define header buttons based on current view
+  const getHeaderButtons = (): HeaderButton[] => {
+    if (currentView === 'reader') {
+      return [{
+        icon: (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        ),
+        onClick: () => setShowReaderMenu(true),
+        ariaLabel: 'Open reader menu'
+      }];
+    }
+    
+    if (currentView === 'library') {
+      return [{
+        icon: <span className="text-xl">⚙️</span>,
+        onClick: () => setCurrentView('settings'),
+        ariaLabel: t('common.settings')
+      }];
+    }
+
+    return [];
+  };
+
   return (
     <div className="h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
       <div className="h-full flex flex-col">
         {/* Header */}
         <Header
           title={getViewTitle()}
-          onSettingsClick={currentView === 'library' ? () => setCurrentView('settings') : undefined}
+          buttons={getHeaderButtons()}
           onBackClick={getBackAction()}
         />
 
@@ -178,6 +205,8 @@ export default function Home() {
                     fontSize: 16,
                     isPaged: false,
                   }}
+                  showMenu={showReaderMenu}
+                  onMenuClose={() => setShowReaderMenu(false)}
                 />
               </div>
             </div>
