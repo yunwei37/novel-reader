@@ -8,16 +8,25 @@ import { Reader } from './components/Reader';
 import { SettingsView } from './components/SettingsView';
 import { NovelStorage } from './lib/storage';
 import { Novel } from './types';
+import { useTranslation } from './contexts/LanguageContext';
 
 type View = 'library' | 'reader' | 'settings' | 'add';
 
 export default function Home() {
-  // State management
+  const { t } = useTranslation();
   const [currentView, setCurrentView] = useState<View>('library');
   const [currentNovel, setCurrentNovel] = useState<Novel | null>(null);
   const [content, setContent] = useState<string>('');
   const [currentOffset, setCurrentOffset] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const handleNovelSelect = useCallback(async (novel: Novel) => {
+    const content = await NovelStorage.getNovelContent(novel.id);
+    setCurrentNovel(novel);
+    setContent(content);
+    setCurrentOffset(novel.lastPosition);
+    setCurrentView('reader');
+  }, []);
 
   // Handle URL query parameters for auto-import
   useEffect(() => {
@@ -34,10 +43,9 @@ export default function Home() {
     const addUrl = params.get('add');
     if (addUrl) {
       handleUrlImport(addUrl);
-      // Clear the URL parameter after import attempt
       window.history.replaceState({}, '', window.location.pathname);
     }
-  }, []);
+  }, [handleNovelSelect]);
 
   // Initialize dark mode from localStorage or system preference
   useEffect(() => {
@@ -66,14 +74,6 @@ export default function Home() {
     });
   }, []);
 
-  const handleNovelSelect = useCallback(async (novel: Novel) => {
-    const content = await NovelStorage.getNovelContent(novel.id);
-    setCurrentNovel(novel);
-    setContent(content);
-    setCurrentOffset(novel.lastPosition);
-    setCurrentView('reader');
-  }, []);
-
   const handlePositionChange = useCallback((offset: number) => {
     setCurrentOffset(offset);
     if (currentNovel) {
@@ -92,13 +92,13 @@ export default function Home() {
   const getViewTitle = () => {
     switch (currentView) {
       case 'reader':
-        return currentNovel?.title || 'Reading';
+        return currentNovel?.title || t('reader.title');
       case 'settings':
-        return 'Settings';
+        return t('common.settings');
       case 'add':
-        return 'Add Novel';
+        return t('library.import');
       default:
-        return 'Novel Reader';
+        return t('library.title');
     }
   };
 

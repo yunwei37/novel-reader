@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { BookmarksPage } from './BookmarksPage';
 import { ChaptersPage } from './ChaptersPage';
@@ -12,6 +14,8 @@ interface ReaderConfig {
     charsPerPage: number;
 }
 
+export type MenuPage = 'main' | 'settings' | 'bookmarks' | 'chapters' | 'search';
+
 interface ReaderMenuProps {
     isOpen: boolean;
     onClose: () => void;
@@ -23,8 +27,6 @@ interface ReaderMenuProps {
     currentPosition: number;
     onPositionChange: (offset: number) => void;
 }
-
-type MenuPage = 'main' | 'settings' | 'bookmarks' | 'chapters' | 'search';
 
 export const ReaderMenu: React.FC<ReaderMenuProps> = ({
     isOpen,

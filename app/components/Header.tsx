@@ -5,7 +5,10 @@
  * Contains dark mode toggle and mobile menu button.
  */
 
+'use client';
+
 import React from 'react';
+import { useTranslation } from '../contexts/LanguageContext';
 
 interface HeaderProps {
   onSettingsClick?: () => void;
@@ -18,6 +21,8 @@ export const Header: React.FC<HeaderProps> = ({
   onBackClick,
   title,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <header className="flex justify-between items-center h-14 px-4 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-2">
@@ -29,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
               text-gray-600 dark:text-gray-300
               hover:bg-gray-100 dark:hover:bg-gray-700
             "
-            aria-label="Go back"
+            aria-label={t('common.back')}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -50,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
               text-gray-600 dark:text-gray-300
               hover:bg-gray-100 dark:hover:bg-gray-700
             "
-            aria-label="Settings"
+            aria-label={t('common.settings')}
           >
             <span className="text-xl">⚙️</span>
           </button>

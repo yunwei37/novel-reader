@@ -1,53 +1,43 @@
-import React from 'react';
+'use client';
+
+import { useTranslation } from '../../contexts/LanguageContext';
+import type { MenuPage } from './ReaderMenu';
 
 interface MainMenuPageProps {
-    onNavigate: (page: 'settings' | 'bookmarks' | 'chapters' | 'search') => void;
+    onNavigate: (page: MenuPage) => void;
 }
 
 export const MainMenuPage: React.FC<MainMenuPageProps> = ({
     onNavigate,
 }) => {
+    const { t } = useTranslation();
+
+    const menuItems = [
+        { id: 'settings', label: t('reader.menu.settings'), icon: '⚙️' },
+        { id: 'bookmarks', label: t('reader.menu.bookmarks'), icon: '🔖' },
+        { id: 'chapters', label: t('reader.menu.chapters'), icon: '📑' },
+        { id: 'search', label: t('reader.menu.search'), icon: '🔍' },
+    ] as const;
+
     return (
         <div className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Reader Menu</h2>
-            <div className="space-y-2">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                {t('reader.menu.title')}
+            </h2>
+            {menuItems.map(({ id, label, icon }) => (
                 <button
-                    onClick={() => onNavigate('settings')}
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    key={id}
+                    onClick={() => onNavigate(id as MenuPage)}
+                    className="w-full flex items-center gap-4 p-4 rounded-lg
+                        bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700
+                        transition-colors"
                 >
-                    <span className="text-gray-900 dark:text-gray-100">Settings</span>
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                    <span className="text-2xl">{icon}</span>
+                    <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        {label}
+                    </span>
                 </button>
-                <button
-                    onClick={() => onNavigate('bookmarks')}
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                >
-                    <span className="text-gray-900 dark:text-gray-100">Bookmarks</span>
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-                <button
-                    onClick={() => onNavigate('chapters')}
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                >
-                    <span className="text-gray-900 dark:text-gray-100">Chapters</span>
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-                <button
-                    onClick={() => onNavigate('search')}
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                >
-                    <span className="text-gray-900 dark:text-gray-100">Search</span>
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-            </div>
+            ))}
         </div>
     );
 }; 

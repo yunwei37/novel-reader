@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 interface LibraryControlsProps {
     filterQuery: string;
@@ -23,6 +26,8 @@ export const LibraryControls: React.FC<LibraryControlsProps> = ({
     onDeleteSelected,
     onImportClick,
 }) => {
+    const { t } = useTranslation();
+
     return (
         <div className="mb-6 flex items-center justify-between gap-4">
             <div className="flex-1">
@@ -64,7 +69,7 @@ export const LibraryControls: React.FC<LibraryControlsProps> = ({
                     onClick={onImportClick}
                     className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white"
                 >
-                    Add
+                    {t('library.import')}
                 </button>
             </div>
         </div>

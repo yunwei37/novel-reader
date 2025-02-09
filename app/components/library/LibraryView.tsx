@@ -1,8 +1,11 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { NovelStorage } from '../../lib/storage';
 import { Novel } from '../../types';
 import { LibraryControls } from './LibraryControls';
 import { NovelListItem } from './NovelListItem';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 interface LibraryViewProps {
     onNovelSelect: (novel: Novel) => void;
@@ -10,6 +13,7 @@ interface LibraryViewProps {
 }
 
 export const LibraryView: React.FC<LibraryViewProps> = ({ onNovelSelect, onImportClick }) => {
+    const { t } = useTranslation();
     const [novels, setNovels] = useState<Novel[]>([]);
     const [sortBy, setSortBy] = useState<'title' | 'lastRead'>('lastRead');
     const [filterQuery, setFilterQuery] = useState('');
@@ -109,8 +113,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({ onNovelSelect, onImpor
 
             {novels.length === 0 && (
                 <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-                    No novels in your library yet. Import one to get started!
-                </div>
+                    {t('library.noNovels')}
+                    </div>
             )}
         </div>
     );

@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslation } from '../contexts/LanguageContext';
+import { LanguageSelector } from './LanguageSelector';
 
 interface SettingsViewProps {
     isDarkMode: boolean;
@@ -9,11 +11,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     isDarkMode,
     onDarkModeToggle,
 }) => {
+    const { t } = useTranslation();
+
     return (
         <div className="max-w-2xl mx-auto p-4">
             <section>
                 <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-                    Appearance
+                    {t('settings.darkMode')}
                 </h2>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -39,6 +43,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                             </span>
                         </button>
                     </div>
+                </div>
+            </section>
+
+            <section className="mt-8">
+                <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+                    {t('settings.language')}
+                </h2>
+                <div className="flex items-center justify-between">
+                    <LanguageSelector />
                 </div>
             </section>
         </div>

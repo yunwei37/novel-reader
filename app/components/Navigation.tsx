@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useTranslation } from '../contexts/LanguageContext';
 
 export type View = 'library' | 'reader' | 'settings' | 'add';
 
@@ -13,11 +16,13 @@ export const Navigation: React.FC<NavigationProps> = ({
     onViewChange,
     isMobile,
 }) => {
+    const { t } = useTranslation();
+
     const navItems: { id: View; label: string; icon: string }[] = [
-        { id: 'library', label: 'Library', icon: '📚' },
-        { id: 'reader', label: 'Reader', icon: '📖' },
-        { id: 'settings', label: 'Settings', icon: '⚙️' },
-        { id: 'add', label: 'Add', icon: '📥' },
+        { id: 'library', label: t('navigation.library'), icon: '📚' },
+        { id: 'reader', label: t('navigation.reader'), icon: '📖' },
+        { id: 'settings', label: t('navigation.settings'), icon: '⚙️' },
+        { id: 'add', label: t('navigation.add'), icon: '📥' },
     ];
 
     if (isMobile) {
@@ -29,12 +34,12 @@ export const Navigation: React.FC<NavigationProps> = ({
                             key={id}
                             onClick={() => onViewChange(id)}
                             className={`
-                flex flex-col items-center p-2 rounded-lg
-                ${currentView === id
+                                flex flex-col items-center p-2 rounded-lg
+                                ${currentView === id
                                     ? 'text-blue-500 dark:text-blue-400'
                                     : 'text-gray-600 dark:text-gray-400'
                                 }
-              `}
+                            `}
                         >
                             <span className="text-xl mb-1">{icon}</span>
                             <span className="text-xs">{label}</span>
@@ -50,7 +55,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             <div className="h-full flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                        Novel Reader
+                        {t('library.title')}
                     </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -59,13 +64,13 @@ export const Navigation: React.FC<NavigationProps> = ({
                             key={id}
                             onClick={() => onViewChange(id)}
                             className={`
-                flex items-center gap-2 px-3 py-2 rounded-lg
-                transition-colors
-                ${currentView === id
+                                flex items-center gap-2 px-3 py-2 rounded-lg
+                                transition-colors
+                                ${currentView === id
                                     ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400'
                                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                                 }
-              `}
+                            `}
                         >
                             <span>{icon}</span>
                             <span>{label}</span>
