@@ -1,6 +1,7 @@
+import React from 'react';
 import { useTranslation } from '../contexts/LanguageContext';
 
-type View = 'library' | 'reader' | 'settings' | 'add' | 'discover';
+type View = 'library' | 'reader' | 'settings' | 'discover';
 
 interface FooterProps {
   currentView: View;
@@ -9,7 +10,7 @@ interface FooterProps {
 
 interface NavItem {
   view: View;
-  icon: JSX.Element;
+  icon: React.ReactElement;
 }
 
 export function Footer({ currentView, onNavigate }: FooterProps) {

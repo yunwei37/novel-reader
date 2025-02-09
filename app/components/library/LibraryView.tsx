@@ -9,10 +9,9 @@ import { useTranslation } from '../../contexts/LanguageContext';
 
 interface LibraryViewProps {
     onNovelSelect: (novel: Novel) => void;
-    onImportClick: () => void;
 }
 
-export const LibraryView: React.FC<LibraryViewProps> = ({ onNovelSelect, onImportClick }) => {
+export const LibraryView: React.FC<LibraryViewProps> = ({ onNovelSelect }) => {
     const { t } = useTranslation();
     const [novels, setNovels] = useState<Novel[]>([]);
     const [sortBy, setSortBy] = useState<'title' | 'lastRead'>('lastRead');
@@ -95,7 +94,6 @@ export const LibraryView: React.FC<LibraryViewProps> = ({ onNovelSelect, onImpor
                 selectedCount={selectedNovels.size}
                 onSelectionModeToggle={handleSelectionModeToggle}
                 onDeleteSelected={handleDeleteSelected}
-                onImportClick={onImportClick}
             />
 
             <div className="space-y-2">

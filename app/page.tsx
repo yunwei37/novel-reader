@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { AddView } from './components/AddView';
 import { Header } from './components/Header';
 import { LibraryView } from './components/library/LibraryView';
 import { Reader } from './components/Reader';
@@ -11,9 +10,9 @@ import { Novel } from './types';
 import { useTranslation } from './contexts/LanguageContext';
 import { LoadingDialog } from './components/LoadingDialog';
 import { Footer } from './components/Footer';
-import { DiscoverView } from './components/DiscoverView';
+import { DiscoverView } from './components/discover';
 
-type View = 'library' | 'reader' | 'settings' | 'add' | 'discover';
+type View = 'library' | 'reader' | 'settings' | 'discover';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -117,8 +116,6 @@ export default function Home() {
         return currentNovel?.title || t('reader.title');
       case 'settings':
         return t('common.settings');
-      case 'add':
-        return t('library.import');
       case 'discover':
         return t('common.discover');
       default:
@@ -154,7 +151,6 @@ export default function Home() {
           {currentView === 'library' && (
             <LibraryView
               onNovelSelect={handleNovelSelect}
-              onImportClick={() => setCurrentView('add')}
             />
           )}
 
@@ -178,15 +174,6 @@ export default function Home() {
             <SettingsView
               isDarkMode={isDarkMode}
               onDarkModeToggle={handleDarkModeToggle}
-            />
-          )}
-
-          {currentView === 'add' && (
-            <AddView
-              onImportComplete={(novel: Novel) => {
-                handleNovelSelect(novel);
-                setCurrentView('reader');
-              }}
             />
           )}
 

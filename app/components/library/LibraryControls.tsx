@@ -12,7 +12,6 @@ interface LibraryControlsProps {
     selectedCount: number;
     onSelectionModeToggle: () => void;
     onDeleteSelected: () => void;
-    onImportClick: () => void;
 }
 
 export const LibraryControls: React.FC<LibraryControlsProps> = ({
@@ -24,7 +23,6 @@ export const LibraryControls: React.FC<LibraryControlsProps> = ({
     selectedCount,
     onSelectionModeToggle,
     onDeleteSelected,
-    onImportClick,
 }) => {
     const { t } = useTranslation();
 
@@ -66,12 +64,6 @@ export const LibraryControls: React.FC<LibraryControlsProps> = ({
                         {t('library.delete')} ({selectedCount})
                     </button>
                 )}
-                <button
-                    onClick={onImportClick}
-                    className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"
-                >
-                    {t('library.import')}
-                </button>
             </div>
         </div>
     );
