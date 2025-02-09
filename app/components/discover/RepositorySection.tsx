@@ -42,7 +42,7 @@ export function RepositorySection({
                   {repo.meta.name}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {`${repo.meta.novels}/${repo.meta.updatedNovels}`}
+                  {`${repo.meta.novels}`}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {`${t('discover.lastSync')} ${new Date(repo.lastSync).toLocaleString()}`}

@@ -60,6 +60,8 @@ export const translations: Translations = {
     'discover.error.invalidRepo': 'Invalid repository URL',
     'discover.error.fetchFailed': 'Failed to fetch repository data',
     'discover.importComplete': 'Successfully imported "{title}"',
+    'discover.searchResults': 'Search Results',
+    'discover.searchPlaceholder': 'Search by title, author...',
   },
   zh: {
     'common.back': '返回',
@@ -120,5 +122,7 @@ export const translations: Translations = {
     'discover.error.invalidRepo': '无效的仓库地址',
     'discover.error.fetchFailed': '获取仓库数据失败',
     'discover.importComplete': '成功导入《{title}》',
+    'discover.searchResults': '搜索结果',
+    'discover.searchPlaceholder': '按标题、作者搜索...',
   },
 }; 

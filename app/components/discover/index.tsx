@@ -4,12 +4,10 @@ import { NovelMeta, LocalRepo } from '../../types/repo';
 import { NovelCard } from './NovelCard';
 import { ImportSection } from './ImportSection';
 import { RepositorySection } from './RepositorySection';
-import { SearchBar } from './SearchBar';
 import { Novel } from '../../types';
 import {
   fetchRepoIndex,
   syncRepository,
-  searchNovels,
   getPopularNovels,
   getLatestNovels
 } from '../../lib/discover';
@@ -22,28 +20,33 @@ export function DiscoverView() {
   const router = useRouter();
   const [repositories, setRepositories] = useState<LocalRepo[]>([]);
   const [showAddRepo, setShowAddRepo] = useState(false);
-  const [repoUrl, setRepoUrl] = useState('');
-  const [searchResults, setSearchResults] = useState<NovelMeta[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
-  const handleAddRepository = async () => {
-    if (!repoUrl) return;
+  const handleAddRepository = async (url: string) => {
+    if (!url) return;
     setIsLoading(true);
     try {
-      const repoData = await fetchRepoIndex(repoUrl);
+      const repoData = await fetchRepoIndex(url);
       const newRepo: LocalRepo = {
-        url: repoUrl,
-        meta: repoData,
+        url,
+        meta: {
+          name: repoData.name,
+          description: '',
+          url: url,
+          lastUpdated: repoData.lastSync,
+          novels: repoData.novels.length,
+          updatedNovels: repoData.updatedNovels
+        },
         lastSync: new Date().toISOString(),
         index: repoData
       };
       
       setRepositories(prev => [...prev, newRepo]);
-      setRepoUrl('');
       setShowAddRepo(false);
     } catch (error) {
       console.error('Failed to add repository:', error);
+      alert(t('discover.error.invalidRepo'));
     } finally {
       setIsLoading(false);
     }
@@ -72,13 +75,6 @@ export function DiscoverView() {
     }
   };
 
-  const handleSearch = (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-    } else {
-      setSearchResults(searchNovels(repositories, query));
-    }
-  };
 
   const handleRemoveRepo = (url: string) => {
     setRepositories(prev => prev.filter(repo => repo.url !== url));
@@ -91,48 +87,53 @@ export function DiscoverView() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-full overflow-hidden bg-gray-50 dark:bg-gray-900">
       <Search 
         repositories={repositories} 
         onSearching={setIsSearching}
+        className="flex-none px-4 pt-4"
       />
 
-      <div className="p-4 space-y-6">
-        <ImportSection onImportComplete={handleImportComplete} />
-        
-        <RepositorySection
-          repositories={repositories}
-          onAddClick={() => setShowAddRepo(true)}
-          onSync={handleSync}
-          onRemove={handleRemoveRepo}
-        />
+      {!isSearching && (
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 space-y-6">
+            <ImportSection onImportComplete={handleImportComplete} />
+            
+            <RepositorySection
+              repositories={repositories}
+              onAddClick={() => setShowAddRepo(true)}
+              onSync={handleSync}
+              onRemove={handleRemoveRepo}
+            />
 
-        {!isSearching && repositories.length > 0 && (
-          <>
-            <section>
-              <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-                {t('discover.popular')}
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                {getPopularNovels(repositories).map(novel => (
-                  <NovelCard key={novel.id} novel={novel} />
-                ))}
-              </div>
-            </section>
+            {repositories.length > 0 && (
+              <>
+                <section>
+                  <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+                    {t('discover.popular')}
+                  </h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {getPopularNovels(repositories).map(novel => (
+                      <NovelCard key={novel.id} novel={novel} />
+                    ))}
+                  </div>
+                </section>
 
-            <section>
-              <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-                {t('discover.latest')}
-              </h2>
-              <div className="space-y-4">
-                {getLatestNovels(repositories).map(novel => (
-                  <NovelCard key={novel.id} novel={novel} />
-                ))}
-              </div>
-            </section>
-          </>
-        )}
-      </div>
+                <section>
+                  <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+                    {t('discover.latest')}
+                  </h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {getLatestNovels(repositories).map(novel => (
+                      <NovelCard key={novel.id} novel={novel} />
+                    ))}
+                  </div>
+                </section>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       <AddRepositoryDialog
         isOpen={showAddRepo}

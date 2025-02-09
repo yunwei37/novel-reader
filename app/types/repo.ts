@@ -1,16 +1,30 @@
+export interface YamlNovelSearchIndex {
+  author?: string;
+  date?: string;
+  description?: string;
+  tags?: string[];
+  categories?: string[];
+  filename?: string;
+  region?: string;
+  size?: number;
+  chapters?: number;
+  lastUpdated?: string;
+  downloadUrl?: string;
+}
+
 export interface NovelMeta {
   id: string;
   title: string;
   author: string;
-  cover?: string;
   description?: string;
-  categories: string[];
+  cover?: string | null;
   tags: string[];
-  language: string;
+  categories: string[];
   chapters: number;
   lastUpdated: string;
-  size: number;
   downloadUrl: string;
+  size?: number;
+  region?: string;
 }
 
 export interface RepoMeta {
@@ -23,7 +37,10 @@ export interface RepoMeta {
 }
 
 export interface RepoIndex {
+  name: string;
   novels: NovelMeta[];
+  updatedNovels: number;
+  lastSync: string;
   categories: string[];
   tags: string[];
 }
