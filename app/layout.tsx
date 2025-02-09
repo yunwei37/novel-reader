@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from 'next/script';
 import "./globals.css";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { CONFIG } from "@/config/constants";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,10 +22,22 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Web Novel Reader",
+  title: "WebNR - Web Novel Reader",
   description: "A platform to read and manage your web novels.",
   manifest: '/manifest.json',
-  themeColor: '#000000',
+  themeColor: CONFIG.PWA.THEME_COLOR,
+  metadataBase: new URL(CONFIG.CANONICAL_DOMAIN),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'WebNR - Web Novel Reader',
+    description: 'A platform to read and manage your web novels.',
+    url: CONFIG.CANONICAL_DOMAIN,
+    siteName: 'WebNR',
+    locale: 'en_US',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
@@ -36,13 +49,13 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#000000" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <meta name="theme-color" content={CONFIG.PWA.THEME_COLOR} />
+        <link rel="apple-touch-icon" href={CONFIG.PWA.ICON_192} />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         
         {/* Google Analytics */}
-        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-DGH8HNQKE4" />
+        <Script async src={`https://www.googletagmanager.com/gtag/js?id=${CONFIG.GOOGLE_ANALYTICS_ID}`} />
         <Script
           id="google-analytics"
           dangerouslySetInnerHTML={{
@@ -50,7 +63,7 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', 'G-DGH8HNQKE4');
+              gtag('config', '${CONFIG.GOOGLE_ANALYTICS_ID}');
             `,
           }}
         />

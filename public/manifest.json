@@ -1,7 +1,7 @@
 {
-    "name": "Novel Reader",
-    "short_name": "NovelReader",
-    "description": "A Progressive Web App for reading novels",
+    "name": "WebNR - Web Novel Reader",
+    "short_name": "WebNR",
+    "description": "Reading and managing web novels with ease",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 interface SettingsPageProps {
     fontSize: number;
@@ -19,6 +20,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     charsPerPage = 500,
     onCharsPerPageChange,
 }) => {
+    const { t } = useTranslation();
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
     // Initialize theme from system/localStorage
@@ -51,22 +53,22 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span>Back</span>
+                <span>{t('common.back')}</span>
             </button>
 
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Settings</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('common.settings')}</h2>
 
             <div className="space-y-6">
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Theme
+                        {t('settings.theme')}
                     </label>
                     <button
                         onClick={toggleTheme}
                         className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-left"
                     >
                         <span className="text-gray-900 dark:text-gray-100">
-                            {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
+                            {theme === 'light' ? t('settings.themeLight') : t('settings.themeDark')}
                         </span>
                         <div className="relative">
                             {theme === 'light' ? (
@@ -88,7 +90,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Font Size
+                        {t('settings.fontSize')}
                     </label>
                     <div className="flex items-center gap-4">
                         <button
@@ -115,14 +117,14 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Reading Mode
+                        {t('settings.readingMode')}
                     </label>
                     <button
                         onClick={onModeToggle}
                         className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-left"
                     >
                         <span className="text-gray-900 dark:text-gray-100">
-                            {isPaged ? 'Paged Mode' : 'Scroll Mode'}
+                            {isPaged ? t('settings.pagedMode') : t('settings.scrollMode')}
                         </span>
                     </button>
                 </div>
@@ -130,7 +132,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 {isPaged && onCharsPerPageChange && (
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Characters Per Page
+                            {t('settings.charactersPerPage')}
                         </label>
                         <div className="flex items-center gap-4">
                             <button

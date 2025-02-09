@@ -1,4 +1,4 @@
-# Novel Reader
+# WebNR - Web Novel Reader
 
 A modern, feature-rich reading app for novels, books, and files, built with Next.js and TypeScript.
 
