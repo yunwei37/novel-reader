@@ -13,6 +13,7 @@ import { Footer } from './components/Footer';
 import { DiscoverView } from './components/discover';
 import { SearchView } from './components/search';
 import { LocalRepo } from './types/repo';
+import { handleUrlImport, handleRepoImport } from './lib/url-handlers';
 
 type View = 'library' | 'reader' | 'settings' | 'discover' | 'search';
 
@@ -35,41 +36,35 @@ export default function Home() {
     setCurrentView('reader');
   }, []);
 
-  // Handle URL query parameters for auto-import
+  // Handle URL query parameters for auto-import and repo adding
   useEffect(() => {
-    const handleUrlImport = async (url: string) => {
-      // Check if novel with this URL already exists
-      const existingNovel = await NovelStorage.findNovelByUrl(url);
-      
-      if (existingNovel) {
-        const shouldDownloadAgain = window.confirm(t('add.confirmRedownload'));
-        if (!shouldDownloadAgain) {
-          handleNovelSelect(existingNovel);
-          return;
-        }
-      }
-
-      setIsLoading(true);
-      setLoadingMessage(t('add.loadingUrl'));
-      
-      try {
-        const novel = await NovelStorage.importFromUrl(url);
-        handleNovelSelect(novel);
-      } catch (err) {
-        console.error('Failed to import novel from URL:', err);
-      } finally {
-        setIsLoading(false);
-        setLoadingMessage('');
-      }
-    };
-
     const params = new URLSearchParams(window.location.search);
     const addUrl = params.get('add');
-    if (addUrl) {
-      handleUrlImport(addUrl);
+    const addRepos = params.get('repos');
+
+    if (addRepos) {
+      const repoUrls = addRepos.split(',').filter(url => url.trim());
+      if (repoUrls.length > 0) {
+        handleRepoImport(repoUrls, {
+          repositories,
+          onLoading: setIsLoading,
+          onLoadingMessage: setLoadingMessage,
+          onRepositoriesChange: setRepositories,
+          onViewChange: setCurrentView,
+          t
+        });
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    } else if (addUrl) {
+      handleUrlImport(addUrl, {
+        onLoading: setIsLoading,
+        onLoadingMessage: setLoadingMessage,
+        onNovelSelect: handleNovelSelect,
+        t
+      });
       window.history.replaceState({}, '', window.location.pathname);
     }
-  }, [handleNovelSelect, t]);
+  }, [handleNovelSelect, repositories, t]);
 
   // Initialize dark mode from localStorage or system preference
   useEffect(() => {

@@ -37,14 +37,14 @@ export function DiscoverView() {
 
   const handleAddRepository = async (url: string) => {
     if (!url) return;
-    
+
     // Check if repository already exists
     const existingRepo = repositories.find(repo => repo.url === url);
     if (existingRepo) {
       alert(t('discover.error.repoExists'));
       return;
     }
-    
+
     setIsLoading(true);
     try {
       const repoData = await fetchRepoIndex(url);
@@ -61,7 +61,7 @@ export function DiscoverView() {
         lastSync: new Date().toISOString(),
         index: repoData
       };
-      
+
       await NovelStorage.saveRepository(newRepo);
       setRepositories(prev => [...prev, newRepo]);
       setShowAddRepo(false);
@@ -87,7 +87,7 @@ export function DiscoverView() {
     try {
       const repo = repositories.find(r => r.url === repoUrl);
       if (!repo) return;
-      
+
       const index = await syncRepository(repo);
       const updatedRepo: LocalRepo = {
         ...repo,
@@ -96,7 +96,7 @@ export function DiscoverView() {
       };
 
       await NovelStorage.saveRepository(updatedRepo);
-      setRepositories(prev => 
+      setRepositories(prev =>
         prev.map(r => r.url === repoUrl ? updatedRepo : r)
       );
     } catch (error) {
@@ -117,13 +117,7 @@ export function DiscoverView() {
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-8">
           <ImportSection onImportComplete={handleImportComplete} />
-          
-          <RepositorySection
-            repositories={repositories}
-            onAddClick={() => setShowAddRepo(true)}
-            onSync={handleSync}
-            onRemove={handleRemoveRepo}
-          />
+
 
           {repositories.length > 0 && (
             <>
@@ -150,6 +144,13 @@ export function DiscoverView() {
               </section>
             </>
           )}
+
+          <RepositorySection
+            repositories={repositories}
+            onAddClick={() => setShowAddRepo(true)}
+            onSync={handleSync}
+            onRemove={handleRemoveRepo}
+          />
         </div>
       </div>
 
