@@ -79,9 +79,38 @@ export default function RootLayout({
             __html: `
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js');
+                  navigator.serviceWorker.register('/sw.js').catch(function(error) {
+                    console.error('Service worker registration failed:', error);
+                    window.alert('Service Worker Error: ' + error.message);
+                  });
                 });
               }
+
+              // Global error handling
+              window.onerror = function(message, source, lineno, colno, error) {
+                console.error('Global error:', { message, source, lineno, colno, error });
+                const errorDetails = error ? 
+                  \`Error: \${error.message}\\nLocation: \${source}:\${lineno}:\${colno}\` :
+                  String(message);
+                window.alert('An error occurred:\\n' + errorDetails);
+                return false;
+              };
+
+              // Handle unhandled promise rejections
+              window.addEventListener('unhandledrejection', function(event) {
+                console.error('Unhandled promise rejection:', event.reason);
+                window.alert('Unhandled Promise Error:\\n' + event.reason);
+              });
+
+              // Handle TTS specific errors
+              window.addEventListener('error', function(event) {
+                if (event.target && 'speechSynthesis' in window && 
+                    (event.target === window.speechSynthesis || 
+                     event.target instanceof SpeechSynthesisUtterance)) {
+                  console.error('Speech synthesis error:', event);
+                  window.alert('Text-to-Speech Error:\\n' + event.message);
+                }
+              }, true);
             `,
           }}
         />
