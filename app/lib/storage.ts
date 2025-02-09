@@ -201,6 +201,8 @@ export class NovelStorage {
             url,
             lastRead: Date.now(),
             lastPosition: 0,
+            bookmarks: [],
+            chapters: [],
         };
 
         await this.saveNovel(novel, content);

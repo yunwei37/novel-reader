@@ -46,6 +46,8 @@ const translations: Translations = {
     'add.error.import': 'Failed to import file. Please try again.',
     'add.error.url': 'Failed to import from URL. Please check the URL and try again.',
     'add.error.cancelled': 'Import cancelled.',
+    'dialog.loading': 'Loading...',
+    'dialog.cancel': 'Cancel',
   },
   zh: {
     'common.back': '返回',
@@ -84,6 +86,8 @@ const translations: Translations = {
     'add.error.import': '导入文件失败。请重试。',
     'add.error.url': '从网址导入失败。请检查网址后重试。',
     'add.error.cancelled': '导入已取消。',
+    'dialog.loading': '加载中...',
+    'dialog.cancel': '取消',
   },
 };
 
