@@ -44,9 +44,8 @@ export async function handleUrlImport(
             repositories,
             onLoading,
             onLoadingMessage,
-            onRepositoriesChange: async (repos) => {
+            onRepositoriesChange: (repos) => {
               console.log('Repositories changed:', repos);
-              window.alert(t('add.repoImported'));
             },
             onViewChange: () => {}, // Don't change view in this case
             t
@@ -65,7 +64,7 @@ export async function handleUrlImport(
     onNovelSelect(novel);
   } catch (err) {
     console.error('Failed to import novel from URL:', err);
-    alert(t('add.error.url'));
+    window.alert(t('add.error.url'));
   } finally {
     onLoading(false);
     onLoadingMessage('');
@@ -143,7 +142,7 @@ export async function handleRepoImport(
     }
   } catch (error) {
     console.error('Failed to handle repositories:', error);
-    alert(t('discover.error.invalidRepo'));
+    window.alert(t('discover.error.invalidRepo'));
   } finally {
     onLoading(false);
     onLoadingMessage('');
