@@ -2,6 +2,7 @@ import { NovelMeta } from '../../types/repo';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { DownloadIcon } from '../icons';
 
 interface NovelCardProps {
   novel: NovelMeta;
@@ -21,7 +22,8 @@ export function NovelCard({ novel }: NovelCardProps) {
   return (
     <div className="flex flex-col p-3 rounded-lg
       bg-white dark:bg-gray-800
-      shadow-sm border border-gray-200 dark:border-gray-700">
+      shadow-sm border border-gray-200 dark:border-gray-700
+      text-gray-900 dark:text-gray-100">
       <div className="flex space-x-3">
         {novel.cover && (
           <div className="relative w-20 h-28 flex-shrink-0">
@@ -34,21 +36,23 @@ export function NovelCard({ novel }: NovelCardProps) {
           </div>
         )}
         <div className="flex flex-col flex-1 min-w-0">
-          <h3 className="font-medium text-gray-900 dark:text-gray-100 break-words">
+          <h3 className="font-medium break-words">
             {novel.title}
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             {t('discover.novel.author')}: {novel.author}
           </p>
           <div className="flex flex-wrap gap-1 mt-1">
             {novel.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
+              <span key={tag} className="text-xs px-2 py-0.5 
+                bg-gray-100 dark:bg-gray-700 
+                text-gray-700 dark:text-gray-300 rounded">
                 {tag}
               </span>
             ))}
           </div>
           <div className="flex items-center justify-between mt-2">
-            <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
               {novel.size && <span>{formatSize(novel.size)}</span>}
             </div>
             <div className="flex items-center space-x-2">
@@ -59,14 +63,14 @@ export function NovelCard({ novel }: NovelCardProps) {
                     window.location.href = `/?add=${encodeURIComponent(novel.downloadUrl!)}`;
                   }}
                   href={novel.downloadUrl}
-                  className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 
-                    text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200
+                  className="p-1.5 rounded-full 
+                    hover:bg-gray-100 dark:hover:bg-gray-700 
+                    text-gray-600 dark:text-gray-300
+                    hover:text-gray-900 dark:hover:text-gray-100
                     cursor-pointer"
                   title={t('discover.novel.addToLibrary')}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
+                  <DownloadIcon />
                 </a>
               )}
             </div>
@@ -77,18 +81,20 @@ export function NovelCard({ novel }: NovelCardProps) {
       {isExpanded && (
         <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
           {novel.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+            <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">
               {novel.description}
             </p>
           )}
           <div className="flex flex-wrap gap-1 mb-2">
             {novel.tags.map((tag) => (
-              <span key={tag} className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
+              <span key={tag} className="text-xs px-2 py-0.5 
+                bg-gray-100 dark:bg-gray-700 
+                text-gray-700 dark:text-gray-300 rounded">
                 {tag}
               </span>
             ))}
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-sm text-gray-600 dark:text-gray-300">
             <p>{t('discover.novel.categories')}: {novel.categories.join(', ')}</p>
             <p>{t('discover.novel.lastUpdated')}: {novel.lastUpdated}</p>
             {novel.region && <p>{t('discover.novel.region')}: {novel.region}</p>}
@@ -96,18 +102,25 @@ export function NovelCard({ novel }: NovelCardProps) {
           {novel.pageUrl && (
             <a 
               href={novel.pageUrl} 
-              className="text-blue-500 hover:text-blue-600"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
             >
               {t('discover.novel.visit')}
             </a>
           )}
+          <a 
+            href={`/?add=${encodeURIComponent(novel.downloadUrl!)}`} 
+            aria-label={t('discover.novel.addToLibrary')}
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 block mt-2"
+          >
+            {t('discover.novel.addToLibrary')}
+          </a>
         </div>
       )}
       
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="mt-2 text-sm text-gray-500 hover:text-gray-700 
-          dark:text-gray-400 dark:hover:text-gray-200 underline"
+        className="mt-2 text-sm text-gray-600 hover:text-gray-900
+          dark:text-gray-300 dark:hover:text-gray-100 underline"
       >
         {isExpanded ? t('discover.novel.showLess') : t('discover.novel.showMore')}
       </button>
