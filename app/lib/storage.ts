@@ -1,12 +1,14 @@
 import * as jschardet from 'jschardet';
 import { TextDecoder } from 'text-encoding';
 import { Novel } from '../types';
+import { LocalRepo } from '../types/repo';
 
 export class NovelStorage {
     private static DB_NAME = 'novel-reader-db';
     private static DB_VERSION = 1;
     private static NOVELS_STORE = 'novels';
     private static CONTENT_STORE = 'content';
+    private static REPOS_STORE = 'repositories';
 
     private static async getDB(): Promise<IDBDatabase> {
         return new Promise((resolve, reject) => {
@@ -26,6 +28,11 @@ export class NovelStorage {
                 // Create content store for novel content
                 if (!db.objectStoreNames.contains(this.CONTENT_STORE)) {
                     db.createObjectStore(this.CONTENT_STORE, { keyPath: 'id' });
+                }
+
+                // Create repositories store
+                if (!db.objectStoreNames.contains(this.REPOS_STORE)) {
+                    db.createObjectStore(this.REPOS_STORE, { keyPath: 'url' });
                 }
             };
         });
@@ -214,5 +221,41 @@ export class NovelStorage {
     static async findNovelByUrl(url: string): Promise<Novel | undefined> {
         const novels = await this.getAllNovels();
         return novels.find(novel => novel.url === url);
+    }
+
+    static async saveRepository(repo: LocalRepo): Promise<void> {
+        const db = await this.getDB();
+        return new Promise<void>((resolve, reject) => {
+            const transaction = db.transaction(this.REPOS_STORE, 'readwrite');
+            const store = transaction.objectStore(this.REPOS_STORE);
+            store.put(repo);
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
+    }
+
+    static async getAllRepositories(): Promise<LocalRepo[]> {
+        const db = await this.getDB();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(this.REPOS_STORE, 'readonly');
+            const store = transaction.objectStore(this.REPOS_STORE);
+            const request = store.getAll();
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    static async deleteRepository(url: string): Promise<void> {
+        const db = await this.getDB();
+        return new Promise<void>((resolve, reject) => {
+            const transaction = db.transaction(this.REPOS_STORE, 'readwrite');
+            const store = transaction.objectStore(this.REPOS_STORE);
+            store.delete(url);
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
     }
 }

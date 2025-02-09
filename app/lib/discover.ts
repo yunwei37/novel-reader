@@ -76,16 +76,34 @@ export async function syncRepository(repo: LocalRepo): Promise<RepoIndex> {
 
 // Search and filter functions
 export function searchNovels(repositories: LocalRepo[], query: string): NovelMeta[] {
-  if (!query.trim()) return [];
-  
   const searchTerms = query.toLowerCase().split(/\s+/);
-  return repositories
-    .flatMap(repo => repo.index?.novels || [])
-    .filter(novel => {
-      const searchText = `${novel.title} ${novel.author} ${novel.description || ''} ${
-        (novel.categories || []).join(' ')} ${(novel.tags || []).join(' ')}`.toLowerCase();
-      return searchTerms.every(term => searchText.includes(term));
-    });
+  
+  const results: NovelMeta[] = [];
+  
+  for (const repo of repositories) {
+    const novels = repo.index.novels;
+    
+    for (const novel of novels) {
+      // Check if all search terms match either title or author
+      const matchesAllTerms = searchTerms.every(term => {
+        const title = novel.title.toLowerCase();
+        const author = novel.author?.toLowerCase() || '';
+        return title.includes(term) || author.includes(term);
+      });
+
+      if (matchesAllTerms) {
+        results.push({
+          ...novel,
+          repoUrl: repo.url // Add repository URL to identify source
+        });
+      }
+    }
+  }
+
+  // Sort by title
+  results.sort((a, b) => a.title.localeCompare(b.title));
+  
+  return results;
 }
 
 // Ranking and sorting functions

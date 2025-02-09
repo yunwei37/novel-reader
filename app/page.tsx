@@ -11,8 +11,10 @@ import { useTranslation } from './contexts/LanguageContext';
 import { LoadingDialog } from './components/LoadingDialog';
 import { Footer } from './components/Footer';
 import { DiscoverView } from './components/discover';
+import { SearchView } from './components/search';
+import { LocalRepo } from './types/repo';
 
-type View = 'library' | 'reader' | 'settings' | 'discover';
+type View = 'library' | 'reader' | 'settings' | 'discover' | 'search';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -23,6 +25,7 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [repositories, setRepositories] = useState<LocalRepo[]>([]);
 
   const handleNovelSelect = useCallback(async (novel: Novel) => {
     const content = await NovelStorage.getNovelContent(novel.id);
@@ -118,6 +121,8 @@ export default function Home() {
         return t('common.settings');
       case 'discover':
         return t('common.discover');
+      case 'search':
+        return t('common.search');
       default:
         return t('library.title');
     }
@@ -135,6 +140,19 @@ export default function Home() {
     }
     setCurrentView(view);
   }, [currentView, handleBackToLibrary]);
+
+  // Load repositories on mount
+  useEffect(() => {
+    const loadRepositories = async () => {
+      try {
+        const repos = await NovelStorage.getAllRepositories();
+        setRepositories(repos);
+      } catch (error) {
+        console.error('Failed to load repositories:', error);
+      }
+    };
+    loadRepositories();
+  }, []);
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
@@ -178,6 +196,16 @@ export default function Home() {
           )}
 
           {currentView === 'discover' && <DiscoverView />}
+          
+          {currentView === 'search' && (
+            <div className="h-full">
+              <SearchView 
+                repositories={repositories}
+                onSearching={() => {}}
+                className="h-full"
+              />
+            </div>
+          )}
 
           {/* Loading Dialog */}
           {isLoading && (

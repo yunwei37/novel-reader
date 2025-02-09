@@ -62,6 +62,11 @@ export const translations: Translations = {
     'discover.importComplete': 'Successfully imported "{title}"',
     'discover.searchResults': 'Search Results',
     'discover.searchPlaceholder': 'Search by title, author...',
+    'navigation.library': 'Library',
+    'navigation.discover': 'Discover',
+    'navigation.search': 'Search',
+    'navigation.settings': 'Settings',
+    'common.search': 'Search',
   },
   zh: {
     'common.back': '返回',
@@ -124,5 +129,10 @@ export const translations: Translations = {
     'discover.importComplete': '成功导入《{title}》',
     'discover.searchResults': '搜索结果',
     'discover.searchPlaceholder': '按标题、作者搜索...',
+    'navigation.library': '书架',
+    'navigation.discover': '发现',
+    'navigation.search': '搜索',
+    'navigation.settings': '设置',
+    'common.search': '搜索',
   },
 }; 

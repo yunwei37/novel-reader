@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslation } from '../contexts/LanguageContext';
 
-export type View = 'library' | 'reader' | 'settings' | 'add';
+export type View = 'library' | 'reader' | 'settings' | 'add' | 'discover' | 'search';
 
 interface NavigationProps {
     currentView: View;
@@ -20,9 +20,9 @@ export const Navigation: React.FC<NavigationProps> = ({
 
     const navItems: { id: View; label: string; icon: string }[] = [
         { id: 'library', label: t('navigation.library'), icon: '📚' },
-        { id: 'reader', label: t('navigation.reader'), icon: '📖' },
+        { id: 'discover', label: t('navigation.discover'), icon: '🔍' },
+        { id: 'search', label: t('navigation.search'), icon: '🔎' },
         { id: 'settings', label: t('navigation.settings'), icon: '⚙️' },
-        { id: 'add', label: t('navigation.add'), icon: '📥' },
     ];
 
     if (isMobile) {
