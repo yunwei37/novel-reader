@@ -1,4 +1,5 @@
 import { NovelMeta } from '../../types/repo';
+import { NovelStorage } from '../../lib/storage';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -45,8 +46,29 @@ export function NovelCard({ novel }: NovelCardProps) {
               </span>
             ))}
           </div>
-          <div className="flex items-center space-x-2 mt-2 text-sm text-gray-500 dark:text-gray-400">
-            {novel.size && <span>{formatSize(novel.size)}</span>}
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+              {novel.size && <span>{formatSize(novel.size)}</span>}
+            </div>
+            <div className="flex items-center space-x-2">
+              {novel.downloadUrl && (
+                <a
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = `/?add=${encodeURIComponent(novel.downloadUrl!)}`;
+                  }}
+                  href={novel.downloadUrl}
+                  className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 
+                    text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200
+                    cursor-pointer"
+                  title="Add to Library"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -70,7 +92,7 @@ export function NovelCard({ novel }: NovelCardProps) {
             <p>Last Updated: {novel.lastUpdated}</p>
             {novel.region && <p>Region: {novel.region}</p>}
           </div>
-          { novel.pageUrl && (
+          {novel.pageUrl && (
             <a href={novel.pageUrl} className="text-blue-500 hover:text-blue-600">
               Visit
             </a>

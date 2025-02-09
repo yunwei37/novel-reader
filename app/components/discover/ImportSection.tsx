@@ -45,7 +45,7 @@ export function ImportSection({ onImportComplete }: ImportSectionProps) {
         <input
           ref={fileInputRef}
           type="file"
-          accept=".txt,.epub"
+          accept=".txt"
           onChange={handleFileUpload}
           className="hidden"
         />
