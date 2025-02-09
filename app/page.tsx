@@ -234,7 +234,6 @@ export default function Home() {
                   showMenu={showReaderMenu}
                   onMenuClose={() => setShowReaderMenu(false)}
                   isTTSMode={isTTSMode}
-                  onTTSToggle={() => setIsTTSMode(prev => !prev)}
                 />
               </div>
             </div>

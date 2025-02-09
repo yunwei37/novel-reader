@@ -2,7 +2,7 @@ export interface TTSEventHandlers {
     onBoundary: (position: number) => void;
     onEnd: () => void;
     onStart: () => void;
-    onError: (error: any) => void;
+    onError: () => void;
 }
 
 export class TTSManager {
@@ -40,8 +40,8 @@ export class TTSManager {
             handlers.onStart();
         };
 
-        utterance.onerror = (event) => {
-            handlers.onError(event);
+        utterance.onerror = () => {
+            handlers.onError();
         };
 
         this.synthesis.speak(utterance);

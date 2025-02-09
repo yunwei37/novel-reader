@@ -10,7 +10,6 @@ import { PagedReader } from './PagedReader';
 import { ScrollReader } from './ScrollReader';
 import { ReaderMenu } from './reader/ReaderMenu';
 import { TTSReader } from './TTSReader';
-import { SoundIcon } from './icons';
 
 interface ReaderConfig {
   fontSize: number;
@@ -26,7 +25,6 @@ interface ReaderProps {
   showMenu?: boolean;
   onMenuClose?: () => void;
   isTTSMode?: boolean;
-  onTTSToggle?: () => void;
 }
 
 const DEFAULT_CONFIG: ReaderConfig = {
@@ -43,7 +41,6 @@ export const Reader: React.FC<ReaderProps> = ({
   showMenu = false,
   onMenuClose = () => {},
   isTTSMode = false,
-  onTTSToggle = () => {},
 }) => {
   const [config, setConfig] = useState<ReaderConfig>({
     ...DEFAULT_CONFIG,

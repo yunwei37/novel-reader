@@ -31,7 +31,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
     const chunks = useMemo(() => {
         const lines = content.split(/\n+/);
         const result: string[] = [];
-        
+
         for (let i = 0; i < lines.length; i += LINES_PER_CHUNK) {
             const chunk = lines.slice(i, i + LINES_PER_CHUNK).join('\n');
             if (chunk.trim()) {
@@ -126,7 +126,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
                 chunkContent: chunks[nextIndex],
                 chunkLength: chunks[nextIndex].length
             });
-            
+
             // Force the position update
             setCurrentPosition(newOffset);
             onPositionChange(newOffset);
@@ -163,7 +163,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
         return () => {
             window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
         };
-    }, []);
+    }, [selectedVoice]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -188,7 +188,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
             {/* Progress indicators */}
             <div className="px-4 py-2 border-b dark:border-gray-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 flex justify-between items-center">
-                    <span>{t('tts.section', { current: currentChunkIndex + 1, total: chunks.length })}</span>
+                    <span>{" " + currentChunkIndex + 1 + " / " + chunks.length}</span>
                     <span>{Math.round(progress)}%</span>
                 </div>
                 <div className="mt-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full">

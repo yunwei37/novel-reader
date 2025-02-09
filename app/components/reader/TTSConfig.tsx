@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from '../../contexts/LanguageContext';
 
 interface TTSConfigProps {
@@ -63,7 +63,7 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
   };
 
   // Initialize saved settings
-  React.useEffect(() => {
+  useEffect(() => {
     if (voices.length > 0) {
       const savedVoiceName = localStorage.getItem('tts-voice');
       const savedRate = localStorage.getItem('tts-rate');
@@ -79,7 +79,25 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
         onRateChange(parseFloat(savedRate));
       }
     }
-  }, [voices]);
+  }, [voices, onVoiceChange, onRateChange]);
+
+  useEffect(() => {
+    const handleVoicesChanged = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length) {
+        // Set default voice and rate
+        onVoiceChange(voices[0]);
+        onRateChange(1.0);
+      }
+    };
+
+    window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+    handleVoicesChanged();
+
+    return () => {
+      window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+    };
+  }, [onVoiceChange, onRateChange]);
 
   return (
     <div className="space-y-6">
