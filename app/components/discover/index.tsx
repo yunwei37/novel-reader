@@ -13,7 +13,6 @@ import { AddRepositoryDialog } from './AddRepositoryDialog';
 import { useRouter } from 'next/navigation';
 import { NovelStorage } from '../../lib/storage';
 import type { Novel, View } from '../../types';
-import { RepoCard } from './RepoCard';
 
 interface DiscoverViewProps {
   onViewChange: (view: View) => void;
