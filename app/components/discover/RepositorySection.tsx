@@ -2,6 +2,7 @@ import { useTranslation } from '../../contexts/LanguageContext';
 import { PlusIcon } from '../icons';
 import { LocalRepo } from '../../types/repo';
 import { RepoCard } from './RepoCard';
+import type { View } from '../../types';
 
 interface RepositorySectionProps {
   repositories: LocalRepo[];

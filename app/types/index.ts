@@ -25,3 +25,5 @@ export interface Novel {
   description?: string;
   tags?: string[];
 }
+
+export type View = 'library' | 'discover' | 'reader' | 'settings'; // adjust these values based on your actual view types

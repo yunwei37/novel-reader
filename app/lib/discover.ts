@@ -1,4 +1,4 @@
-import { NovelMeta, LocalRepo, RepoIndex, YamlNovelSearchIndex } from '../types/repo';
+import { NovelMeta, LocalRepo, RepoIndex, YamlNovelSearchIndex, SearchResult } from '../types/repo';
 import yaml from 'js-yaml';
 
 // Repository management functions
