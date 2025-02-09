@@ -17,12 +17,21 @@ export async function fetchRepoIndex(url: string): Promise<RepoIndex> {
     const yamlText = await response.text();
     const yamlData = yaml.load(yamlText) as Record<string, YamlNovelSearchIndex>;
 
-    // Collect all categories and tags
+    // Collect all categories and tags using Sets to prevent duplicates
     const categorySet = new Set<string>();
     const tagSet = new Set<string>();
+    const processedPaths = new Set<string>();
+    const novels: NovelMeta[] = [];
 
     // Transform the YAML data into NovelMeta array
-    const novels: NovelMeta[] = Object.entries(yamlData).map(([path, data]) => {
+    for (const [path, data] of Object.entries(yamlData)) {
+      // Skip if we've already processed this path
+      if (processedPaths.has(path)) continue;
+      processedPaths.add(path);
+
+      // Skip if filename doesn't end with .txt
+      if (data.filename && !data.filename.endsWith('.txt')) continue;
+
       // Add categories and tags to sets
       data.categories?.forEach(cat => categorySet.add(cat));
       data.tags?.forEach(tag => tagSet.add(tag));
@@ -38,7 +47,8 @@ export async function fetchRepoIndex(url: string): Promise<RepoIndex> {
       pageUrl = pageUrl.replace(/\.md$/, '');
       // downloadUrl is the same as pageUrl but replace the last part with filename
       const downloadUrl = pageUrl.replace(/\/[^/]+$/, '') + '/' + data.filename;
-      return {
+
+      novels.push({
         id: path,
         title,
         author: data.author || 'Unknown',
@@ -47,13 +57,14 @@ export async function fetchRepoIndex(url: string): Promise<RepoIndex> {
         tags: data.tags || [],
         categories: data.categories || [],
         chapters: data.chapters || 0,
-        lastUpdated: data.date || new Date().toISOString(),
+        date: data.date || new Date().toISOString(),
+        lastUpdated: data['archived date'] || new Date().toISOString(),
         size: data.size,
         region: data.region,
         pageUrl,
         downloadUrl
-      };
-    });
+      });
+    }
 
     // Extract repository name from URL
     const repoName = new URL(url).hostname.split('.')[0];
@@ -110,6 +121,7 @@ export function searchNovels(repositories: LocalRepo[], query: string): NovelMet
           categories: novel.categories,
           chapters: novel.chapters,
           lastUpdated: novel.lastUpdated,
+          date: novel.date,
           pageUrl: novel.pageUrl,
           size: novel.size,
           region: novel.region
@@ -128,7 +140,16 @@ export function searchNovels(repositories: LocalRepo[], query: string): NovelMet
 export function getPopularNovels(repositories: LocalRepo[], limit = 6): NovelMeta[] {
   return repositories
     .flatMap(repo => repo.index?.novels || [])
-    .sort((a, b) => (b.chapters || 0) - (a.chapters || 0))
+    .sort((a, b) => {
+      // First compare by chapters
+      const chapterDiff = (b.chapters || 0) - (a.chapters || 0);
+      if (chapterDiff !== 0) return chapterDiff;
+      
+      // If chapters are equal, compare by date
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return dateB - dateA;
+    })
     .slice(0, limit);
 }
 

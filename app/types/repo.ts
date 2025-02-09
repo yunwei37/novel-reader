@@ -9,6 +9,7 @@ export interface YamlNovelSearchIndex {
   size?: number;
   chapters?: number;
   lastUpdated?: string;
+  'archived date'?: string;
 }
 
 export interface NovelMeta {
@@ -20,6 +21,7 @@ export interface NovelMeta {
   tags: string[];
   categories: string[];
   chapters: number;
+  date: string;
   lastUpdated: string;
   pageUrl: string;
   size?: number;

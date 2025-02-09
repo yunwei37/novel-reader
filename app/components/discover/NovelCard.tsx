@@ -1,6 +1,7 @@
 import { NovelMeta } from '../../types/repo';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 interface NovelCardProps {
   novel: NovelMeta;
@@ -8,6 +9,7 @@ interface NovelCardProps {
 
 export function NovelCard({ novel }: NovelCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useTranslation();
 
   const formatSize = (size?: number) => {
     if (!size) return '';
@@ -36,7 +38,7 @@ export function NovelCard({ novel }: NovelCardProps) {
             {novel.title}
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {novel.author}
+            {t('discover.novel.author')}: {novel.author}
           </p>
           <div className="flex flex-wrap gap-1 mt-1">
             {novel.tags.slice(0, 3).map((tag) => (
@@ -60,7 +62,7 @@ export function NovelCard({ novel }: NovelCardProps) {
                   className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 
                     text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200
                     cursor-pointer"
-                  title="Add to Library"
+                  title={t('discover.novel.addToLibrary')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -87,13 +89,16 @@ export function NovelCard({ novel }: NovelCardProps) {
             ))}
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            <p>Categories: {novel.categories.join(', ')}</p>
-            <p>Last Updated: {novel.lastUpdated}</p>
-            {novel.region && <p>Region: {novel.region}</p>}
+            <p>{t('discover.novel.categories')}: {novel.categories.join(', ')}</p>
+            <p>{t('discover.novel.lastUpdated')}: {novel.lastUpdated}</p>
+            {novel.region && <p>{t('discover.novel.region')}: {novel.region}</p>}
           </div>
           {novel.pageUrl && (
-            <a href={novel.pageUrl} className="text-blue-500 hover:text-blue-600">
-              Visit
+            <a 
+              href={novel.pageUrl} 
+              className="text-blue-500 hover:text-blue-600"
+            >
+              {t('discover.novel.visit')}
             </a>
           )}
         </div>
@@ -104,7 +109,7 @@ export function NovelCard({ novel }: NovelCardProps) {
         className="mt-2 text-sm text-gray-500 hover:text-gray-700 
           dark:text-gray-400 dark:hover:text-gray-200 underline"
       >
-        {isExpanded ? 'Show less' : 'Show more'}
+        {isExpanded ? t('discover.novel.showLess') : t('discover.novel.showMore')}
       </button>
     </div>
   );

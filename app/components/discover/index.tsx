@@ -37,6 +37,14 @@ export function DiscoverView() {
 
   const handleAddRepository = async (url: string) => {
     if (!url) return;
+    
+    // Check if repository already exists
+    const existingRepo = repositories.find(repo => repo.url === url);
+    if (existingRepo) {
+      alert(t('discover.error.repoExists'));
+      return;
+    }
+    
     setIsLoading(true);
     try {
       const repoData = await fetchRepoIndex(url);
