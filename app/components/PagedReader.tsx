@@ -189,9 +189,9 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                 ref={containerRef}
                 className="
                     flex-1 rounded-t-md overflow-y-auto min-h-0
-                    bg-white dark:bg-gray-800 
+                    bg-white dark:bg-gray-900 
                     text-gray-900 dark:text-gray-100
-                    shadow-sm dark:shadow-gray-900/20
+                    shadow-sm dark:shadow-gray-950/50
                     scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 
                     dark:scrollbar-thumb-gray-600 dark:hover:scrollbar-thumb-gray-500 
                     scrollbar-track-transparent
@@ -213,33 +213,35 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
 
             <div className="
                 min-h-[2.5rem] px-2 sm:px-4 py-2
-                bg-white dark:bg-gray-800 
+                bg-white dark:bg-gray-900 
                 text-gray-900 dark:text-gray-100
-                border-t border-gray-200 dark:border-gray-700
-                shadow-sm dark:shadow-gray-900/20
+                border-t border-gray-200 dark:border-gray-800
+                shadow-sm dark:shadow-gray-950/50
                 rounded-b-md
-                flex flex-wrap items-center justify-between gap-2
+                flex items-stretch gap-2
             ">
                 <button
                     onClick={() => navigatePage('prev')}
                     disabled={currentPage <= 1}
                     className="
-                        w-7 h-7 rounded-md transition-all duration-200
+                        flex-1 rounded-md transition-all duration-200
                         flex items-center justify-center
-                        text-gray-600 dark:text-gray-300 
-                        hover:bg-gray-100 dark:hover:bg-gray-700
+                        text-gray-700 dark:text-gray-300 
+                        hover:bg-gray-100 hover:text-gray-900
+                        dark:hover:bg-gray-800 dark:hover:text-gray-100
+                        disabled:bg-transparent
                         disabled:text-gray-300 dark:disabled:text-gray-700
+                        disabled:hover:bg-transparent
                         disabled:cursor-not-allowed
-                        order-1
                     "
                     aria-label="Previous page"
                 >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
 
-                <div className="flex items-center gap-2 sm:gap-3 order-2 flex-1 justify-center min-w-[150px]">
+                <div className="flex items-center gap-2 sm:gap-3 justify-center min-w-[150px] px-2">
                     <div className="flex items-center gap-1 sm:gap-1.5">
                         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                             Page
@@ -247,8 +249,10 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
                             {currentPage}
                         </span>
-                        <span className="text-xs text-gray-400 dark:text-gray-500">/</span>
-                        <span className="text-xs text-gray-400 dark:text-gray-500">
+                        <span className="text-xs text-gray-400 dark:text-gray-600">
+                            /
+                        </span>
+                        <span className="text-xs text-gray-400 dark:text-gray-600">
                             {totalPages}
                         </span>
                     </div>
@@ -264,17 +268,19 @@ export const PagedReader: React.FC<PagedReaderProps> = ({
                     onClick={() => navigatePage('next')}
                     disabled={currentPage >= totalPages}
                     className="
-                        w-7 h-7 rounded-md transition-all duration-200
+                        flex-1 rounded-md transition-all duration-200
                         flex items-center justify-center
-                        text-gray-600 dark:text-gray-300 
-                        hover:bg-gray-100 dark:hover:bg-gray-700
+                        text-gray-700 dark:text-gray-300 
+                        hover:bg-gray-100 hover:text-gray-900
+                        dark:hover:bg-gray-800 dark:hover:text-gray-100
+                        disabled:bg-transparent
                         disabled:text-gray-300 dark:disabled:text-gray-700
+                        disabled:hover:bg-transparent
                         disabled:cursor-not-allowed
-                        order-3
                     "
                     aria-label="Next page"
                 >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                 </button>

@@ -48,7 +48,14 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         <div className="space-y-6">
             <button
                 onClick={onBack}
-                className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                className="
+                    flex items-center gap-2 
+                    text-gray-700 dark:text-gray-300 
+                    hover:text-gray-900 hover:bg-gray-100
+                    dark:hover:text-white dark:hover:bg-gray-800
+                    rounded-md p-1.5 -ml-1.5
+                    transition-colors duration-200
+                "
             >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -65,20 +72,26 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     </label>
                     <button
                         onClick={toggleTheme}
-                        className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-left"
+                        className="
+                            w-full flex items-center justify-between p-3 
+                            bg-gray-100 dark:bg-gray-800 
+                            hover:bg-gray-200 dark:hover:bg-gray-700
+                            text-left rounded-lg
+                            transition-colors duration-200
+                        "
                     >
                         <span className="text-gray-900 dark:text-gray-100">
                             {theme === 'light' ? t('settings.themeLight') : t('settings.themeDark')}
                         </span>
                         <div className="relative">
                             {theme === 'light' ? (
-                                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                         d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
                                     />
                                 </svg>
                             ) : (
-                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                         d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
                                     />
@@ -95,7 +108,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => onFontSizeChange(fontSize - 1)}
-                            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            className="
+                                p-2 rounded-lg 
+                                bg-gray-100 dark:bg-gray-800
+                                hover:bg-gray-200 dark:hover:bg-gray-700
+                                text-gray-700 dark:text-gray-300
+                                transition-colors duration-200
+                            "
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -106,7 +125,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                         </span>
                         <button
                             onClick={() => onFontSizeChange(fontSize + 1)}
-                            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            className="
+                                p-2 rounded-lg 
+                                bg-gray-100 dark:bg-gray-800
+                                hover:bg-gray-200 dark:hover:bg-gray-700
+                                text-gray-700 dark:text-gray-300
+                                transition-colors duration-200
+                            "
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -121,7 +146,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     </label>
                     <button
                         onClick={onModeToggle}
-                        className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-left"
+                        className="
+                            w-full p-3 rounded-lg 
+                            bg-gray-100 dark:bg-gray-800
+                            hover:bg-gray-200 dark:hover:bg-gray-700
+                            text-left
+                            transition-colors duration-200
+                        "
                     >
                         <span className="text-gray-900 dark:text-gray-100">
                             {isPaged ? t('settings.pagedMode') : t('settings.scrollMode')}
@@ -137,7 +168,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={() => onCharsPerPageChange(Math.max(200, charsPerPage - 100))}
-                                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                className="
+                                    p-2 rounded-lg 
+                                    bg-gray-100 dark:bg-gray-800
+                                    hover:bg-gray-200 dark:hover:bg-gray-700
+                                    text-gray-700 dark:text-gray-300
+                                    transition-colors duration-200
+                                "
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -148,7 +185,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                             </span>
                             <button
                                 onClick={() => onCharsPerPageChange(Math.min(2000, charsPerPage + 100))}
-                                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                className="
+                                    p-2 rounded-lg 
+                                    bg-gray-100 dark:bg-gray-800
+                                    hover:bg-gray-200 dark:hover:bg-gray-700
+                                    text-gray-700 dark:text-gray-300
+                                    transition-colors duration-200
+                                "
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
