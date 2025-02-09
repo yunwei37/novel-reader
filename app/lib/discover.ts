@@ -33,8 +33,11 @@ export async function fetchRepoIndex(url: string): Promise<RepoIndex> {
                    'Untitled';
 
       // Construct download URL
-      const downloadUrl = url.replace(/\/search_index\.yml$/, '') + '/' + path;
-
+      let pageUrl = url.replace(/\/search_index\.yml$/, '') + '/' + path;
+      // remove .md from pageUrl
+      pageUrl = pageUrl.replace(/\.md$/, '');
+      // downloadUrl is the same as pageUrl but replace the last part with filename
+      const downloadUrl = pageUrl.replace(/\/[^/]+$/, '') + '/' + data.filename;
       return {
         id: path,
         title,
@@ -45,9 +48,10 @@ export async function fetchRepoIndex(url: string): Promise<RepoIndex> {
         categories: data.categories || [],
         chapters: data.chapters || 0,
         lastUpdated: data.date || new Date().toISOString(),
-        downloadUrl,
         size: data.size,
-        region: data.region
+        region: data.region,
+        pageUrl,
+        downloadUrl
       };
     });
 
@@ -81,6 +85,9 @@ export function searchNovels(repositories: LocalRepo[], query: string): NovelMet
   const results: NovelMeta[] = [];
   
   for (const repo of repositories) {
+    // Add null check for index
+    if (!repo.index?.novels) continue;
+    
     const novels = repo.index.novels;
     
     for (const novel of novels) {
@@ -92,9 +99,20 @@ export function searchNovels(repositories: LocalRepo[], query: string): NovelMet
       });
 
       if (matchesAllTerms) {
+        // Create a new object without the repoUrl property
         results.push({
-          ...novel,
-          repoUrl: repo.url // Add repository URL to identify source
+          id: novel.id,
+          title: novel.title,
+          author: novel.author,
+          description: novel.description,
+          cover: novel.cover,
+          tags: novel.tags,
+          categories: novel.categories,
+          chapters: novel.chapters,
+          lastUpdated: novel.lastUpdated,
+          pageUrl: novel.pageUrl,
+          size: novel.size,
+          region: novel.region
         });
       }
     }

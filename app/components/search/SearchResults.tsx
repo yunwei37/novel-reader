@@ -9,18 +9,16 @@ interface SearchResultsProps {
 export function SearchResults({ results }: SearchResultsProps) {
   const { t } = useTranslation();
 
-  if (results.length === 0) return null;
-
   return (
-    <section>
-      <h2 className="text-xl font-bold mb-4 sticky top-0 bg-gray-50 dark:bg-gray-900 py-2 text-gray-900 dark:text-gray-100">
+    <div className="py-6">
+      <h2 className="text-xl font-bold mb-6 sticky top-0 bg-gray-50 dark:bg-gray-900 py-3 text-gray-900 dark:text-gray-100 z-10">
         {t('discover.searchResults')} ({results.length})
       </h2>
-      <div className="grid grid-cols-2 gap-4 pb-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
         {results.map(novel => (
           <NovelCard key={novel.id} novel={novel} />
         ))}
       </div>
-    </section>
+    </div>
   );
 } 

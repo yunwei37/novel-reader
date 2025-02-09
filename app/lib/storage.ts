@@ -4,11 +4,11 @@ import { Novel } from '../types';
 import { LocalRepo } from '../types/repo';
 
 export class NovelStorage {
-    private static DB_NAME = 'novel-reader-db';
-    private static DB_VERSION = 1;
-    private static NOVELS_STORE = 'novels';
-    private static CONTENT_STORE = 'content';
-    private static REPOS_STORE = 'repositories';
+    private static readonly DB_NAME = 'NovelDB';
+    private static readonly DB_VERSION = 1;
+    private static readonly REPOS_STORE = 'repositories';
+    private static readonly NOVELS_STORE = 'novels';
+    private static readonly CONTENT_STORE = 'content';
 
     private static async getDB(): Promise<IDBDatabase> {
         return new Promise((resolve, reject) => {

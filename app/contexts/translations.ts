@@ -67,6 +67,7 @@ export const translations: Translations = {
     'navigation.search': 'Search',
     'navigation.settings': 'Settings',
     'common.search': 'Search',
+    'discover.noResults': 'No results found',
   },
   zh: {
     'common.back': '返回',
@@ -134,5 +135,6 @@ export const translations: Translations = {
     'navigation.search': '搜索',
     'navigation.settings': '设置',
     'common.search': '搜索',
+    'discover.noResults': '未找到结果',
   },
 }; 
