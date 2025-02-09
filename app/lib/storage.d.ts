@@ -1,4 +1,4 @@
-import { Novel } from '../types';
+import { Novel, Chapter } from '../types';
 
 export declare class NovelStorage {
     static saveNovel(novel: Novel, content: string): Promise<void>;
@@ -7,4 +7,5 @@ export declare class NovelStorage {
     static updateNovelProgress(novelId: string, position: number): Promise<void>;
     static deleteNovel(novelId: string): Promise<void>;
     static importFromUrl(url: string): Promise<Novel>;
+    static updateNovelChapters(novelId: string, chapters: Chapter[]): Promise<void>;
 } 

@@ -11,6 +11,8 @@ export interface Novel {
   totalChapters?: number;
   description?: string;
   tags?: string[];
+  bookmarks: Bookmark[];
+  chapters: Chapter[];
 }
 
 export interface ReaderConfig {

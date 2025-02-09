@@ -7,6 +7,7 @@ import { MainMenuPage } from './MainMenuPage';
 import { ProgressSlider } from './ProgressSlider';
 import { SearchPage } from './SearchPage';
 import { SettingsPage } from './SettingsPage';
+import { Novel } from '../../types';
 
 interface ReaderConfig {
     fontSize: number;
@@ -22,7 +23,8 @@ interface ReaderMenuProps {
     // Reading settings
     config: ReaderConfig;
     onConfigChange: (updates: Partial<ReaderConfig>) => void;
-    // Content
+    // Novel data
+    novel: Novel;
     content: string;
     currentPosition: number;
     onPositionChange: (offset: number) => void;
@@ -33,6 +35,7 @@ export const ReaderMenu: React.FC<ReaderMenuProps> = ({
     onClose,
     config,
     onConfigChange,
+    novel,
     content,
     currentPosition,
     onPositionChange,
@@ -99,6 +102,7 @@ export const ReaderMenu: React.FC<ReaderMenuProps> = ({
                             currentPosition={currentPosition}
                             onPositionChange={onPositionChange}
                             onBack={() => setCurrentPage('main')}
+                            chapters={novel.chapters}
                         />
                     )}
                     {currentPage === 'search' && (

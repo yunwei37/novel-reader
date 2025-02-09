@@ -7,6 +7,7 @@ interface ChaptersPageProps {
     currentPosition: number;
     onPositionChange: (position: number) => void;
     onBack: () => void;
+    chapters: Chapter[];
 }
 
 export const ChaptersPage: React.FC<ChaptersPageProps> = ({
@@ -14,27 +15,14 @@ export const ChaptersPage: React.FC<ChaptersPageProps> = ({
     currentPosition,
     onPositionChange,
     onBack,
+    chapters,
 }) => {
-    const [chapters, setChapters] = useState<Chapter[]>([]);
     const [chapterPattern, setChapterPattern] = useState(() =>
         loadFromStorage<string>('chapterPattern', '')
     );
     const [isEditing, setIsEditing] = useState(false);
     const [editPattern, setEditPattern] = useState(chapterPattern);
     const chaptersContainerRef = useRef<HTMLDivElement>(null);
-
-    // Detect chapters when content or pattern changes
-    useEffect(() => {
-        if (content) {
-            const detectedChapters = detectChapters(content, chapterPattern);
-            console.log('Detected chapters:', detectedChapters.map(ch => ({
-                title: ch.title,
-                startIndex: ch.startIndex,
-                contentPreview: ch.content.slice(0, 50)
-            })));
-            setChapters(detectedChapters);
-        }
-    }, [content, chapterPattern]);
 
     // Find current chapter index
     const currentChapterIndex = chapters.findIndex((chapter, index) => {
