@@ -10,8 +10,10 @@ import { NovelStorage } from './lib/storage';
 import { Novel } from './types';
 import { useTranslation } from './contexts/LanguageContext';
 import { LoadingDialog } from './components/LoadingDialog';
+import { Footer } from './components/Footer';
+import { DiscoverView } from './components/DiscoverView';
 
-type View = 'library' | 'reader' | 'settings' | 'add';
+type View = 'library' | 'reader' | 'settings' | 'add' | 'discover';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -117,6 +119,8 @@ export default function Home() {
         return t('common.settings');
       case 'add':
         return t('library.import');
+      case 'discover':
+        return t('common.discover');
       default:
         return t('library.title');
     }
@@ -127,6 +131,13 @@ export default function Home() {
     if (currentView === 'library') return undefined;
     return handleBackToLibrary;
   };
+
+  const handleNavigate = useCallback((view: View) => {
+    if (currentView === 'reader' && view !== 'reader') {
+      handleBackToLibrary();
+    }
+    setCurrentView(view);
+  }, [currentView, handleBackToLibrary]);
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
@@ -179,6 +190,8 @@ export default function Home() {
             />
           )}
 
+          {currentView === 'discover' && <DiscoverView />}
+
           {/* Loading Dialog */}
           {isLoading && (
             <LoadingDialog
@@ -187,6 +200,14 @@ export default function Home() {
             />
           )}
         </div>
+
+        {/* Footer Navigation */}
+        {currentView !== 'reader' && (
+          <Footer
+            currentView={currentView}
+            onNavigate={handleNavigate}
+          />
+        )}
       </div>
     </div>
   );
