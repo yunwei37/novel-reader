@@ -26,6 +26,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
     const [rate, setRate] = useState(DEFAULT_RATE);
     const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
     const ttsManager = useRef(new TTSManager());
+    const [error, setError] = useState<string | null>(null);
 
     // Split content into chunks
     const chunks = useMemo(() => {
@@ -77,7 +78,10 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
     }, [chunks]);
 
     const playChunk = useCallback((chunkIndex: number) => {
-        if (!selectedVoice || chunkIndex >= chunks.length) return;
+        if (!selectedVoice || chunkIndex >= chunks.length) {
+            setError('No voice selected or invalid chunk');
+            return;
+        }
 
         const chunk = chunks[chunkIndex];
         const startOffset = getChunkStartOffset(chunkIndex);
@@ -99,8 +103,14 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
                         setIsPlaying(false);
                     }
                 },
-                onStart: () => setIsPlaying(true),
-                onError: () => setIsPlaying(false)
+                onStart: () => {
+                    setError(null);
+                    setIsPlaying(true);
+                },
+                onError: () => {
+                    setError('Speech synthesis failed. Please try again.');
+                    setIsPlaying(false);
+                }
             }
         );
     }, [chunks, selectedVoice, rate, onPositionChange, getChunkStartOffset]);
@@ -185,6 +195,11 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
 
     return (
         <div className="h-full flex flex-col bg-white dark:bg-gray-800">
+            {error && (
+                <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400">
+                    {error}
+                </div>
+            )}
             {/* Progress indicators */}
             <div className="px-4 py-2 border-b dark:border-gray-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 flex justify-between items-center">

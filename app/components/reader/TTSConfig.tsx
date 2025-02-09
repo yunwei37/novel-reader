@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../../contexts/LanguageContext';
 
 interface TTSConfigProps {
@@ -81,23 +81,57 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
     }
   }, [voices, onVoiceChange, onRateChange]);
 
+  // Add error state
+  const [initError, setInitError] = useState<string | null>(null);
+
   useEffect(() => {
-    const handleVoicesChanged = () => {
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length) {
-        // Set default voice and rate
-        onVoiceChange(voices[0]);
-        onRateChange(1.0);
+    let timeoutId: NodeJS.Timeout;
+    
+    const initVoices = () => {
+      try {
+        const availableVoices = window.speechSynthesis.getVoices();
+        if (availableVoices.length === 0) {
+          // Some mobile browsers need a moment to initialize
+          timeoutId = setTimeout(initVoices, 1000);
+        } else {
+          // Set default voice and rate
+          onVoiceChange(availableVoices[0]);
+          onRateChange(1.0);
+          setInitError(null);
+        }
+      } catch (error) {
+        console.error('Error initializing voices:', error);
+        setInitError('Failed to initialize speech synthesis');
       }
     };
 
-    window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
-    handleVoicesChanged();
+    const handleVoicesChanged = () => {
+      clearTimeout(timeoutId);
+      initVoices();
+    };
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+      initVoices();
+    } else {
+      setInitError('Speech synthesis not supported in this browser');
+    }
 
     return () => {
-      window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+      clearTimeout(timeoutId);
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+      }
     };
   }, [onVoiceChange, onRateChange]);
+
+  if (initError) {
+    return (
+      <div className="p-4 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg">
+        {initError}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
