@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 interface TTSConfigProps {
   rate: number;
@@ -15,6 +16,8 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
   onVoiceChange,
   voices,
 }) => {
+  const { t } = useTranslation();
+
   // Group voices by language
   const voicesByLanguage = React.useMemo(() => {
     const voiceMap = new Map<string, SpeechSynthesisVoice[]>();
@@ -48,12 +51,42 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
     }
   };
 
+  // Update handlers to persist settings
+  const handleRateChange = (newRate: number) => {
+    localStorage.setItem('tts-rate', newRate.toString());
+    onRateChange(newRate);
+  };
+
+  const handleVoiceChange = (voice: SpeechSynthesisVoice) => {
+    localStorage.setItem('tts-voice', voice.name);
+    onVoiceChange(voice);
+  };
+
+  // Initialize saved settings
+  React.useEffect(() => {
+    if (voices.length > 0) {
+      const savedVoiceName = localStorage.getItem('tts-voice');
+      const savedRate = localStorage.getItem('tts-rate');
+
+      if (savedVoiceName) {
+        const savedVoice = voices.find(v => v.name === savedVoiceName);
+        if (savedVoice) {
+          onVoiceChange(savedVoice);
+        }
+      }
+      
+      if (savedRate) {
+        onRateChange(parseFloat(savedRate));
+      }
+    }
+  }, [voices]);
+
   return (
     <div className="space-y-6">
       {/* Speed control */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Reading Speed
+          {t('tts.speed')}
         </label>
         <input
           type="range"
@@ -61,7 +94,7 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
           max="2"
           step="0.1"
           value={rate}
-          onChange={(e) => onRateChange(parseFloat(e.target.value))}
+          onChange={(e) => handleRateChange(parseFloat(e.target.value))}
           className="w-full accent-blue-500"
         />
         <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -72,7 +105,7 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
       {/* Language selection */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Language
+          {t('tts.language')}
         </label>
         <select
           value={currentLanguage}
@@ -93,7 +126,7 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
       {currentLanguage && (
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Voice
+            {t('tts.voice')}
           </label>
           <div className="space-y-2">
             {(voicesByLanguage.get(currentLanguage) || []).map((voice) => (
@@ -105,7 +138,7 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
                   type="radio"
                   name="voice"
                   checked={selectedVoice?.name === voice.name}
-                  onChange={() => onVoiceChange(voice)}
+                  onChange={() => handleVoiceChange(voice)}
                   className="text-blue-500 focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700 dark:text-gray-300">

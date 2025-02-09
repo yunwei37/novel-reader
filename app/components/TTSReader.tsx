@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import { ScrollProgress } from './reader/ScrollProgress';
 import { TTSConfig } from './reader/TTSConfig';
 import { TTSManager } from '../lib/TTSManager';
+import { useTranslation } from '../contexts/LanguageContext';
 
 interface TTSReaderProps {
     content: string;
@@ -19,6 +20,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
     onPositionChange,
     fontSize,
 }) => {
+    const { t } = useTranslation();
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentPosition, setCurrentPosition] = useState(currentOffset);
     const [rate, setRate] = useState(DEFAULT_RATE);
@@ -43,8 +45,15 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
     const currentChunkIndex = useMemo(() => {
         let totalLength = 0;
         for (let i = 0; i < chunks.length; i++) {
-            totalLength += chunks[i].length;
-            if (currentPosition <= totalLength) {
+            const chunkLength = chunks[i].length + 1; // Add 1 for newline
+            totalLength += chunkLength;
+            if (currentPosition < totalLength) {
+                console.log('Found chunk index:', {
+                    index: i,
+                    totalLength,
+                    currentPosition,
+                    chunkLength
+                });
                 return i;
             }
         }
@@ -53,7 +62,18 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
 
     // Calculate start offset for current chunk
     const getChunkStartOffset = useCallback((index: number) => {
-        return chunks.slice(0, index).reduce((acc, chunk) => acc + chunk.length, 0);
+        let offset = 0;
+        for (let i = 0; i < index; i++) {
+            offset += chunks[i].length;
+            // Add 1 for the newline character between chunks
+            offset += 1;
+        }
+        console.log('Calculated offset:', {
+            index,
+            offset,
+            chunkLengths: chunks.slice(0, index).map(c => c.length)
+        });
+        return offset;
     }, [chunks]);
 
     const playChunk = useCallback((chunkIndex: number) => {
@@ -94,6 +114,40 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
         }
     }, [isPlaying, currentChunkIndex, playChunk]);
 
+    const goToNextChunk = useCallback(() => {
+        if (!isPlaying && currentChunkIndex < chunks.length - 1) {
+            const nextIndex = currentChunkIndex + 1;
+            const newOffset = getChunkStartOffset(nextIndex);
+            console.log('Going to next chunk:', {
+                nextIndex,
+                newOffset,
+                currentChunkIndex,
+                currentPosition,
+                chunkContent: chunks[nextIndex],
+                chunkLength: chunks[nextIndex].length
+            });
+            
+            // Force the position update
+            setCurrentPosition(newOffset);
+            onPositionChange(newOffset);
+        }
+    }, [isPlaying, currentChunkIndex, chunks, getChunkStartOffset, onPositionChange, currentPosition]);
+
+    const goToPreviousChunk = useCallback(() => {
+        if (!isPlaying && currentChunkIndex > 0) {
+            const prevIndex = currentChunkIndex - 1;
+            const newOffset = getChunkStartOffset(prevIndex);
+            setCurrentPosition(newOffset);
+            onPositionChange(newOffset);
+            setTimeout(() => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 100);
+        }
+    }, [isPlaying, currentChunkIndex, getChunkStartOffset, onPositionChange]);
+
     // Voice initialization
     useEffect(() => {
         const handleVoicesChanged = () => {
@@ -120,6 +174,11 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
         };
     }, []);
 
+    // Add this effect to sync with parent's currentOffset
+    useEffect(() => {
+        setCurrentPosition(currentOffset);
+    }, [currentOffset]);
+
     const currentChunk = chunks[currentChunkIndex] || '';
     const progress = (currentPosition / content.length) * 100;
     const chunkProgress = ((currentChunkIndex + 1) / chunks.length) * 100;
@@ -129,7 +188,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
             {/* Progress indicators */}
             <div className="px-4 py-2 border-b dark:border-gray-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 flex justify-between items-center">
-                    <span>Section {currentChunkIndex + 1} of {chunks.length}</span>
+                    <span>{t('tts.section', { current: currentChunkIndex + 1, total: chunks.length })}</span>
                     <span>{Math.round(progress)}%</span>
                 </div>
                 <div className="mt-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full">
@@ -173,6 +232,32 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
             {/* Playback controls */}
             <div className="p-4 border-t dark:border-gray-700">
                 <div className="max-w-xl mx-auto">
+                    <div className="flex gap-4 mb-4">
+                        <button
+                            onClick={goToPreviousChunk}
+                            disabled={isPlaying || currentChunkIndex === 0}
+                            className="flex-1 py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 
+                                    disabled:opacity-50 disabled:cursor-not-allowed
+                                    text-gray-800 font-semibold transition-colors
+                                    focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
+                                    dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white
+                                    dark:focus:ring-offset-gray-800"
+                        >
+                            {t('tts.previous')}
+                        </button>
+                        <button
+                            onClick={goToNextChunk}
+                            disabled={isPlaying || currentChunkIndex === chunks.length - 1}
+                            className="flex-1 py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 
+                                    disabled:opacity-50 disabled:cursor-not-allowed
+                                    text-gray-800 font-semibold transition-colors
+                                    focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
+                                    dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white
+                                    dark:focus:ring-offset-gray-800"
+                        >
+                            {t('tts.next')}
+                        </button>
+                    </div>
                     <button
                         onClick={togglePlayback}
                         className="w-full py-4 px-6 rounded-lg bg-blue-500 hover:bg-blue-600 
@@ -180,7 +265,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
                                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                                dark:focus:ring-offset-gray-800"
                     >
-                        {isPlaying ? 'Stop' : 'Start Reading'}
+                        {isPlaying ? t('tts.stop') : t('tts.start')}
                     </button>
                     <div className="mt-4">
                         <ScrollProgress progress={progress.toFixed(2)} />
