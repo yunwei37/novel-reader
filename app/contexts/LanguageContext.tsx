@@ -1,12 +1,15 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-type Translations = {
-  [key: string]: {
-    [key: string]: string;
-  };
-};
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getSystemLanguage } from '../lib/language';
+import { 
+  LanguageContextType, 
+  createTranslator, 
+  Translations,
+  getStoredLanguage,
+  storeLanguage,
+  SupportedLanguage
+} from '../lib/i18n';
 
 const translations: Translations = {
   en: {
@@ -91,48 +94,53 @@ const translations: Translations = {
   },
 };
 
-type LanguageContextType = {
-  language: string;
-  setLanguage: (lang: string) => void;
-  t: (key: string) => string;
-};
+const LanguageContext = createContext<LanguageContextType>({
+  language: 'en',
+  setLanguage: () => {},
+  t: (key: string) => key,
+});
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
-
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState('en');
+export const LanguageProvider = ({ 
+  children,
+  initialLang
+}: { 
+  children: React.ReactNode;
+  initialLang: string;
+}) => {
+  const [language, setLanguage] = useState(initialLang);
 
   useEffect(() => {
-    const savedLang = localStorage.getItem('language');
+    const savedLang = getStoredLanguage();
     if (savedLang) {
       setLanguage(savedLang);
-    } else {
-      // Try to detect browser language
-      const browserLang = navigator.language.split('-')[0];
-      setLanguage(translations[browserLang] ? browserLang : 'en');
+      return;
+    }
+
+    const systemLang = getSystemLanguage();
+    if (systemLang !== language) {
+      setLanguage(systemLang);
+      storeLanguage(systemLang as SupportedLanguage);
     }
   }, []);
 
-  const handleSetLanguage = (lang: string) => {
-    setLanguage(lang);
-    localStorage.setItem('language', lang);
+  const handleSetLanguage = (newLang: string) => {
+    setLanguage(newLang);
+    storeLanguage(newLang as SupportedLanguage);
   };
 
-  const t = (key: string): string => {
-    return translations[language]?.[key] || key;
-  };
+  const t = createTranslator(translations, language);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
-}
+};
 
-export function useTranslation() {
+export const useTranslation = () => {
   const context = useContext(LanguageContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useTranslation must be used within a LanguageProvider');
   }
   return context;
-} 
+}; 

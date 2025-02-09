@@ -41,7 +41,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <LanguageProvider>
+        <LanguageProvider initialLang="en">
           {children}
         </LanguageProvider>
         <Script
