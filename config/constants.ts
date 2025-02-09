@@ -3,7 +3,7 @@
  */
 export const CONFIG = {
   // Site URLs
-  GITHUB_REPO: 'https://github.com/yourusername/web-novel-reader', // Update this with your actual repo URL
+  GITHUB_REPO: 'hhttps://github.com/yunwei37/webNR', // Update this with your actual repo URL
   HOME_PAGE: 'https://webnovel.win', // Updated to a more professional domain
   CANONICAL_DOMAIN: 'https://app.webnovel.win', // Base URL for canonical links
 
