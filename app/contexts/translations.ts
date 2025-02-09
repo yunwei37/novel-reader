@@ -101,6 +101,9 @@ export const translations: Translations = {
     'settings.viewSourceDesc': 'Check out our GitHub repository',
     'settings.copyright': '© {year} Web Novel Reader',
     'settings.licenseMIT': 'MIT License',
+    'add.confirmRedownload': 'This novel already exists. Do you want to download it again?',
+    'add.confirmImportRepo': 'This novel is from a new repository. Would you like to import the repository data as well?',
+    'add.repoImported': 'Repository successfully imported!',
   },
   zh: {
     'common.back': '返回',
@@ -202,5 +205,8 @@ export const translations: Translations = {
     'settings.viewSourceDesc': '访问我们的 GitHub 仓库',
     'settings.copyright': '© Web Novel Reader',
     'settings.licenseMIT': 'MIT 许可证',
+    'add.confirmRedownload': '该小说已存在。是否重新下载？',
+    'add.confirmImportRepo': '该小说来自新的书源。是否同时导入书源数据？',
+    'add.repoImported': '书源导入成功！',
   },
 }; 
