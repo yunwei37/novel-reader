@@ -1,6 +1,6 @@
 site_name: WebNR - Web Novel Reader
 site_description: A modern, privacy-focused, cross-platform web novel reader
-site_url: https://app.webnovel.win
+site_url: https://www.webnovel.win
 repo_url: https://github.com/yunwei37/webNR
 repo_name: webNR
 
@@ -24,13 +24,6 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-
-nav:
-  - Home: README.md
-  - Documentation:
-    - Getting Started: getting-started.md
-    - Features: features.md
-    - URL Parameters: url-parameters.md
 
 markdown_extensions:
   - pymdownx.highlight:

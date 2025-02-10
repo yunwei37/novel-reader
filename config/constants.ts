@@ -3,8 +3,8 @@
  */
 export const CONFIG = {
   // Site URLs
-  GITHUB_REPO: 'hhttps://github.com/yunwei37/webNR', // Update this with your actual repo URL
-  HOME_PAGE: 'https://webnovel.win', // Updated to a more professional domain
+  GITHUB_REPO: 'https://github.com/yunwei37/webNR', // Update this with your actual repo URL
+  HOME_PAGE: 'https://www.webnovel.win', // Updated to a more professional domain
   CANONICAL_DOMAIN: 'https://app.webnovel.win', // Base URL for canonical links
 
   // Analytics
