@@ -4,10 +4,9 @@
 
 [English Documentation](README.md)
 
+Live Demo: [https://app.webnovel.win](https://app.webnovel.win)
 
 ## Demo Screenshots
-
-<div align="center">
 
 ![Screenshot 1](imgs/Screenshot%202025-02-09%20174556.png)
 
@@ -24,8 +23,6 @@
 ![Screenshot 7](imgs/Screenshot%202025-02-09%20174925.png)
 
 ![Screenshot 8](imgs/Screenshot%202025-02-09%20174925.png)
-
-</div>
 
 ## 主要特性
 
