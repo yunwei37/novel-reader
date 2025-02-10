@@ -6,26 +6,30 @@ A modern, privacy-focused, cross-platform web novel reader that works entirely c
 
 ## Key Features
 
-- 🔒 **Privacy First**
-  - All data processed locally
-  - No login required
-  - No tracking or analytics
-  - Works offline as PWA
+🔒 **Privacy First**
+  
+- All data processed locally
+- No login required
+- No tracking or analytics
+- Works offline as PWA
 
-- 📚 **Multi-Source Reading**
-  - Import from local files
-  - Import from URLs
-  - Connect to compatible novel repositories
-  - Support for multiple text encodings (UTF-8, GB18030, Big5)
+📚 **Multi-Source Reading**
 
-- 🌐 **Repository System**
+- Import from local files
+- Import from URLs
+- Connect to compatible novel repositories
+- Support for multiple text encodings (UTF-8, GB18030, Big5)
+
+🌐 **Repository System**
+  
   - Connect to multiple novel repositories
   - Browse popular and latest novels
   - Search across repositories
   - Automatic repository syncing
   - Categories and tags support
 
-- 📖 **Rich Reading Experience**
+📖 **Rich Reading Experience**
+
   - Two reading modes: Paged and Scroll
   - Customizable font size
   - Dark/Light theme with system preference detection
@@ -34,18 +38,21 @@ A modern, privacy-focused, cross-platform web novel reader that works entirely c
   - Text-to-Speech support with adjustable speed and voice selection
   - One-click access to web resources and definitions
 
-- 🔍 **Advanced Search**
+🔍 **Advanced Search**
+
   - Full-text search across all repositories
   - Multiple sorting options (relevance, newest, popular, rating)
   - Paginated results
   - Quick repository filtering
 
-- 🌍 **Internationalization**
+🌍 **Internationalization**
+
   - Multi-language support
   - Currently supports English and Chinese
   - Easy to add new translations
 
-- 📱 **Cross-Platform**
+📱 **Cross-Platform**
+
   - Works as Progressive Web App (PWA)
   - Responsive design for all screen sizes
   - Installable on any device
@@ -62,11 +69,13 @@ The app supports several URL parameters for direct actions:
   ```
 
 - `?add=URL` - Import novel directly from URL
+
   ```
   https://app.webnovel.win?add=https://example.com/novel.txt
   ```
 
 - `?search=REPO_URL` - Open search view for specific repository
+
   ```
   https://app.webnovel.win?search=https://repo1.com
   ```
