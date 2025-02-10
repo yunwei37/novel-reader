@@ -36,11 +36,11 @@ jobs:
       - run: pip install mkdocs-rss-plugin  mkdocs-static-i18n[material] python-dotenv openai pdfplumber python-docx
       # - run: pip install -r .github/scripts/requirements.txt
       - run: sudo apt-get install libcairo2-dev
-      - name: Prepare site
-        run: |
-          mkdir -p docs
-          cp README.md docs/README.md
-          cp README.zh.md docs/README.zh.md
+      # - name: Prepare site
+      #   run: |
+      #     mkdir -p docs
+      #     cp README.md docs/README.md
+      #     cp README.zh.md docs/README.zh.md
 
       # - name: Create docs directory
       #   run: |

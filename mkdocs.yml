@@ -46,6 +46,16 @@ markdown_extensions:
 
 plugins:
   - search
+  - i18n:
+    docs_structure: suffix
+    languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: zh
+          name: Chinese
+          build: true
 
 extra:
   analytics:

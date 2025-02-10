@@ -4,6 +4,29 @@ A modern, privacy-focused, cross-platform web novel reader that works entirely c
 
 [中文文档](README.zh.md)
 
+
+## Demo Screenshots
+
+<div align="center">
+
+![Screenshot 1](imgs/Screenshot%202025-02-09%20174556.png)
+
+![Screenshot 2](imgs/Screenshot%202025-02-09%20174735.png)
+
+![Screenshot 3](imgs/Screenshot%202025-02-09%20174807.png)
+
+![Screenshot 4](imgs/Screenshot%202025-02-09%20174820.png)
+
+![Screenshot 5](imgs/Screenshot%202025-02-09%20174833.png)
+
+![Screenshot 6](imgs/Screenshot%202025-02-09%20174855.png)
+
+![Screenshot 7](imgs/Screenshot%202025-02-09%20174925.png)
+
+![Screenshot 8](imgs/Screenshot%202025-02-09%20174925.png)
+
+</div>
+
 ## Key Features
 
 🔒 **Privacy First**
