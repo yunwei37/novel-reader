@@ -1,45 +1,83 @@
 # WebNR - Web Novel Reader
 
-A modern, feature-rich reading app for novels, books, and files, built with Next.js and TypeScript.
+A modern, privacy-focused, cross-platform web novel reader that works entirely client-side in browser. Built with Next.js and TypeScript.
 
-## Features
+[中文文档](README.zh.md)
 
-It works as `Progressive Web App (PWA)` or A `Single Page Application (SPA)`.
+## Key Features
 
-- 📚 **Library Management**
-  - Import novels from local files or URLs
-  - Organize and manage your novel collection
-  - Sort by title or last read date
-  - Filter novels by title or author
-  - Bulk selection and deletion support
+- 🔒 **Privacy First**
+  - All data processed locally
+  - No login required
+  - No tracking or analytics
+  - Works offline as PWA
 
-- 📖 **Advanced Reading Experience**
-  - Two reading modes: `Paged` and `Scroll`
+- 📚 **Multi-Source Reading**
+  - Import from local files
+  - Import from URLs
+  - Connect to compatible novel repositories
+  - Support for multiple text encodings (UTF-8, GB18030, Big5)
+
+- 🌐 **Repository System**
+  - Connect to multiple novel repositories
+  - Browse popular and latest novels
+  - Search across repositories
+  - Automatic repository syncing
+  - Categories and tags support
+
+- 📖 **Rich Reading Experience**
+  - Two reading modes: Paged and Scroll
   - Customizable font size
-  - Progress tracking and automatic bookmark saving
-  - Dark mode support with system preference detection
-  - Beautiful, clean reading interface
+  - Dark/Light theme with system preference detection
+  - Progress tracking
+  - Clean, distraction-free interface
+  - Text-to-Speech support with adjustable speed and voice selection
+  - One-click access to web resources and definitions
 
-- 🔍 **Navigation & Search**
-  - Automatic chapter detection
-  - Full-text search functionality
-  - Bookmarking system with notes
-  - Progress slider for quick navigation
+- 🔍 **Advanced Search**
+  - Full-text search across all repositories
+  - Multiple sorting options (relevance, newest, popular, rating)
+  - Paginated results
+  - Quick repository filtering
 
-- 🌐 **Progressive Web App**
-  - Works offline
-  - Installable on any device
+- 🌍 **Internationalization**
+  - Multi-language support
+  - Currently supports English and Chinese
+  - Easy to add new translations
+
+- 📱 **Cross-Platform**
+  - Works as Progressive Web App (PWA)
   - Responsive design for all screen sizes
-  - URL-based novel import support
+  - Installable on any device
+  - Offline support
 
-- 📝 **Text Processing**
-  - Smart text encoding detection
-  - Support for multiple file encodings (UTF-8, GB18030, Big5, etc.)
-  - Automatic chapter detection with customizable patterns
+
+## URL Parameters
+
+The app supports several URL parameters for direct actions:
+
+- `?repos=URL1,URL2,...` - Add one or more repository URLs
+  ```
+  https://webnr.app?repos=https://repo1.com,https://repo2.com
+  ```
+
+- `?add=URL` - Import novel directly from URL
+  ```
+  https://webnr.app?add=https://example.com/novel.txt
+  ```
+
+- `?search=REPO_URL` - Open search view for specific repository
+  ```
+  https://webnr.app?search=https://repo1.com
+  ```
 
 ## Getting Started
 
 1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/webnr.git
+```
+
 2. Install dependencies:
 ```bash
 npm install
@@ -56,13 +94,14 @@ yarn dev
 
 4. Open [http://localhost:3000](http://localhost:3000) with your browser to start using the app.
 
-## Development
+## Technology Stack
 
-This project is built with:
-- [Next.js](https://nextjs.org/) - React framework
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [Tailwind CSS](https://tailwindcss.com/) - Styling
-- [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) - Local storage
+- **Frontend Framework**: Next.js with TypeScript
+- **Styling**: Tailwind CSS
+- **Storage**: IndexedDB for local data storage
+- **State Management**: React Context
+- **Internationalization**: Custom i18n implementation
+- **Text-to-Speech**: Web Speech API
 
 ## Contributing
 
