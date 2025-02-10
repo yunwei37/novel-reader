@@ -9,6 +9,30 @@ interface TTSConfigProps {
   voices: SpeechSynthesisVoice[];
 }
 
+const getLanguageDisplay = (langCode: string): string => {
+  try {
+    // First try with Intl.DisplayNames
+    return new Intl.DisplayNames(['en'], { type: 'language' }).of(langCode) || langCode;
+  } catch (error) {
+    console.warn('Failed to get language display name:', error);
+    // Fallback: return the language code itself or a mapped name
+    const languageMap: Record<string, string> = {
+      'en': 'English',
+      'es': 'Spanish',
+      'fr': 'French',
+      'de': 'German',
+      'it': 'Italian',
+      'pt': 'Portuguese',
+      'ru': 'Russian',
+      'zh': 'Chinese',
+      'ja': 'Japanese',
+      'ko': 'Korean',
+      // Add more common languages as needed
+    };
+    return languageMap[langCode] || langCode;
+  }
+};
+
 export const TTSConfig: React.FC<TTSConfigProps> = ({
   rate,
   onRateChange,
@@ -23,13 +47,17 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
     const voiceMap = new Map<string, SpeechSynthesisVoice[]>();
     
     voices.forEach(voice => {
-      const langCode = voice.lang.split('-')[0];
-      const language = new Intl.DisplayNames(['en'], { type: 'language' }).of(langCode) || langCode;
-      
-      if (!voiceMap.has(language)) {
-        voiceMap.set(language, []);
+      try {
+        const langCode = voice.lang.split('-')[0].toLowerCase();
+        const language = getLanguageDisplay(langCode);
+        
+        if (!voiceMap.has(language)) {
+          voiceMap.set(language, []);
+        }
+        voiceMap.get(language)?.push(voice);
+      } catch (error) {
+        console.warn('Error processing voice:', voice, error);
       }
-      voiceMap.get(language)?.push(voice);
     });
     
     return new Map([...voiceMap.entries()].sort());
@@ -38,8 +66,13 @@ export const TTSConfig: React.FC<TTSConfigProps> = ({
   // Get current language from selected voice
   const currentLanguage = React.useMemo(() => {
     if (!selectedVoice) return '';
-    const langCode = selectedVoice.lang.split('-')[0];
-    return new Intl.DisplayNames(['en'], { type: 'language' }).of(langCode) || langCode;
+    try {
+      const langCode = selectedVoice.lang.split('-')[0].toLowerCase();
+      return getLanguageDisplay(langCode);
+    } catch (error) {
+      console.warn('Error getting current language:', error);
+      return selectedVoice.lang || '';
+    }
   }, [selectedVoice]);
 
   // Handle language change
