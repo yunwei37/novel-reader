@@ -36,17 +36,6 @@ jobs:
       - run: pip install mkdocs-rss-plugin  mkdocs-static-i18n[material] python-dotenv openai pdfplumber python-docx
       # - run: pip install -r .github/scripts/requirements.txt
       - run: sudo apt-get install libcairo2-dev
-      # New steps start here
-      - name: Generate documents
-        run: |
-          # python .github/scripts/workflows/build_documents.py
-          make clean
-          make build
-      - name: Commit changes
-        run: |
-          git add .
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update for modify contents" && git push)
-      
       # - name: Prepare site
       #   run: .github/site/prepare_site.sh
 
