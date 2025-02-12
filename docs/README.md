@@ -1,106 +1,92 @@
-# WebNR - Web Novel Reader
-
-A modern, privacy-focused, cross-platform web novel reader that works entirely client-side in browser. Built with Next.js and TypeScript.
-
-[中文文档](README.zh.md)
-
-Live Demo: [https://app.webnovel.win](https://app.webnovel.win)
-
-## Demo Screenshots
-
-![Screenshot 1](imgs/Screenshot%202025-02-09%20174556.png)
-
-![Screenshot 2](imgs/Screenshot%202025-02-09%20174735.png)
-
-![Screenshot 3](imgs/Screenshot%202025-02-09%20174807.png)
-
-![Screenshot 4](imgs/Screenshot%202025-02-09%20174820.png)
-
-![Screenshot 5](imgs/Screenshot%202025-02-09%20174833.png)
-
-![Screenshot 6](imgs/Screenshot%202025-02-09%20174855.png)
-
-![Screenshot 7](imgs/Screenshot%202025-02-09%20174925.png)
-
-![Screenshot 8](imgs/Screenshot%202025-02-09%20174925.png)
-
-## Key Features
-
-🔒 **Privacy First**
+<div align="center">
+  <h1>WebNR - Web Novel Reader</h1>
+  <p>A modern, privacy-focused, cross-platform web novel reader that works entirely client-side in browser.<br/>Built with Next.js and TypeScript.</p>
   
+  <p>
+    <a href="README.zh.md">中文文档</a> |
+    <a href="https://app.webnovel.win">Live Demo</a>
+  </p>
+</div>
+
+<div align="center">
+  <img src="imgs/Screenshot%202025-02-09%20174556.png" alt="Screenshot 1" width="800"/>
+</div>
+
+<details>
+<summary>More Screenshots</summary>
+
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px;">
+  <img src="imgs/Screenshot%202025-02-09%20174735.png" alt="Screenshot 2" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174807.png" alt="Screenshot 3" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174820.png" alt="Screenshot 4" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174833.png" alt="Screenshot 5" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174855.png" alt="Screenshot 6" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174925.png" alt="Screenshot 7" style="width: 100%; border-radius: 8px;"/>
+</div>
+
+</details>
+
+## ✨ Key Features
+
+<table>
+<tr>
+<td>
+<h3>🔒 Privacy First</h3>
+
 - All data processed locally
 - No login required
 - No tracking or analytics
 - Works offline as PWA
-
-📚 **Multi-Source Reading**
+</td>
+<td>
+<h3>📚 Multi-Source Reading</h3>
 
 - Import from local files
 - Import from URLs
-- Connect to compatible novel repositories
-- Support for multiple text encodings (UTF-8, GB18030, Big5)
+- Connect to repositories
+- Multiple text encodings
+</td>
+</tr>
+<tr>
+<td>
+<h3>🌐 Repository System</h3>
 
-🌐 **Repository System**
-  
-  - Connect to multiple novel repositories
-  - Browse popular and latest novels
-  - Search across repositories
-  - Automatic repository syncing
-  - Categories and tags support
+- Multiple novel repositories
+- Browse popular/latest novels
+- Cross-repository search
+- Auto repository syncing
+</td>
+<td>
+<h3>📖 Rich Reading Experience</h3>
 
-📖 **Rich Reading Experience**
+- Paged and Scroll modes
+- Customizable font size
+- Dark/Light themes
+- Progress tracking
+</td>
+</tr>
+</table>
 
-  - Two reading modes: Paged and Scroll
-  - Customizable font size
-  - Dark/Light theme with system preference detection
-  - Progress tracking
-  - Clean, distraction-free interface
-  - Text-to-Speech support with adjustable speed and voice selection
-  - One-click access to web resources and definitions
-
-🔍 **Advanced Search**
-
-  - Full-text search across all repositories
-  - Multiple sorting options (relevance, newest, popular, rating)
-  - Paginated results
-  - Quick repository filtering
-
-🌍 **Internationalization**
-
-  - Multi-language support
-  - Currently supports English and Chinese
-  - Easy to add new translations
-
-📱 **Cross-Platform**
-
-  - Works as Progressive Web App (PWA)
-  - Responsive design for all screen sizes
-  - Installable on any device
-  - Offline support
-
-
-## URL Parameters
+<details>
+<summary><h2>🔗 URL Parameters</h2></summary>
 
 The app supports several URL parameters for direct actions:
 
-- `?repos=URL1,URL2,...` - Add one or more repository URLs
-  ```
-  https://app.webnovel.win?repos=https://repo1.com,https://repo2.com
-  ```
+```
+# Add repositories
+https://app.webnovel.win?repos=https://repo1.com,https://repo2.com
 
-- `?add=URL` - Import novel directly from URL
+# Import novel
+https://app.webnovel.win?add=https://example.com/novel.txt
 
-  ```
-  https://app.webnovel.win?add=https://example.com/novel.txt
-  ```
+# Open search
+https://app.webnovel.win?search=https://repo1.com
+```
 
-- `?search=REPO_URL` - Open search view for specific repository
+</details>
 
-  ```
-  https://app.webnovel.win?search=https://repo1.com
-  ```
-
-## Getting Started
+<details>
+<summary><h2>🚀 Getting Started</h2></summary>
 
 1. Clone the repository:
 ```bash
@@ -121,21 +107,30 @@ npm run dev
 yarn dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) with your browser to start using the app.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-## Technology Stack
+</details>
+
+<details>
+<summary><h2>🛠️ Technology Stack</h2></summary>
 
 - **Frontend Framework**: Next.js with TypeScript
 - **Styling**: Tailwind CSS
-- **Storage**: IndexedDB for local data storage
+- **Storage**: IndexedDB
 - **State Management**: React Context
-- **Internationalization**: Custom i18n implementation
+- **Internationalization**: Custom i18n
 - **Text-to-Speech**: Web Speech API
 
-## Contributing
+</details>
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+<div align="center">
 
-## License
+## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE).
+
+<p>
+  <a href="#top">Back to top</a>
+</p>
+
+</div>
