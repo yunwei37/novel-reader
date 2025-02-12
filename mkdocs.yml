@@ -41,13 +41,12 @@ plugins:
   - search
   - i18n:
       docs_structure: suffix
-      default_language: en
       languages:
-        en:
+        - locale: en
+          default: true
           name: English
           build: true
-          default: true
-        zh:
+        - locale: zh
           name: Chinese
           build: true
 
