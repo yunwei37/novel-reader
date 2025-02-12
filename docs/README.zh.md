@@ -1,28 +1,25 @@
-# WebNR - Web小说阅读器
+<div align="center">
+  <h1>WebNR - 在线小说阅读器</h1>
+  <p>一个现代、隐私优先、跨平台的在线小说阅读器<br/> 完全离线，客户端运行。
+  <br/>无需安装，一键打开。
+  </p>
+  
+  <p>
+    <a href="README.zh.md">中文文档</a> |
+    <a href="https://app.webnovel.win">Live Demo</a>
+  </p>
+</div>
 
-一个现代化的、注重隐私的 SPA/PWA 跨平台网页小说阅读器，完全在浏览器中本地运行。使用 Next.js 和 TypeScript 构建。
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 16px;">
+  <img src="imgs/Screenshot%202025-02-09%20174735.png" alt="Screenshot 2" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174807.png" alt="Screenshot 3" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174820.png" alt="Screenshot 4" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174833.png" alt="Screenshot 5" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174855.png" alt="Screenshot 6" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174925.png" alt="Screenshot 7" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174556.png" alt="Screenshot 1" style="width: 100%; border-radius: 8px;"/>
+</div>
 
-[English Documentation](README.md)
-
-Live Demo: [https://app.webnovel.win](https://app.webnovel.win)
-
-## Demo Screenshots
-
-![Screenshot 1](imgs/Screenshot%202025-02-09%20174556.png)
-
-![Screenshot 2](imgs/Screenshot%202025-02-09%20174735.png)
-
-![Screenshot 3](imgs/Screenshot%202025-02-09%20174807.png)
-
-![Screenshot 4](imgs/Screenshot%202025-02-09%20174820.png)
-
-![Screenshot 5](imgs/Screenshot%202025-02-09%20174833.png)
-
-![Screenshot 6](imgs/Screenshot%202025-02-09%20174855.png)
-
-![Screenshot 7](imgs/Screenshot%202025-02-09%20174925.png)
-
-![Screenshot 8](imgs/Screenshot%202025-02-09%20174925.png)
 
 ## 主要特性
 

@@ -1,6 +1,8 @@
 <div align="center">
   <h1>WebNR - Web Novel Reader</h1>
-  <p>A modern, privacy-focused, cross-platform web novel reader that works entirely client-side in browser.<br/>Built with Next.js and TypeScript.</p>
+  <p>A modern, privacy-focused, cross-platform web novel reader that works entirely offline, client-side in browser.<br/>Built with Next.js and TypeScript.
+  <br/>No installation needed, open with one click.
+  </p>
   
   <p>
     <a href="README.zh.md">中文文档</a> |
@@ -8,23 +10,16 @@
   </p>
 </div>
 
-<div align="center">
-  <img src="imgs/Screenshot%202025-02-09%20174556.png" alt="Screenshot 1" width="800"/>
-</div>
-
-<details>
-<summary>More Screenshots</summary>
-
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px;">
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 16px;">
   <img src="imgs/Screenshot%202025-02-09%20174735.png" alt="Screenshot 2" style="width: 100%; border-radius: 8px;"/>
   <img src="imgs/Screenshot%202025-02-09%20174807.png" alt="Screenshot 3" style="width: 100%; border-radius: 8px;"/>
   <img src="imgs/Screenshot%202025-02-09%20174820.png" alt="Screenshot 4" style="width: 100%; border-radius: 8px;"/>
   <img src="imgs/Screenshot%202025-02-09%20174833.png" alt="Screenshot 5" style="width: 100%; border-radius: 8px;"/>
   <img src="imgs/Screenshot%202025-02-09%20174855.png" alt="Screenshot 6" style="width: 100%; border-radius: 8px;"/>
   <img src="imgs/Screenshot%202025-02-09%20174925.png" alt="Screenshot 7" style="width: 100%; border-radius: 8px;"/>
+  <img src="imgs/Screenshot%202025-02-09%20174556.png" alt="Screenshot 1" style="width: 100%; border-radius: 8px;"/>
 </div>
 
-</details>
 
 ## ✨ Key Features
 
