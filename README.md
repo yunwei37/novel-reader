@@ -17,15 +17,15 @@ A modern, privacy-focused, cross-platform web novel reader that works entirely c
 
 - Import from local files
 - Import from URLs
-- Connect to compatible novel repositories
+- Connect to compatible novel Sources
 - Support for multiple text encodings (UTF-8, GB18030, Big5)
 
-🌐 **Repository System**
+🌐 **source System**
   
-  - Connect to multiple novel repositories
+  - Connect to multiple novel Sources
   - Browse popular and latest novels
-  - Search across repositories
-  - Automatic repository syncing
+  - Search across Sources
+  - Automatic source syncing
   - Categories and tags support
 
 📖 **Rich Reading Experience**
@@ -40,10 +40,10 @@ A modern, privacy-focused, cross-platform web novel reader that works entirely c
 
 🔍 **Advanced Search**
 
-  - Full-text search across all repositories
+  - Full-text search across all Sources
   - Multiple sorting options (relevance, newest, popular, rating)
   - Paginated results
-  - Quick repository filtering
+  - Quick source filtering
 
 🌍 **Internationalization**
 
@@ -63,7 +63,7 @@ A modern, privacy-focused, cross-platform web novel reader that works entirely c
 
 The app supports several URL parameters for direct actions:
 
-- `?repos=URL1,URL2,...` - Add one or more repository URLs
+- `?repos=URL1,URL2,...` - Add one or more source URLs
   ```
   https://app.webnovel.win?repos=https://repo1.com,https://repo2.com
   ```
@@ -74,7 +74,7 @@ The app supports several URL parameters for direct actions:
   https://app.webnovel.win?add=https://example.com/novel.txt
   ```
 
-- `?search=REPO_URL` - Open search view for specific repository
+- `?search=REPO_URL` - Open search view for specific source
 
   ```
   https://app.webnovel.win?search=https://repo1.com
@@ -82,7 +82,7 @@ The app supports several URL parameters for direct actions:
 
 ## Getting Started
 
-1. Clone the repository:
+1. Clone the source:
 ```bash
 git clone https://github.com/yourusername/webnr.git
 ```

@@ -13,10 +13,10 @@
 
 - **Shosetsu（Android）**  
   一个受 Tachiyomi 启发的可扩展轻小说阅读器，提供可高度自定义的阅读界面以及追更系统来跟踪新章节  
-  ([Shosetsu | F-Droid - Free and Open Source Android App Repository](https://f-droid.org/id/packages/app.shosetsu.android.fdroid/#:~:text=Shosetsu%20%7C%20F,keep%20track%20of%20new%20chapters))。  
+  ([Shosetsu | F-Droid - Free and Open Source Android App source](https://f-droid.org/id/packages/app.shosetsu.android.fdroid/#:~:text=Shosetsu%20%7C%20F,keep%20track%20of%20new%20chapters))。  
   Shosetsu 使用插件/扩展（extension）模式，并搭配**可修改的仓库**来托管大量来源适配器  
   ([Shosetsu - The extendable novel reader for Android. - Fossdroid](https://fossdroid.com/a/shosetsu-2.html#:~:text=Fossdroid%20fossdroid.com%20%20,a%20plateroa%20of%20extensions))  
-  ([Repositories - Shosetsu](https://shosetsu.app/help/guides/repositories/#:~:text=Repositories%20,users%20can%20acquire%20said%20resources))。  
+  ([Sources - Shosetsu](https://shosetsu.app/help/guides/Sources/#:~:text=Sources%20,users%20can%20acquire%20said%20resources))。  
   （注意：该项目于 2022 年被存档，意味着维护方面出现了挑战。）
 
 - **LNReader（Android，React Native）**  
@@ -47,7 +47,7 @@
 
 - **NovelDokusha（Android）**  
   一个用 Kotlin（Jetpack Compose）编写的现代化网络小说阅读器。可支持**多个来源网站**并可在多个小说数据库中进行搜索  
-  ([NovelDokusha - IzzyOnDroid F-Droid Repository](https://apt.izzysoft.de/fdroid/index/apk/my.noveldokusha#:~:text=NovelDokusha%20is%20a%20web%20novel,from%20where%20to%20read%3B%20Reader))，  
+  ([NovelDokusha - IzzyOnDroid F-Droid source](https://apt.izzysoft.de/fdroid/index/apk/my.noveldokusha#:~:text=NovelDokusha%20is%20a%20web%20novel,from%20where%20to%20read%3B%20Reader))，  
   例如按书名或类别跨索引搜索。  
   亮点功能包括无限滚动阅读、自定义字体和字号、**实时翻译**以及可调语音的文字转语音（TTS）  
   ([README.md - nanihadesuka/NovelDokusha - GitHub](https://github.com/nanihadesuka/NovelDokusha/blob/master/README.md#:~:text=Features%20%C2%B7%20Infinite%20scroll%20%C2%B7,Save%20your%20preferred%20voices)) —— 支持后台播放章节语音。它也可读本地 EPUB、轻松备份并支持暗色模式  
@@ -102,13 +102,13 @@
   相比之下，QuickNovel 支持的站点更少（更专注核心站点）  
   ([What is LNReader? : r/animepiracy - Reddit](https://www.reddit.com/r/animepiracy/comments/xcrvrj/what_is_lnreader/#:~:text=Fast%20searches%20and%20quick%20download,Not))，用速度来换取对来源广度的牺牲。  
   Shosetsu 也因为其社区贡献的**多样化来源扩展**而有可观的来源量  
-  ([Repositories - Shosetsu](https://shosetsu.app/help/guides/repositories/#:~:text=Repositories%20,users%20can%20acquire%20said%20resources))。  
+  ([Sources - Shosetsu](https://shosetsu.app/help/guides/Sources/#:~:text=Sources%20,users%20can%20acquire%20said%20resources))。  
   我们的项目目标是**在来源覆盖度上与这些工具持平或更优**，同时确保对小众或新站点的兼容性，并提供便捷的方法来新增来源。
 
 - **书库管理 & 更新：**  
   所有这些开源应用都提供**收藏/书架**功能来跟踪并显示小说更新。  
   例如，Shosetsu 的更新系统会追踪整本书的新章节  
-  ([Shosetsu | F-Droid - Free and Open Source Android App Repository](https://f-droid.org/id/packages/app.shosetsu.android.fdroid/#:~:text=Shosetsu%20%7C%20F,keep%20track%20of%20new%20chapters))，  
+  ([Shosetsu | F-Droid - Free and Open Source Android App source](https://f-droid.org/id/packages/app.shosetsu.android.fdroid/#:~:text=Shosetsu%20%7C%20F,keep%20track%20of%20new%20chapters))，  
   LNReader 和 NovelLibrary 也能让用户把小说加入书库，并在有新章节时进行通知或突出显示。  
   QuickNovel 的弱点是缺少自动提醒更新功能  
   ([What is LNReader? : r/animepiracy - Reddit](https://www.reddit.com/r/animepiracy/comments/xcrvrj/what_is_lnreader/#:~:text=Fast%20searches%20and%20quick%20download,Not))，  
@@ -130,7 +130,7 @@
 - **UI 可定制：**  
   几乎所有成熟的阅读器都具备如字体大小、亮度调节、主题等基础功能。  
   Shosetsu 强调其*高度可定制的阅读器*  
-  ([Shosetsu | F-Droid - Free and Open Source Android App Repository](https://f-droid.org/id/packages/app.shosetsu.android.fdroid/#:~:text=Shosetsu%20%7C%20F,keep%20track%20of%20new%20chapters))，  
+  ([Shosetsu | F-Droid - Free and Open Source Android App source](https://f-droid.org/id/packages/app.shosetsu.android.fdroid/#:~:text=Shosetsu%20%7C%20F,keep%20track%20of%20new%20chapters))，  
   NovelDokusha 进一步拓展至自定义字体和无限滚动阅读  
   ([README.md - nanihadesuka/NovelDokusha - GitHub](https://github.com/nanihadesuka/NovelDokusha/blob/master/README.md#:~:text=Features%20%C2%B7%20Infinite%20scroll%20%C2%B7,Save%20your%20preferred%20voices))。  
   我们的项目也会提供多种阅读模式（分页或连续滚动）、字体及行距调节、日/夜主题，以及用户自定义色彩方案。对于站点格式不统一的问题，我们还会考虑先进排版设置或 CSS 调整功能，让用户在遇到排版混乱的章节时也能统一处理。
@@ -182,11 +182,11 @@
 
 - **插件/扩展式架构：**  
   Shosetsu 与 Tachiyomi 开创了针对不同来源的扩展包思路。Shosetsu 允许开发者把扩展托管在仓库中，用户可在应用中加载  
-  ([Repositories - Shosetsu](https://shosetsu.app/help/guides/repositories/#:~:text=Repositories%20,users%20can%20acquire%20said%20resources))，  
+  ([Sources - Shosetsu](https://shosetsu.app/help/guides/Sources/#:~:text=Sources%20,users%20can%20acquire%20said%20resources))，  
   这样把来源代码与核心应用解耦——这是**我们也计划采用**的最佳实践之一。  
   LNReader 同样支持多来源插件（他们维护了一个独立的 `lnreader-plugins` 仓库）。  
   借鉴类似架构，我们的项目也能很好地扩展：有新的来源或内容格式时，社区可以新增扩展，而无需更新整个主应用。我们会提供一个清晰的 API 或 SDK，方便开发者编写站点解析器（定义如何获取书籍列表、章节、解析文本等），再打包供应用使用。这种模式在开源社区中已经被证明是行之有效的  
-  ([Repositories - Shosetsu](https://shosetsu.app/help/guides/repositories/#:~:text=Repositories%20,users%20can%20acquire%20said%20resources))。
+  ([Sources - Shosetsu](https://shosetsu.app/help/guides/Sources/#:~:text=Sources%20,users%20can%20acquire%20said%20resources))。
 
 - **开源贡献模式：**  
   提及的所有开源项目都在 GitHub/GitLab 上开放代码，并接受 Issue 或 Pull Request。Shosetsu 团队曾欢迎外部帮助，LNReader 也因为社群接力而维持活跃度。  
@@ -294,7 +294,7 @@
   我们可以尝试分时或缓存热门内容：例如同一热门作品，重复搜索可从公共缓存获得，而不是每个客户端都直接爬取。  
   这就涉及到客户端 + 云端的混合架构，会增加复杂度，但对提升用户体验与减轻站点压力有帮助。  
   从代码角度看，可扩展性也意味着分开维护站点扩展，网站一旦改版，只需更新对应扩展而不必升级整个应用。Tachiyomi、Shosetsu 等都这么做  
-  ([Repositories - Shosetsu](https://shosetsu.app/help/guides/repositories/#:~:text=Repositories%20,users%20can%20acquire%20said%20resources))，  
+  ([Sources - Shosetsu](https://shosetsu.app/help/guides/Sources/#:~:text=Sources%20,users%20can%20acquire%20said%20resources))，  
   这是长线发展的关键。
 
 - **跨平台同步架构：**  
@@ -310,7 +310,7 @@
 构建一款同时满足休闲读者和技术用户需求的**网络小说阅读器**，既富挑战又具价值。我们通过对现有解决方案——从 Shosetsu、LNReader、QuickNovel、NovelDokusha 等开源项目，到商业平台——的深入分析，看到了许多对我们自己的项目具有借鉴意义的地方。在**内容覆盖广度**、**定制化阅读体验**和**现代可扩展架构**方面，依然有提升空间，也存在清晰的差异化机会。
 
 对开发者和潜在贡献者而言，我们的项目将以可扩展和透明为核心，采用插件式来源系统  
-([Repositories - Shosetsu](https://shosetsu.app/help/guides/repositories/#:~:text=Repositories%20,users%20can%20acquire%20said%20resources))、模块化架构以及跨平台技术来打造一个易于上手、可持续的代码库。对高级用户而言，像实时翻译、TTS 这样的功能  
+([Sources - Shosetsu](https://shosetsu.app/help/guides/Sources/#:~:text=Sources%20,users%20can%20acquire%20said%20resources))、模块化架构以及跨平台技术来打造一个易于上手、可持续的代码库。对高级用户而言，像实时翻译、TTS 这样的功能  
 ([README.md - nanihadesuka/NovelDokusha - GitHub](https://github.com/nanihadesuka/NovelDokusha/blob/master/README.md#:~:text=Features%20%C2%B7%20Infinite%20scroll%20%C2%B7,Save%20your%20preferred%20voices))  
 会带来更丰富的阅读方式，而云同步、丰富的元数据等潜在功能也能进一步完善体验。
 
@@ -318,8 +318,8 @@
 
 **参考资料：**  
 本文对功能和特性的讨论，主要基于各项目的官方文档及用户社区的讨论。核心参考包括 Shosetsu  
-([Shosetsu | F-Droid - Free and Open Source Android App Repository](https://f-droid.org/id/packages/app.shosetsu.android.fdroid/#:~:text=Shosetsu%20%7C%20F,keep%20track%20of%20new%20chapters))  
-([Repositories - Shosetsu](https://shosetsu.app/help/guides/repositories/#:~:text=Repositories%20,users%20can%20acquire%20said%20resources))，  
+([Shosetsu | F-Droid - Free and Open Source Android App source](https://f-droid.org/id/packages/app.shosetsu.android.fdroid/#:~:text=Shosetsu%20%7C%20F,keep%20track%20of%20new%20chapters))  
+([Sources - Shosetsu](https://shosetsu.app/help/guides/Sources/#:~:text=Sources%20,users%20can%20acquire%20said%20resources))，  
 LNReader  
 ([lnreader vs QuickNovel - compare differences and reviews? - LibHunt](https://www.libhunt.com/compare-lnreader-vs-QuickNovel#:~:text=LNReader%20,NO%20MORE%2050%20million))，  
 QuickNovel  
@@ -328,7 +328,7 @@ NovelLibrary
 ([Download Novel Library (MOD) APK for Android](https://novel-library.apk.dog/#:~:text=Download%20Novel%20Library%20,can%20search%20for%20novels))，  
 NovelDokusha  
 ([README.md - nanihadesuka/NovelDokusha - GitHub](https://github.com/nanihadesuka/NovelDokusha/blob/master/README.md#:~:text=Features%20%C2%B7%20Infinite%20scroll%20%C2%B7,Save%20your%20preferred%20voices))  
-([NovelDokusha - IzzyOnDroid F-Droid Repository](https://apt.izzysoft.de/fdroid/index/apk/my.noveldokusha#:~:text=NovelDokusha%20is%20a%20web%20novel,from%20where%20to%20read%3B%20Reader))，  
+([NovelDokusha - IzzyOnDroid F-Droid source](https://apt.izzysoft.de/fdroid/index/apk/my.noveldokusha#:~:text=NovelDokusha%20is%20a%20web%20novel,from%20where%20to%20read%3B%20Reader))，  
 Miru  
 ([miru-project/miru-app - GitHub](https://github.com/miru-project/miru-app#:~:text=A%20versatile%20application%20that%20is,Android%2C%20Windows%2C%20and%20Web))，  
 以及其他文中引用的资源。这些参考可为想进一步了解实现细节和功能的读者提供更多信息。
